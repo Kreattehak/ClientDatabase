@@ -58,9 +58,6 @@ h1 {
     margin: 10px 0;
 }
 
-
-
-
 .stylish-input-group .input-group-addon{
     background: white !important;
 }
@@ -72,4 +69,47 @@ h1 {
 .stylish-input-group button{
     border:0;
     background:transparent;
+}
+
+
+table th {
+    padding: 20px;
+    border-right: 1px #595959 solid;
+    background-color: #2C2C2C;
+
+    position: relative;
+
+    cursor: pointer;
+
+    color: #E2E2E2;
+}
+
+table th:after {
+    content: "";
+    display: none;
+    width: 0;
+    height: 0;
+    margin-top: -5px;
+
+    position: absolute;
+    top: 50%;
+    right: 20px;
+}
+
+table th.asc:after {
+    display: block;
+    border-style: solid;
+    border-width: 0 5px 10px 5px;
+    border-color: transparent transparent #E2E2E2 transparent;
+}
+
+table th.desc:after {
+    display: block;
+    border-style: solid;
+    border-width: 10px 5px 0 5px;
+    border-color: #E2E2E2 transparent transparent transparent;
+}
+
+table tr:nth-child(even) td {
+    background-color: #F2F2F2;
 }

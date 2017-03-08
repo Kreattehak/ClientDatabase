@@ -15,7 +15,7 @@
 
 <div class="container">
     <section>
-        <table class="table">
+        <table class="table" id="clientsTable">
             <thead>
             <tr>
                 <th>#</th>
@@ -41,5 +41,6 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="<c:url value="/resources/script.js"/>"></script>
 </body>
 </html>
