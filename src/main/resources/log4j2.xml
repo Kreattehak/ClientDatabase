@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n" />
+		</Console>
+	<RollingFile name="smtrace" fileName="${sys:user.home}\UserDatabase\logs\smtrace.log"
+		filePattern="${sys:user.home}\UserDatabase\logs\%d{yyyy-MM-dd}\smtrace-%d{HH-mm-ss}.log">
+		<PatternLayout>
+			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n
+			</pattern>
+		</PatternLayout>
+		<Policies>
+		  <OnStartupTriggeringPolicy />
+		</Policies>
+	</RollingFile>
+	<RollingFile name="allLogs" fileName="${sys:user.home}\UserDatabase\logs\allLogs.log"
+    		filePattern="${sys:user.home}\UserDatabase\logs\%d{yyyy-MM-dd}\allLogs-%d{HH-mm-ss}.log">
+    		<PatternLayout>
+    			<pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n
+    			</pattern>
+    		</PatternLayout>
+    		<Policies>
+    		  <OnStartupTriggeringPolicy />
+    		</Policies>
+    	</RollingFile>
+	</Appenders>
+	<Loggers>
+        <Logger name="com.company" level="trace" additivity="false">
+            <AppenderRef ref="console" level="all"/>
+        </Logger>
+        <Logger name="com.company" level="all" additivity="false">
+            <AppenderRef ref="allLogs" level="all"/>
+            <AppenderRef ref="smtrace" level="INFO"/>
+        </Logger>
+        <Logger name="org.hibernate.type" level="trace" additivity="false">
+                    <AppenderRef ref="smtrace" level="trace"/>
+        </Logger>
+        <Root level="error">
+            <AppenderRef ref="console"/>
+        </Root>
+	</Loggers>
+</Configuration>
