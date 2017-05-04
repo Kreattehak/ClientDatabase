@@ -16,21 +16,17 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-nav-hide">
             <ul class="nav navbar-nav">
-                <li><a href="#">About Us</a>
-                </li>
-                <li><a href="#">Products</a>
-                </li>
+                <li><a href="#">About Us</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="<c:url value="#"/>">Contact</a></li>
-                <li><a href="<c:url value="?language=pl"/>">ENG</a></li>
+                <li><a href="<c:url value="?language=en"/>">ENG</a></li>
                 <li><a href="<c:url value="?language=pl"/>">P<span class="language-polish">L</span></a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">
-                        Account <span class="caret"></span></a>
+                        Admin Panel <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Login</a></li>
+                        <li><a href="<c:url value="/addClient"/>">Add Client</a></li>
                         <li><a href="#">OrderList</a></li>
                         <li><a href="#">Settings</a></li>
                         <li role="separator" class="divider"></li>

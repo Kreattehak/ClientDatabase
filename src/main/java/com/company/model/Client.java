@@ -1,51 +1,52 @@
 package com.company.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
-
+import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "listofclients")
 public class Client implements Serializable {
 
-    private static final long serialVersionUID = 4910225916550731446L;
+    private static final long serialVersionUID = 3112262902113509486L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "client_id", unique = true, nullable = false)
     private Long id;
+
+    @Column(name = "firstName", length = 50)
     private String firstName;
+
+    @Column(name = "lastName", length = 50)
     private String lastName;
-    private String designation;
-    private Integer salary;
+
+    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Address> address;
+
+    @Column(name = "dateOfRegistration")
+    private Date dateOfRegistration;
 
     public Client() {
     }
 
-    public Client(Long id) {
-        this.id = id;
+    public Client(String firstName, String lastName, Date dateOfRegistration) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = new HashSet<>();
+        this.dateOfRegistration = dateOfRegistration;
     }
 
-    public Client(Long id, String firstname, String lastname, String designation, Integer salary) {
-        this.id = id;
-        this.firstName = firstname;
-        this.lastName = lastname;
-        this.designation = designation;
-        this.salary = salary;
-    }
-
-    public Client(String firstname, String lastname, String designation, Integer salary) {
-        this.firstName = firstname;
-        this.lastName = lastname;
-        this.designation = designation;
-        this.salary = salary;
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, nullable = false)
     public Long getId() {
         return this.id;
     }
@@ -54,7 +55,6 @@ public class Client implements Serializable {
         this.id = id;
     }
 
-    @Column(name = "firstName", length = 50)
     public String getFirstName() {
         return this.firstName;
     }
@@ -63,7 +63,6 @@ public class Client implements Serializable {
         this.firstName = firstName;
     }
 
-    @Column(name = "lastName", length = 50)
     public String getLastName() {
         return this.lastName;
     }
@@ -72,31 +71,45 @@ public class Client implements Serializable {
         this.lastName = lastName;
     }
 
-    @Column(name = "designation", length = 50)
-    public String getDesignation() {
-        return this.designation;
+    public Set<Address> getAddress() {
+        return address;
     }
 
-    public void setDesignation(String designation) {
-        this.designation = designation;
+    public void setAddress(Set<Address> adress) {
+        this.address = adress;
     }
 
-    @Column(name = "salary")
-    public Integer getSalary() {
-        return this.salary;
+    public Date getDateOfRegistration() {
+        return dateOfRegistration;
     }
 
-    public void setSalary(Integer salary) {
-        this.salary = salary;
+    public void setDateOfRegistration(Date dateOfRegistration) {
+        this.dateOfRegistration = dateOfRegistration;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Client client = (Client) o;
+
+        return id != null ? id.equals(client.id) : client.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("Id: ").append(this.id).append(", firstName: ").append(this.firstName).append(", lastName: ")
-                .append(this.lastName).append(", Designation: ").append(this.designation).append(", Salary: ")
-                .append(this.salary);
-        return sb.toString();
+        return "Client{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", address=" + address +
+                ", dateOfRegistration=" + dateOfRegistration +
+                '}';
     }
-
 }

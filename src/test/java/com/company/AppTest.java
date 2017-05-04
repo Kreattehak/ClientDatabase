@@ -12,10 +12,8 @@ public class AppTest {
             context = new AnnotationConfigApplicationContext(AppConfiguration.class);
             MyApplication application = context.getBean(MyApplication.class);
 
-//            application.performDbTasks();
-//            application.queryAllClients();
-            application.fullFillDatabase();
-
+            application.performDbTasks();
+//            application.getClient();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

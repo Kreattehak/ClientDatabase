@@ -4,17 +4,20 @@
 
     <groupId>com.company</groupId>
     <artifactId>UserDatabase</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <version>1.0.0</version>
+    <packaging>war</packaging>
 
     <name>UserDatabase</name>
-    <url>http://maven.apache.org</url>
+    <url>http://localhost:8080</url>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <spring.version>4.3.7.RELEASE</spring.version>
+        <spring.security>4.2.2.RELEASE</spring.security>
         <hibernate.version>5.2.8.Final</hibernate.version>
+        <validator.version>5.4.1.Final</validator.version>
+        <mysql.connector>6.0.6</mysql.connector>
     </properties>
 
     <dependencies>
@@ -32,6 +35,13 @@
             <version>${hibernate.version}</version>
         </dependency>
 
+        <!--Validator-->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${validator.version}</version>
+        </dependency>
+
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -44,11 +54,28 @@
             <version>${spring.version}</version>
         </dependency>
 
+        <!--Security-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring.security}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring.security}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.security}</version>
+        </dependency>
+
         <!-- Database -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>6.0.5</version>
+            <version>${mysql.connector}</version>
         </dependency>
 
         <!-- Logging -->
@@ -79,6 +106,19 @@
             <artifactId>jboss-logging</artifactId>
             <version>3.3.0.Final</version>
         </dependency>
-
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

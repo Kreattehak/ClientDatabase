@@ -16,26 +16,39 @@
 		</Policies>
 	</RollingFile>
 	<RollingFile name="allLogs" fileName="${sys:user.home}\UserDatabase\logs\allLogs.log"
-    		filePattern="${sys:user.home}\UserDatabase\logs\%d{yyyy-MM-dd}\allLogs-%d{HH-mm-ss}.log">
-    		<PatternLayout>
-    			<pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n
-    			</pattern>
-    		</PatternLayout>
-    		<Policies>
-    		  <OnStartupTriggeringPolicy />
-    		</Policies>
-    	</RollingFile>
+    	filePattern="${sys:user.home}\UserDatabase\logs\%d{yyyy-MM-dd}\allLogs-%d{HH-mm-ss}.log">
+    	<PatternLayout>
+    		<pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n
+    		</pattern>
+    	</PatternLayout>
+    	<Policies>
+    		 <OnStartupTriggeringPolicy />
+    	</Policies>
+    </RollingFile>
+    <RollingFile name="databaseLogs" fileName="${sys:user.home}\UserDatabase\logs\databaseLogs.log"
+        	filePattern="${sys:user.home}\UserDatabase\logs\%d{yyyy-MM-dd}\databaseLogs-%d{HH-mm-ss}.log">
+        	<PatternLayout>
+        		<pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n
+        		</pattern>
+        	</PatternLayout>
+        	<Policies>
+        		 <OnStartupTriggeringPolicy />
+        	</Policies>
+        </RollingFile>
 	</Appenders>
 	<Loggers>
         <Logger name="com.company" level="trace" additivity="false">
-            <AppenderRef ref="console" level="all"/>
+            <AppenderRef ref="console" level="ALL"/>
         </Logger>
         <Logger name="com.company" level="all" additivity="false">
-            <AppenderRef ref="allLogs" level="all"/>
-            <AppenderRef ref="smtrace" level="INFO"/>
+            <AppenderRef ref="allLogs" level="ALL"/>
+            <AppenderRef ref="smtrace" level="WARN"/>
         </Logger>
         <Logger name="org.hibernate.type" level="trace" additivity="false">
-                    <AppenderRef ref="smtrace" level="trace"/>
+            <AppenderRef ref="smtrace" level="TRACE"/>
+        </Logger>
+        <Logger name="com.company.controller.ClientController" level="info" additivity="false">
+            <AppenderRef ref="databaseLogs" level="INFO"/>
         </Logger>
         <Root level="error">
             <AppenderRef ref="console"/>

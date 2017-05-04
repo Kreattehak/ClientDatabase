@@ -1,17 +1,19 @@
 package com.company.service;
 
+import com.company.model.AddClientForm;
 import com.company.model.Client;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public interface ClientService {
 
-    Client getClient(Long id);
+    Client findClientById(Long id);
 
-    void addNewClient(Client client);
+    List<Client> findAllClients();
 
-    List<Client> getAllClients();
+    Client saveClient(AddClientForm clientForm);
 
-    List<Client> fullFillDatabase();
+    void deleteClient(Client client);
+
+    Client updateClient(Client client);
 }

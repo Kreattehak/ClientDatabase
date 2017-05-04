@@ -2,12 +2,13 @@ package com.company.dao;
 
 import com.company.model.Client;
 
-import java.io.Serializable;
+import java.util.List;
 
-public interface ClientDao {
+public interface ClientDao extends Dao<Client, Long> {
 
-    Serializable save(Client client);
+    List<Client> findByFirstName(String firstName);
 
-    Client findById(Serializable id);
+    List<Client> findByLastName(String lastName);
 
 }
+

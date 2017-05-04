@@ -1,6 +1,5 @@
 html {
     height: 100%;
-    /*body konczylo sie za buttonem i obrazek zle wygladal*/
 }
 
 body {
@@ -41,11 +40,11 @@ body {
 hr {
     width: 400px;
     border-top: 1px solid #f8f8f8;
-    border-bottom: 1px solid rgba(0, 0, 0 , 0.2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 h1 {
-    font-weight:  700;
+    font-weight: 700;
     font-size: 5em;
 }
 
@@ -58,30 +57,26 @@ h1 {
     margin: 10px 0;
 }
 
-.stylish-input-group .input-group-addon{
+.stylish-input-group .input-group-addon {
     background: white !important;
 }
-.stylish-input-group .form-control{
-    border-right:0;
-    box-shadow:0 0 0;
-    border-color:#ccc;
-}
-.stylish-input-group button{
-    border:0;
-    background:transparent;
+
+.stylish-input-group .form-control {
+    border-right: 0;
+    box-shadow: 0 0 0;
+    border-color: #ccc;
 }
 
+.stylish-input-group button {
+    border: 0;
+    background: transparent;
+}
 
 table th {
     padding: 20px;
-    border-right: 1px #595959 solid;
-    background-color: #2C2C2C;
-
+    background-color: #D7D7D7;
     position: relative;
-
     cursor: pointer;
-
-    color: #E2E2E2;
 }
 
 table th:after {
@@ -100,16 +95,29 @@ table th.asc:after {
     display: block;
     border-style: solid;
     border-width: 0 5px 10px 5px;
-    border-color: transparent transparent #E2E2E2 transparent;
+    border-color: transparent transparent #FFFFFF transparent;
 }
 
 table th.desc:after {
     display: block;
     border-style: solid;
     border-width: 10px 5px 0 5px;
-    border-color: #E2E2E2 transparent transparent transparent;
+    border-color: #FFFFFF transparent transparent transparent;
 }
 
-table tr:nth-child(even) td {
-    background-color: #F2F2F2;
+ul.errors {
+    width: 600px;
+    padding: 20px;
+    margin: 0 auto 30px auto;
+    background-color: #FFD4DE;
+}
+
+ul.errors li {
+    list-style: none;
+    line-height: 30px;
+    color: #F70053;
+}
+
+div.address {
+    padding-top: 30px;
 }
