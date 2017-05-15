@@ -1,16 +1,11 @@
 package com.company.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import org.hibernate.validator.constraints.Length;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +13,7 @@ import java.util.Set;
 @Table(name = "listofclients")
 public class Client implements Serializable {
 
-    private static final long serialVersionUID = 3112262902113509486L;
+    private static final long serialVersionUID = 466741405964712741L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,25 +21,33 @@ public class Client implements Serializable {
     private Long id;
 
     @Column(name = "firstName", length = 50)
+    @Length(min = 3, message = "{validation.minLength}")
     private String firstName;
 
     @Column(name = "lastName", length = 50)
+    @Length(min = 3, message = "{validation.minLength}")
     private String lastName;
 
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Address> address;
 
-    @Column(name = "dateOfRegistration")
+    @Column(name = "dateOfRegistration", nullable = false, updatable = false)
     private Date dateOfRegistration;
 
+    @OneToOne
+    @JoinTable(name = "client_main_address", joinColumns = @JoinColumn(name = "client_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id"))
+    private Address mainAddress;
+
     public Client() {
+        this.address = new HashSet<>();
+        this.dateOfRegistration = Date.valueOf(LocalDate.now());
     }
 
-    public Client(String firstName, String lastName, Date dateOfRegistration) {
+    public Client(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.address = new HashSet<>();
-        this.dateOfRegistration = dateOfRegistration;
+
     }
 
     public Long getId() {
@@ -79,12 +82,27 @@ public class Client implements Serializable {
         this.address = adress;
     }
 
+    public void addAddress(Address address) {
+        if (this.address.isEmpty()) {
+            this.mainAddress = address;
+        }
+        this.address.add(address);
+    }
+
     public Date getDateOfRegistration() {
         return dateOfRegistration;
     }
 
     public void setDateOfRegistration(Date dateOfRegistration) {
         this.dateOfRegistration = dateOfRegistration;
+    }
+
+    public Address getMainAddress() {
+        return mainAddress;
+    }
+
+    public void setMainAddress(Address mainAddress) {
+        this.mainAddress = mainAddress;
     }
 
     @Override
@@ -110,6 +128,7 @@ public class Client implements Serializable {
                 ", lastName='" + lastName + '\'' +
                 ", address=" + address +
                 ", dateOfRegistration=" + dateOfRegistration +
+                ", mainAddress=" + mainAddress +
                 '}';
     }
 }

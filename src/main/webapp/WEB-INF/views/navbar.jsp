@@ -16,7 +16,7 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-nav-hide">
             <ul class="nav navbar-nav">
-                <li><a href="#">About Us</a></li>
+                <li><a href="<c:url value="/aboutUs"/>"><spring:message code="menu.aboutUs"/></a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="<c:url value="?language=en"/>">ENG</a></li>
@@ -26,11 +26,12 @@
                        aria-expanded="false">
                         Admin Panel <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="<c:url value="/addClient"/>">Add Client</a></li>
-                        <li><a href="#">OrderList</a></li>
-                        <li><a href="#">Settings</a></li>
+                        <li><a href="<c:url value="/addClient"/>"><spring:message code="menu.addClient"/></a>
+                        </li>
+                        <li><a href="#"><spring:message code="menu.notAssignedAddresses"/></a></li>
+                        <li><a href="#"><spring:message code="menu.clientsWithoutAddress"/></a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="#"><spring:message code="menu.logOut"/></a></li>
                     </ul>
                 </li>
             </ul>

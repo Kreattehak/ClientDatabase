@@ -9,4 +9,5 @@ import org.springframework.context.annotation.PropertySource;
 @ComponentScan(value = {"com.company"})
 @Import({HibernateConfiguration.class, SpringConfiguration.class, SecurityConfiguration.class})
 @PropertySource("classpath:app.properties")
-public class AppConfiguration {}
+public class AppConfiguration {
+}

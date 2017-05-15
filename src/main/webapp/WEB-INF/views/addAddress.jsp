@@ -7,41 +7,44 @@
 <head>
     <link rel="stylesheet" href="<c:url value="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/style.css"/>">
-    <title><spring:message code="addForm.client.title"></spring:message></title>
+    <title><spring:message code="addForm.address.title"/></title>
 </head>
 <body>
 
 <jsp:include page="navbar.jsp"/>
 
 <section class="container">
-    <form:form modelAttribute="newClient" class="form-horizontal" method="POST">
+    <form:form modelAttribute="newAddress" class="form-horizontal" method="POST">
         <form:errors path="*" cssClass="alert alert-danger" element="div"/>
         <fieldset>
-            <legend><spring:message code="addForm.client.legendMessage"/></legend>
+            <legend><spring:message code="addForm.address.legendMessage"/></legend>
             <div class="form-group">
-                <label class="control-label col-lg-2" for="firstName">
-                    <spring:message code="addForm.client.firstName"/>
+                <label class="control-label col-lg-2" for="streetName">
+                    <spring:message code="addForm.client.streetName"/>
                 </label>
                 <div class="col-lg-5">
-                    <form:input id="firstName" path="firstName" type="text" cssClass="form-control"/>
-                    <form:errors path="firstName" cssClass="text-danger"/>
+                    <form:input id="streetName" path="streetName" type="text" cssClass="form-control"/>
+                    <form:errors path="streetName" cssClass="text-danger"/>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="control-label col-lg-2" for="lastName">
-                    <spring:message code="addForm.client.lastName"/>
+                <label class="control-label col-lg-2" for="cityName">
+                    <spring:message code="addForm.client.cityName"/>
                 </label>
                 <div class="col-lg-5">
-                    <form:input id="lastName" path="lastName" type="text" cssClass="form-control"/>
-                    <form:errors path="lastName" cssClass="text-danger"/>
+                    <form:input id="cityName" path="cityName" type="text" cssClass="form-control"/>
+                    <form:errors path="cityName" cssClass="text-danger"/>
                 </div>
             </div>
 
             <div class="form-group">
-                <div class="col-lg-offset-2 col-lg-5">
-                    <input id="addAddress" type="checkbox" name="shouldAddAddress" value="true">
-                    <spring:message code="addForm.client.newAddressCheck"/>
+                <label class="control-label col-lg-2" for="zipCode">
+                    <spring:message code="addForm.client.zipCode"/>
+                </label>
+                <div class="col-lg-5">
+                    <form:input id="zipCode" path="zipCode" type="text" cssClass="form-control"/>
+                    <form:errors path="zipCode" cssClass="text-danger"/>
                 </div>
             </div>
 

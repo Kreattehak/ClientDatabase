@@ -8,8 +8,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class HomeController {
 
     @RequestMapping("/")
-    public String hello(Model model) {
+    public String hello() {
         return "redirect:/clientsTable";
+    }
+
+    @RequestMapping("/blank")
+    public String blank() {
+        return "blank";
+    }
+
+    @RequestMapping("/aboutUs")
+    public String aboutUs() {
+        return "aboutUs";
     }
 
 }

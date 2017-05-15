@@ -3,7 +3,10 @@
     var table = document.querySelector("#clientsTable"),
         ths = table.querySelectorAll("thead th"),
         trs = table.querySelectorAll("tbody tr"),
-        bEdit = document.querySelector("#bEdit"),
+        bAddAddress = document.querySelector("#bAddAddress"),
+        bEditClient = document.querySelector("#bEditClient"),
+        bEditAddresses = document.querySelector("#bEditAddresses"),
+        bEditMainAddress = document.querySelector("#bEditMainAddress"),
         bRemove = document.querySelector("#bRemove"),
         activeRow;
 
@@ -83,7 +86,7 @@
 
         var li = document.createElement("li");
 
-        li.textContent = "Select row to delete";
+        li.textContent = "Please select a row";
 
         ul.appendChild(li);
 
@@ -109,7 +112,10 @@
         }, false);
     }
 
-    addFunctionalityToButton(bEdit, "editClient");
+    addFunctionalityToButton(bAddAddress, "addAddress");
+    addFunctionalityToButton(bEditClient, "editClient");
+    addFunctionalityToButton(bEditAddresses, "editAddresses");
+    addFunctionalityToButton(bEditMainAddress, "editMainAddress");
     addFunctionalityToButton(bRemove, "removeClient");
 
 })();

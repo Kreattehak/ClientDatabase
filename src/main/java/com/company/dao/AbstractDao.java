@@ -57,5 +57,6 @@ public class AbstractDao<T, ID extends Serializable> implements Dao<T, ID> {
     @Override
     public T update(T entity) {
         return (T) sessionFactory.getCurrentSession().merge(entity);
-    }}
+    }
+}
 

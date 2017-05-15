@@ -5,9 +5,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<c:url value="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/style.css"/>">
-    <title>Welcome</title>
+    <title><spring:message code="clientsTable.title"/></title>
 </head>
 <body>
 
@@ -18,9 +18,10 @@
         <thead>
         <tr>
             <th>#</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Date of registration</th>
+            <th><spring:message code="clientsTable.firstName"/></th>
+            <th><spring:message code="clientsTable.lastName"/></th>
+            <th><spring:message code="clientsTable.dateOfRegistration"/></th>
+            <th><spring:message code="clientsTable.cityName"/></th>
         </tr>
         </thead>
         <tbody>
@@ -30,6 +31,7 @@
                 <td>${client.firstName}</td>
                 <td>${client.lastName}</td>
                 <td><fmt:formatDate value="${client.dateOfRegistration}" pattern="dd.MM.yyyy"/></td>
+                <td>${client.mainAddress.cityName}</td>
             </tr>
         </c:forEach>
         </tbody>
@@ -38,8 +40,16 @@
 
 <div class="form-group">
     <div class="col-lg-offset-2 col-lg-10">
-        <button type="submit" id="bEdit" class="btn btn-info">Edit</button>
-        <button type="submit" id="bRemove" class="btn btn-warning">Remove</button>
+        <button type="submit" id="bAddAddress" class="btn btn-info">
+            <spring:message code="button.addAddress"/></button>
+        <button type="submit" id="bEditClient" class="btn btn-info">
+            <spring:message code="button.editClient"/></button>
+        <button type="submit" id="bEditAddresses" class="btn btn-info">
+            <spring:message code="button.editAddresses"/></button>
+        <button type="submit" id="bEditMainAddress" class="btn btn-info">
+            <spring:message code="button.editMainAddress"/></button>
+        <button type="submit" id="bRemove" class="btn btn-warning">
+            <spring:message code="button.editRemove"/></button>
     </div>
 </div>
 

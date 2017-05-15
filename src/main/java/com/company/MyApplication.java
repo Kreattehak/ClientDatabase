@@ -35,7 +35,7 @@ public class MyApplication {
         Set<Address> address = new HashSet<>();
         Address address1 = new Address("Miła", "Katowice", "40-400");
 
-        clientToPersist = new Client("Styrkeriusz", "Nazwisko", Date.valueOf("2015-11-12"));
+        clientToPersist = new Client("Styrkeriusz", "Nazwisko");
         address1.setClient(clientToPersist);
         address.add(address1);
         clientToPersist.setAddress(address);
@@ -55,6 +55,11 @@ public class MyApplication {
 
     public void getClient() {
         System.out.println(clientService.findClientById(1L));
+    }
+
+    public void letsTest() {
+        Client client = clientService.findClientById(48L);
+        System.out.println(client);
     }
 
 }

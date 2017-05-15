@@ -1,6 +1,6 @@
 package com.company.util;
 
-import com.company.model.AddClientForm;
+import com.company.model.Address;
 import com.company.model.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -28,7 +28,7 @@ public class SpringAndHibernateValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return AddClientForm.class.isAssignableFrom(clazz) || Client.class.isAssignableFrom(clazz);
+        return Address.class.isAssignableFrom(clazz) || Client.class.isAssignableFrom(clazz);
     }
 
 
@@ -38,7 +38,7 @@ public class SpringAndHibernateValidator implements Validator {
                 beanValidator.validate(o);
 
         for (ConstraintViolation<Object> constraintViolation : constraintViolations) {
-            errors.rejectValue(constraintViolation.getPropertyPath().toString(), "",
+            errors.rejectValue(constraintViolation.getPropertyPath().toString(), "xDDD",
                     constraintViolation.getMessage());
         }
 

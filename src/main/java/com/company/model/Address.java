@@ -1,13 +1,16 @@
 package com.company.model;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "addresses")
 public class Address implements Serializable {
 
-    private static final long serialVersionUID = 5610211622988060382L;
+    private static final long serialVersionUID = -6641053848769429668L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,12 +23,15 @@ public class Address implements Serializable {
     private Client client;
 
     @Column(name = "streetName", length = 50, nullable = false)
+    @Length(min = 3, message = "{validation.minLength}")
     private String streetName;
 
     @Column(name = "cityName", length = 50, nullable = false)
+    @Length(min = 3, message = "{validation.minLength}")
     private String cityName;
 
     @Column(name = "zipCode", length = 6, nullable = false)
+    @Pattern(regexp = "\\d{2}-\\d{3}", message = "{validation.zipCodePattern}")
     private String zipCode;
 
     public Address() {
