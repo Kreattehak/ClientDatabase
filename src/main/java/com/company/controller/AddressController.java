@@ -37,12 +37,12 @@ public class AddressController {
         this.addressService = addressService;
     }
 
-    @GetMapping("/addAddress")
+    @GetMapping("/admin/addAddress")
     public String addNewAddress(@ModelAttribute("newAddress") Address newAddress) {
         return "addAddress";
     }
 
-    @PostMapping("/addAddress")
+    @PostMapping("/admin/addAddress")
     public String processAddNewAddress(@Valid @ModelAttribute("newAddress") Address newAddress, BindingResult result,
                                        @RequestParam() Long id) {
         if (result.hasErrors()) {
@@ -56,22 +56,24 @@ public class AddressController {
         return "redirect:/clientsTable";
     }
 
-    @GetMapping("/editAddresses")
+    @GetMapping("/admin/editAddresses")
     public String editUsersAddresses(@RequestParam() Long id, Model model) {
         model.addAttribute("usersAddresses", addressSetAsSelectList(id));
         return "editAddresses";
     }
 
-    @GetMapping("/editAddress")
+    @GetMapping("/admin/editAddress")
     public String editUserAddress(@RequestParam() Long addressId, Model model) {
         model.addAttribute("addressToBeEdited", addressService.findAddressById(addressId));
         return "editAddress";
     }
 
-    @PostMapping("/editAddress")
+    @PostMapping("/admin/editAddress")
     public String processEditUserAddress(@Valid @ModelAttribute("addressToBeEdited") Address addressData,
                                     BindingResult result) {
-
+        if (result.hasErrors()) {
+            return "editAddress";
+        }
         Address addressFromDatabase = addressService.findAddressById(addressData.getId());
         addressFromDatabase.setCityName(addressData.getCityName());
         addressFromDatabase.setStreetName(addressData.getStreetName());
@@ -81,13 +83,13 @@ public class AddressController {
         return "redirect:/clientsTable";
     }
 
-    @GetMapping("/editMainAddress")
+    @GetMapping("/admin/editMainAddress")
     public String editUsersMainAddress(@RequestParam() Long id, Model model) {
         model.addAttribute("usersAddresses", addressSetAsSelectList(id));
         return "editMainAddress";
     }
 
-    @PostMapping("/editMainAddress")
+    @PostMapping("/admin/editMainAddress")
     public String processEditUsersMainAddress(@RequestParam() Long addressId, @RequestParam() Long id) {
         Client clientFromDatabase = clientService.findClientById(id);
         Address addressFromDatabase = addressService.findAddressById(addressId);

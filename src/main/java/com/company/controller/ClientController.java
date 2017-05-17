@@ -37,12 +37,12 @@ public class ClientController {
         return "clientsTable";
     }
 
-    @GetMapping("/addClient")
+    @GetMapping("/admin/addClient")
     public String addNewClient(@ModelAttribute("newClient") Client newClient) {
         return "addClient";
     }
 
-    @PostMapping("/addClient")
+    @PostMapping("/admin/addClient")
     public String processAddNewClient(@ModelAttribute("newClient") @Valid Client newClient, BindingResult result,
                                       @RequestParam(defaultValue = "false") boolean shouldAddAddress) {
         if (result.hasErrors()) {
@@ -53,15 +53,15 @@ public class ClientController {
         return shouldAddAddress ? "redirect:/addAddress?id=" + client.getId() : "redirect:/clientsTable";
     }
 
-    @GetMapping(value = "/removeClient")
+    @GetMapping(value = "/admin/removeClient")
     public String removeClient(@RequestParam() long id) {
         Client clientToBeRemoved = clientService.findClientById(id);
         clientService.deleteClient(clientToBeRemoved);
         logger.info("Client removed ->" + clientToBeRemoved);
-        return "redirect:/";
+        return "redirect:/clientsTable";
     }
 
-    @GetMapping(value = "/editClient")
+    @GetMapping(value = "/admin/editClient")
     public String editClient(@RequestParam() long id, Model model) {
         Client clientFromDatabase = clientService.findClientById(id);
         FormDataCleaner.cleanClientData(clientFromDatabase);
@@ -69,7 +69,7 @@ public class ClientController {
         return "editClient";
     }
 
-    @PostMapping("/editClient")
+    @PostMapping("/admin/editClient")
     public String processEditClient(@Valid @ModelAttribute("clientToBeEdited") Client clientEditData,
                                     BindingResult result) {
         if (result.hasErrors()) {

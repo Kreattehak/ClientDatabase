@@ -112,10 +112,10 @@
         }, false);
     }
 
-    addFunctionalityToButton(bAddAddress, "addAddress");
-    addFunctionalityToButton(bEditClient, "editClient");
-    addFunctionalityToButton(bEditAddresses, "editAddresses");
-    addFunctionalityToButton(bEditMainAddress, "editMainAddress");
-    addFunctionalityToButton(bRemove, "removeClient");
+    addFunctionalityToButton(bAddAddress, "admin/addAddress");
+    addFunctionalityToButton(bEditClient, "admin/editClient");
+    addFunctionalityToButton(bEditAddresses, "admin/editAddresses");
+    addFunctionalityToButton(bEditMainAddress, "admin/editMainAddress");
+    addFunctionalityToButton(bRemove, "admin/removeClient");
 
 })();
