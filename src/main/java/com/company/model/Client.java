@@ -1,5 +1,6 @@
 package com.company.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.CascadeType;
@@ -13,7 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.Table;;
 import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -22,13 +23,14 @@ import java.util.Set;
 
 @Entity
 @Table(name = "listofclients")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class Client implements Serializable {
 
     private static final long serialVersionUID = 466741405964712741L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "client_id", unique = true, nullable = false)
+    @Column(name = "client_id", unique = true, nullable = false, updatable = false)
     private Long id;
 
     @Column(name = "firstName", length = 50)
@@ -40,6 +42,7 @@ public class Client implements Serializable {
     private String lastName;
 
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Address> address;
 
     @Column(name = "dateOfRegistration", nullable = false, updatable = false)

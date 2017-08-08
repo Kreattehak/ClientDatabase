@@ -8,14 +8,17 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    public static final String[] PERMITED_URLS = {"/resources/**", "/aboutUs", "/blank", "/clientsTable", "/"
-    , "/login", "/logout"};
+    public static final String[] PERMITED_URLS = {"/resources/**", "/aboutUs", "/blank", "/"
+    , "/login", "/logout", "/api/**", "/getClient", "/hello"};
 
     @Autowired
     private DataSource dataSource;
@@ -31,10 +34,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        CharacterEncodingFilter filter = new CharacterEncodingFilter();
+        filter.setEncoding("UTF-8");
+        filter.setForceEncoding(true);
+        http.addFilterBefore(filter, CsrfFilter.class);
+
         http.authorizeRequests()
                     .antMatchers(PERMITED_URLS).permitAll()
                     .antMatchers("/admin/**").hasRole("ADMIN")
-                    .anyRequest().authenticated()
+//                    .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .and()
                     .formLogin()
                     .loginPage("/login")
@@ -46,6 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .exceptionHandling()
                     .accessDeniedPage("/403")
                 .and()
-                    .csrf();
+                    .csrf()
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     }
 }

@@ -38,7 +38,7 @@ public class SpringAndHibernateValidator implements Validator {
                 beanValidator.validate(o);
 
         for (ConstraintViolation<Object> constraintViolation : constraintViolations) {
-            errors.rejectValue(constraintViolation.getPropertyPath().toString(), "xDDD",
+            errors.rejectValue(constraintViolation.getPropertyPath().toString(), "error",
                     constraintViolation.getMessage());
         }
 

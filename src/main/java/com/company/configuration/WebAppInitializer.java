@@ -5,10 +5,11 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 import javax.servlet.Filter;
 
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class[]{AppConfiguration.class, SpringSecurityInitializer.class};
-    }
+    }//SpringSecurityInitializer.class - should I delete it?
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
@@ -24,4 +25,5 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     protected Filter[] getServletFilters() {
         return new Filter[]{new EncodingFilter()};
     }
+
 }

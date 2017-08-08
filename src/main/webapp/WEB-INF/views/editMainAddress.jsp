@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html; charset=UTF-8" language="java" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -15,7 +15,7 @@
 
 <section class="container">
     <form:form modelAttribute="usersAddresses" class="form-horizontal" method="POST"
-               action="/editMainAddress?id=${param.id}">
+               action="/admin/editMainAddress?id=${param.id}">
         <fieldset>
             <legend><spring:message code="editMainAddress.legendMessage"/></legend>
             <div class="form-group col-lg-6">

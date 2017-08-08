@@ -50,7 +50,7 @@ public class ClientController {
         }
         Client client = clientService.saveClient(newClient);
         logger.info("Client added ->" + client);
-        return shouldAddAddress ? "redirect:/addAddress?id=" + client.getId() : "redirect:/clientsTable";
+        return shouldAddAddress ? "redirect:/admin/addAddress?id=" + client.getId() : "redirect:/clientsTable";
     }
 
     @GetMapping(value = "/admin/removeClient")

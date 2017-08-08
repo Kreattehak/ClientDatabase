@@ -5,12 +5,10 @@ import com.company.model.Address;
 import com.company.model.Client;
 import com.company.service.ClientService;
 import com.company.util.InjectLogger;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;

@@ -31,4 +31,11 @@ public class AddressServiceImpl implements AddressService {
         return addressDao.findById(id);
     }
 
+    @Override
+    @Transactional(readOnly = false)
+    public void deleteAddress(Address address) {
+        addressDao.delete(address);
+        logger.debug("Address with id" + address.getId() + " was deleted.");
+    }
+
 }

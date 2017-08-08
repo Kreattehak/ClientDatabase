@@ -1,5 +1,6 @@
 package com.company.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
@@ -22,12 +23,13 @@ public class Address implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id", unique = true, nullable = false)
+    @Column(name = "address_id", unique = true, nullable = false, updatable = false)
     private Long id;
 
     @ManyToOne
     @JoinTable(name = "client_address", joinColumns = @JoinColumn(name = "address_id"),
             inverseJoinColumns = @JoinColumn(name = "client_id"))
+    @JsonIgnore
     private Client client;
 
     @Column(name = "streetName", length = 50, nullable = false)

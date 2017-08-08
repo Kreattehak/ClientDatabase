@@ -101,7 +101,6 @@
         trs[i].onclick = markAsActive;
     }
 
-
     function addFunctionalityToButton(button, address) {
         button.addEventListener("click", function () {
             if (activeRow !== undefined) {
