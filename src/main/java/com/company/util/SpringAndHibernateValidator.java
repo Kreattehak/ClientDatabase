@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-@Profile("!test")
+@Profile("!dev")
 public class SpringAndHibernateValidator implements Validator {
 
     private javax.validation.Validator beanValidator;

@@ -10,7 +10,7 @@ import java.util.List;
 public class AbstractDao<T, ID extends Serializable> implements Dao<T, ID> {
 
     @Autowired
-    private SessionFactory sessionFactory;
+    protected SessionFactory sessionFactory;
 
     private Class<T> persistentClass;
 

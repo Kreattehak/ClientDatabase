@@ -4,6 +4,7 @@ import com.company.model.Client;
 import com.company.service.ClientService;
 import com.company.util.FormDataCleaner;
 import com.company.util.InjectLogger;
+import com.company.util.Mappings;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -31,18 +32,18 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @GetMapping("/clientsTable")
+    @GetMapping(Mappings.TABLE_OF_CLIENTS)
     public String hello(Model model) {
         model.addAttribute("clients", clientService.findAllClients());
         return "clientsTable";
     }
 
-    @GetMapping("/admin/addClient")
+    @GetMapping(Mappings.ADD_CLIENT)
     public String addNewClient(@ModelAttribute("newClient") Client newClient) {
         return "addClient";
     }
 
-    @PostMapping("/admin/addClient")
+    @PostMapping(Mappings.ADD_CLIENT)
     public String processAddNewClient(@ModelAttribute("newClient") @Valid Client newClient, BindingResult result,
                                       @RequestParam(defaultValue = "false") boolean shouldAddAddress) {
         if (result.hasErrors()) {
@@ -53,7 +54,7 @@ public class ClientController {
         return shouldAddAddress ? "redirect:/admin/addAddress?id=" + client.getId() : "redirect:/clientsTable";
     }
 
-    @GetMapping(value = "/admin/removeClient")
+    @GetMapping(value = Mappings.REMOVE_CLIENT)
     public String removeClient(@RequestParam() long id) {
         Client clientToBeRemoved = clientService.findClientById(id);
         clientService.deleteClient(clientToBeRemoved);
@@ -61,7 +62,7 @@ public class ClientController {
         return "redirect:/clientsTable";
     }
 
-    @GetMapping(value = "/admin/editClient")
+    @GetMapping(value = Mappings.EDIT_CLIENT)
     public String editClient(@RequestParam() long id, Model model) {
         Client clientFromDatabase = clientService.findClientById(id);
         FormDataCleaner.cleanClientData(clientFromDatabase);
@@ -69,7 +70,7 @@ public class ClientController {
         return "editClient";
     }
 
-    @PostMapping("/admin/editClient")
+    @PostMapping(Mappings.EDIT_CLIENT)
     public String processEditClient(@Valid @ModelAttribute("clientToBeEdited") Client clientEditData,
                                     BindingResult result) {
         if (result.hasErrors()) {

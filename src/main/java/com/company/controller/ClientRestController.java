@@ -4,6 +4,7 @@ import com.company.model.Client;
 import com.company.service.AddressService;
 import com.company.service.ClientService;
 import com.company.util.InjectLogger;
+import com.company.util.Mappings;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping(Mappings.REST_API_PREFIX)
 public class ClientRestController {
 
-    @InjectLogger("com.company.controller.ClientController")
+    @InjectLogger("com.company.controller.ClientRestController")
     private static Logger logger;
 
     private ClientService clientService;
@@ -28,17 +29,17 @@ public class ClientRestController {
         this.addressService = addressService;
     }
 
-    @GetMapping(value = "/getAllClients", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = Mappings.REST_GET_ALL_CLIENTS, produces = MediaType.APPLICATION_JSON_VALUE)
     public Client[] allClients() {
         return clientService.findAllClients().toArray(new Client[0]);
     }
 
-    @GetMapping(value = "/admin/getClient", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = Mappings.REST_GET_CLIENT, produces = MediaType.APPLICATION_JSON_VALUE)
     public Client getClient(@RequestParam() long id) {
         return clientService.findClientById(id);
     }
 
-    @PostMapping(value = "/admin/deleteClient", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(value = Mappings.REST_DELETE_CLIENT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean deleteClient(@RequestBody() Client client) {
         Client clientToBeRemoved = clientService.findClientById(client.getId());
@@ -47,7 +48,7 @@ public class ClientRestController {
         return true;
     }
 
-    @PostMapping(value = "/admin/updateClient", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(value = Mappings.REST_UPDATE_CLIENT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean updateClient(@Valid @RequestBody() Client clientEditData, BindingResult result) {
         if (result.hasErrors()) {
@@ -61,7 +62,7 @@ public class ClientRestController {
         return true;
     }
 
-    @PostMapping(value = "/admin/saveNewClient", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(value = Mappings.REST_SAVE_NEW_CLIENT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Long processAddNewClient(@RequestBody() Client newClient, BindingResult result) {
         if (result.hasErrors()) {

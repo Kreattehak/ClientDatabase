@@ -18,6 +18,8 @@
         <hibernate.version>5.2.8.Final</hibernate.version>
         <validator.version>5.4.1.Final</validator.version>
         <mysql.connector>6.0.6</mysql.connector>
+        <jwt.version>0.7.0</jwt.version>
+        <spring.mobile>1.1.5.RELEASE</spring.mobile>
     </properties>
 
     <dependencies>
@@ -107,12 +109,27 @@
             <version>3.3.0.Final</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+        <!-- JSON -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.9.0.pr3</version>
         </dependency>
+
+        <!--JSON Web Token-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jwt.version}</version>
+        </dependency>
+
+        <!--Mobile-->
+        <dependency>
+            <groupId>org.springframework.mobile</groupId>
+            <artifactId>spring-mobile-device</artifactId>
+            <version>${spring.mobile}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

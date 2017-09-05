@@ -5,6 +5,7 @@ import com.company.model.Client;
 import com.company.service.AddressService;
 import com.company.service.ClientService;
 import com.company.util.InjectLogger;
+import com.company.util.Mappings;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,10 +17,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping(Mappings.REST_API_PREFIX)
 public class AddressRestController {
 
-    @InjectLogger("com.company.controller.ClientController")
+    @InjectLogger("com.company.controller.AddressRestController")
     private static Logger logger;
 
     private ClientService clientService;
@@ -31,14 +32,14 @@ public class AddressRestController {
         this.addressService = addressService;
     }
 
-    @GetMapping(value = "/admin/getAllAddresses", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = Mappings.REST_GET_ALL_ADDRESSES, produces = MediaType.APPLICATION_JSON_VALUE)
     public Address[] getAllClientAddresses(@RequestParam() long id) {
         Address[] addresses = clientService.findClientById(id).getAddress().toArray(new Address[0]);
         Arrays.sort(addresses, Comparator.comparing(Address::getId));
         return addresses;
     }
 
-    @PostMapping(value = "/admin/updateAddress", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(value = Mappings.REST_UPDATE_ADDRESS, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean updateAddress(@Valid @RequestBody() Address addressEditData, BindingResult result) {
         if (result.hasErrors()) {
@@ -53,7 +54,7 @@ public class AddressRestController {
         return true;
     }
 
-    @PostMapping("/admin/saveNewAddress")
+    @PostMapping(Mappings.REST_SAVE_NEW_ADDRESS)
     public boolean processAddNewAddress(@RequestBody() Address newAddress, BindingResult result,
                                         @RequestParam() Long id) {
         if (result.hasErrors()) {
@@ -68,7 +69,7 @@ public class AddressRestController {
         return true;
     }
 
-    @PostMapping(value = "/admin/deleteAddress", consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping(value = Mappings.REST_DELETE_ADDRESS, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public boolean deleteClient(@RequestBody() Address address) {
         Address addressToBeDeleted = addressService.findAddressById(address.getId());
@@ -77,13 +78,34 @@ public class AddressRestController {
         return true;
     }
 
-    @PostMapping("/admin/editMainAddress")
-    public boolean processEditUsersMainAddress(@RequestParam() Long addressId, @RequestParam() Long clientId) {
-        Client clientFromDatabase = clientService.findClientById(clientId);
-        Address addressFromDatabase = addressService.findAddressById(addressId);
+    @PostMapping(Mappings.REST_EDIT_MAIN_ADDRESS)
+    public boolean processEditUsersMainAddress(@RequestBody Params params) {
+        Client clientFromDatabase = clientService.findClientById(Long.valueOf(params.getClientId()));
+        Address addressFromDatabase = addressService.findAddressById(Long.valueOf(params.getAddressId()));
         clientFromDatabase.setMainAddress(addressFromDatabase);
         clientService.updateClient(clientFromDatabase);
         logger.info("Main address for " + clientFromDatabase + " was changed to ->" + addressFromDatabase);
         return true;
+    }
+
+    static class Params {
+        private String addressId;
+        private String clientId;
+
+        public String getAddressId() {
+            return addressId;
+        }
+
+        public void setAddressId(String addressId) {
+            this.addressId = addressId;
+        }
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        public void setClientId(String clientId) {
+            this.clientId = clientId;
+        }
     }
 }

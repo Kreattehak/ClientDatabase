@@ -5,6 +5,7 @@ import com.company.model.Client;
 import com.company.service.AddressService;
 import com.company.service.ClientService;
 import com.company.util.InjectLogger;
+import com.company.util.Mappings;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -34,12 +35,12 @@ public class AddressController {
         this.addressService = addressService;
     }
 
-    @GetMapping("/admin/addAddress")
+    @GetMapping(Mappings.ADD_ADDRESS)
     public String addNewAddress(@ModelAttribute("newAddress") Address newAddress) {
         return "addAddress";
     }
 
-    @PostMapping("/admin/addAddress")
+    @PostMapping(Mappings.ADD_ADDRESS)
     public String processAddNewAddress(@Valid @ModelAttribute("newAddress") Address newAddress, BindingResult result,
                                        @RequestParam() Long id) {
         if (result.hasErrors()) {
@@ -53,19 +54,19 @@ public class AddressController {
         return "redirect:/clientsTable";
     }
 
-    @GetMapping("/admin/editAddresses")
+    @GetMapping(Mappings.EDIT_ADDRESSES)
     public String editUsersAddresses(@RequestParam() Long id, Model model) {
         model.addAttribute("usersAddresses", addressSetAsSelectList(id));
         return "editAddresses";
     }
 
-    @GetMapping("/admin/editAddress")
+    @GetMapping(Mappings.EDIT_ADDRESS)
     public String editUserAddress(@RequestParam() Long addressId, Model model) {
         model.addAttribute("addressToBeEdited", addressService.findAddressById(addressId));
         return "editAddress";
     }
 
-    @PostMapping("/admin/editAddress")
+    @PostMapping(Mappings.EDIT_ADDRESS)
     public String processEditUserAddress(@Valid @ModelAttribute("addressToBeEdited") Address addressData,
                                          BindingResult result) {
         if (result.hasErrors()) {
@@ -80,13 +81,13 @@ public class AddressController {
         return "redirect:/clientsTable";
     }
 
-    @GetMapping("/admin/editMainAddress")
+    @GetMapping(Mappings.EDIT_MAIN_ADDRESS)
     public String editUsersMainAddress(@RequestParam() Long id, Model model) {
         model.addAttribute("usersAddresses", addressSetAsSelectList(id));
         return "editMainAddress";
     }
 
-    @PostMapping("/admin/editMainAddress")
+    @PostMapping(Mappings.EDIT_MAIN_ADDRESS)
     public String processEditUsersMainAddress(@RequestParam() Long addressId, @RequestParam() Long id) {
         Client clientFromDatabase = clientService.findClientById(id);
         Address addressFromDatabase = addressService.findAddressById(addressId);

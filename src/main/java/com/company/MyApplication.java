@@ -1,8 +1,11 @@
 package com.company;
 
+import com.company.configuration.security.repository.UserRepository;
+import com.company.configuration.security.repository.UserRepositoryImpl;
 import com.company.dao.ClientDao;
 import com.company.model.Address;
 import com.company.model.Client;
+import com.company.model.security.User;
 import com.company.service.ClientService;
 import com.company.util.InjectLogger;
 import org.apache.logging.log4j.Logger;
@@ -20,44 +23,21 @@ public class MyApplication {
     @InjectLogger("com.company.MyApplication")
     private static Logger logger;
 
-    @Autowired
-    private ClientService clientService;
+//    @Autowired
+//    private ClientService clientService;
+//
+//    @Autowired
+//    private ClientDao clientDao;
 
     @Autowired
-    private ClientDao clientDao;
+    private UserRepository userRepository;
 
     private Client clientToPersist;
 
     public void performDbTasks() {
-
-        Set<Address> address = new HashSet<>();
-        Address address1 = new Address("Miła", "Katowice", "40-400");
-
-        clientToPersist = new Client("Styrkeriusz", "Nazwisko");
-        address1.setClient(clientToPersist);
-        address.add(address1);
-        clientToPersist.setAddress(address);
-
-//        clientService.saveClient(clientToPersist);
-
-
-        List<Client> clients = clientService.findAllClients();
-        clients.stream()
-                .sorted(Comparator.comparing(Client::getId, Comparator.reverseOrder()))
-                .forEach(System.out::println);
-        clients.stream()
-                .flatMap(client -> client.getAddress().stream())
-                .sorted(Comparator.comparing(Address::getId, Comparator.reverseOrder()))
-                .forEach(System.out::println);
+        User user = userRepository.findByUsername("admin");
+        System.out.println(user);
     }
 
-    public void getClient() {
-        System.out.println(clientService.findClientById(1L));
-    }
-
-    public void letsTest() {
-        Client client = clientService.findClientById(48L);
-        System.out.println(client);
-    }
 
 }

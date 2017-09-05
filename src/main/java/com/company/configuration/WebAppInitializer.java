@@ -1,5 +1,6 @@
 package com.company.configuration;
 
+import org.springframework.mobile.device.DeviceResolverRequestFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.Filter;
@@ -23,7 +24,7 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 
     @Override
     protected Filter[] getServletFilters() {
-        return new Filter[]{new EncodingFilter()};
+        return new Filter[]{new EncodingFilter(), new DeviceResolverRequestFilter()};
     }
 
 }
