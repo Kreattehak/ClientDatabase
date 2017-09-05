@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class ClientServiceImpl implements ClientService {
+public class HibernateClientService implements ClientService {
 
     @InjectLogger("com.company.service.ClientServiceImpl")
     private static Logger logger;

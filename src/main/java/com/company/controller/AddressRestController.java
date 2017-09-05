@@ -32,16 +32,17 @@ public class AddressRestController {
         this.addressService = addressService;
     }
 
-    @GetMapping(value = Mappings.REST_GET_ALL_ADDRESSES, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Address[] getAllClientAddresses(@RequestParam() long id) {
-        Address[] addresses = clientService.findClientById(id).getAddress().toArray(new Address[0]);
+    @GetMapping(value = Mappings.REST_GET_ALL_ADDRESSES, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Address[] getAllClientAddresses(@RequestParam long id) {
+        Client client = clientService.findClientById(id);
+        Address[] addresses = addressService.getAllClientAddresses(client).toArray(new Address[0]);
         Arrays.sort(addresses, Comparator.comparing(Address::getId));
         return addresses;
     }
 
-    @PostMapping(value = Mappings.REST_UPDATE_ADDRESS, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean updateAddress(@Valid @RequestBody() Address addressEditData, BindingResult result) {
+    @PutMapping(value = Mappings.REST_UPDATE_ADDRESS, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public boolean updateAddress(@Valid @RequestBody Address addressEditData, BindingResult result) {
         if (result.hasErrors()) {
             return false;
         }
@@ -55,8 +56,8 @@ public class AddressRestController {
     }
 
     @PostMapping(Mappings.REST_SAVE_NEW_ADDRESS)
-    public boolean processAddNewAddress(@RequestBody() Address newAddress, BindingResult result,
-                                        @RequestParam() Long id) {
+    public boolean processAddNewAddress(@RequestBody Address newAddress, BindingResult result,
+                                        @RequestParam Long id) {
         if (result.hasErrors()) {
             return false;
         }
@@ -69,16 +70,17 @@ public class AddressRestController {
         return true;
     }
 
-    @PostMapping(value = Mappings.REST_DELETE_ADDRESS, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean deleteClient(@RequestBody() Address address) {
+    //Passing a body message to an HTTP DELETE action is not currently supported in Angular 2
+    @PostMapping(value = Mappings.REST_DELETE_ADDRESS, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public boolean deleteClient(@RequestBody Address address) {
         Address addressToBeDeleted = addressService.findAddressById(address.getId());
         addressService.deleteAddress(addressToBeDeleted);
         logger.info("Address removed ->" + address);
         return true;
     }
 
-    @PostMapping(Mappings.REST_EDIT_MAIN_ADDRESS)
+    @PutMapping(Mappings.REST_EDIT_MAIN_ADDRESS)
     public boolean processEditUsersMainAddress(@RequestBody Params params) {
         Client clientFromDatabase = clientService.findClientById(Long.valueOf(params.getClientId()));
         Address addressFromDatabase = addressService.findAddressById(Long.valueOf(params.getAddressId()));

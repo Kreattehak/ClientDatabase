@@ -25,7 +25,6 @@ import java.util.Locale;
 
 @Configuration
 @EnableWebMvc
-@Profile("!test")
 public class SpringConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean

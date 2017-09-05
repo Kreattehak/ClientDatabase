@@ -3,7 +3,6 @@ package com.company.util;
 import com.company.model.Address;
 import com.company.model.Client;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -13,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-@Profile("!dev")
 public class SpringAndHibernateValidator implements Validator {
 
     private javax.validation.Validator beanValidator;

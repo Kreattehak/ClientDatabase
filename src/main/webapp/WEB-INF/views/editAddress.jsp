@@ -14,7 +14,7 @@
 <jsp:include page="navbar.jsp"/>
 
 <section class="container">
-    <form:form modelAttribute="addressToBeEdited" class="form-horizontal" method="POST" action="/admin/editAddress">
+    <form:form modelAttribute="addressToBeEdited" class="form-horizontal" method="PUT" action="/admin/editAddress">
         <form:errors path="*" cssClass="alert alert-danger" element="div"/>
         <fieldset>
             <legend><spring:message code="editAddress.legendMessage"/> ${addressToBeEdited.id}</legend>

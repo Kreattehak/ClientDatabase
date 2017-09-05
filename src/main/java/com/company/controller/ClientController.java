@@ -7,19 +7,14 @@ import com.company.util.InjectLogger;
 import com.company.util.Mappings;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @Controller
-@Profile("!test")
 public class ClientController {
 
     @InjectLogger("com.company.controller.ClientController")
@@ -44,7 +39,7 @@ public class ClientController {
     }
 
     @PostMapping(Mappings.ADD_CLIENT)
-    public String processAddNewClient(@ModelAttribute("newClient") @Valid Client newClient, BindingResult result,
+    public String processAddNewClient(@Valid @ModelAttribute("newClient") Client newClient, BindingResult result,
                                       @RequestParam(defaultValue = "false") boolean shouldAddAddress) {
         if (result.hasErrors()) {
             return "addClient";
@@ -55,7 +50,7 @@ public class ClientController {
     }
 
     @GetMapping(value = Mappings.REMOVE_CLIENT)
-    public String removeClient(@RequestParam() long id) {
+    public String removeClient(@RequestParam long id) {
         Client clientToBeRemoved = clientService.findClientById(id);
         clientService.deleteClient(clientToBeRemoved);
         logger.info("Client removed ->" + clientToBeRemoved);
@@ -63,22 +58,22 @@ public class ClientController {
     }
 
     @GetMapping(value = Mappings.EDIT_CLIENT)
-    public String editClient(@RequestParam() long id, Model model) {
+    public String editClient(@RequestParam long id, Model model) {
         Client clientFromDatabase = clientService.findClientById(id);
         FormDataCleaner.cleanClientData(clientFromDatabase);
         model.addAttribute("clientToBeEdited", clientFromDatabase);
         return "editClient";
     }
 
-    @PostMapping(Mappings.EDIT_CLIENT)
-    public String processEditClient(@Valid @ModelAttribute("clientToBeEdited") Client clientEditData,
+    @PutMapping(Mappings.EDIT_CLIENT)
+    public String processEditClient(@Valid @ModelAttribute Client clientToBeEdited,
                                     BindingResult result) {
         if (result.hasErrors()) {
             return "editClient";
         }
-        Client clientToChange = clientService.findClientById(clientEditData.getId());
-        clientToChange.setFirstName(clientEditData.getFirstName());
-        clientToChange.setLastName(clientEditData.getLastName());
+        Client clientToChange = clientService.findClientById(clientToBeEdited.getId());
+        clientToChange.setFirstName(clientToBeEdited.getFirstName());
+        clientToChange.setLastName(clientToBeEdited.getLastName());
         Client client = clientService.updateClient(clientToChange);
         logger.info("Client edited ->" + clientToChange);
         return "redirect:/clientsTable";

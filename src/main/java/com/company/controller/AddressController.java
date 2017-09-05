@@ -8,19 +8,19 @@ import com.company.util.InjectLogger;
 import com.company.util.Mappings;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
-@Profile("!test")
 public class AddressController {
 
     @InjectLogger("com.company.controller.AddressController")
@@ -55,13 +55,13 @@ public class AddressController {
     }
 
     @GetMapping(Mappings.EDIT_ADDRESSES)
-    public String editUsersAddresses(@RequestParam() Long id, Model model) {
+    public String editUsersAddresses(@RequestParam Long id, Model model) {
         model.addAttribute("usersAddresses", addressSetAsSelectList(id));
         return "editAddresses";
     }
 
     @GetMapping(Mappings.EDIT_ADDRESS)
-    public String editUserAddress(@RequestParam() Long addressId, Model model) {
+    public String editUserAddress(@RequestParam Long addressId, Model model) {
         model.addAttribute("addressToBeEdited", addressService.findAddressById(addressId));
         return "editAddress";
     }
@@ -82,13 +82,14 @@ public class AddressController {
     }
 
     @GetMapping(Mappings.EDIT_MAIN_ADDRESS)
-    public String editUsersMainAddress(@RequestParam() Long id, Model model) {
+    public String editUsersMainAddress(@RequestParam Long id, Model model) {
+
         model.addAttribute("usersAddresses", addressSetAsSelectList(id));
         return "editMainAddress";
     }
 
     @PostMapping(Mappings.EDIT_MAIN_ADDRESS)
-    public String processEditUsersMainAddress(@RequestParam() Long addressId, @RequestParam() Long id) {
+    public String processEditUsersMainAddress(@RequestParam Long addressId, @RequestParam() Long id) {
         Client clientFromDatabase = clientService.findClientById(id);
         Address addressFromDatabase = addressService.findAddressById(addressId);
         clientFromDatabase.setMainAddress(addressFromDatabase);
@@ -98,11 +99,11 @@ public class AddressController {
     }
 
     private Map<Long, String> addressSetAsSelectList(Long id) {
-        Set<Address> usersAddresses = clientService.findClientById(id).getAddress();
-        Map<Long, String> addressMap = usersAddresses.stream()
+        return addressService.getAllClientAddresses(clientService.findClientById(id))
+                .stream()
                 .collect(Collectors.toMap(Address::getId,
                         (address) -> address.getCityName() + ", " + address.getStreetName()));
-        return addressMap;
+
     }
 
 }

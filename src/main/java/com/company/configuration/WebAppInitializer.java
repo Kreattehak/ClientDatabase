@@ -1,6 +1,7 @@
 package com.company.configuration;
 
 import org.springframework.mobile.device.DeviceResolverRequestFilter;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.Filter;
@@ -10,6 +11,7 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class[]{AppConfiguration.class, SpringSecurityInitializer.class};
+//        return new Class[]{AppConfiguration.class};
     }//SpringSecurityInitializer.class - should I delete it?
 
     @Override
@@ -24,7 +26,7 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 
     @Override
     protected Filter[] getServletFilters() {
-        return new Filter[]{new EncodingFilter(), new DeviceResolverRequestFilter()};
+        return new Filter[]{new EncodingFilter(), new HiddenHttpMethodFilter(), new DeviceResolverRequestFilter()};
     }
 
 }

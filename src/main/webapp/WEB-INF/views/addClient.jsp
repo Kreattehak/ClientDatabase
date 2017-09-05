@@ -14,7 +14,7 @@
 <jsp:include page="navbar.jsp"/>
 
 <section class="container">
-    <form:form modelAttribute="newClient" class="form-horizontal" method="POST">
+    <form:form modelAttribute="newClient" class="form-horizontal" method="PUT">
         <form:errors path="*" cssClass="alert alert-danger" element="div"/>
         <fieldset>
             <legend><spring:message code="addForm.client.legendMessage"/></legend>

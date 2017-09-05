@@ -2,15 +2,18 @@ package com.company.service;
 
 import com.company.dao.AddressDao;
 import com.company.model.Address;
+import com.company.model.Client;
 import com.company.util.InjectLogger;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Service
 @Transactional(readOnly = true)
-public class AddressServiceImpl implements AddressService {
+public class HibernateAddressService implements AddressService {
 
     @InjectLogger("com.company.service.AddressServiceImpl")
     private static Logger logger;
@@ -38,4 +41,8 @@ public class AddressServiceImpl implements AddressService {
         logger.debug("Address with id" + address.getId() + " was deleted.");
     }
 
+    @Override
+    public Set<Address> getAllClientAddresses(Client client) {
+        return client.getAddress();
+    }
 }

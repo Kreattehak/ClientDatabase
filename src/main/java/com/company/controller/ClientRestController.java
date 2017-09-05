@@ -29,28 +29,29 @@ public class ClientRestController {
         this.addressService = addressService;
     }
 
-    @GetMapping(value = Mappings.REST_GET_ALL_CLIENTS, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = Mappings.REST_GET_ALL_CLIENTS, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Client[] allClients() {
         return clientService.findAllClients().toArray(new Client[0]);
     }
 
-    @GetMapping(value = Mappings.REST_GET_CLIENT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Client getClient(@RequestParam() long id) {
+    @GetMapping(value = Mappings.REST_GET_CLIENT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Client getClient(@RequestParam long id) {
         return clientService.findClientById(id);
     }
 
-    @PostMapping(value = Mappings.REST_DELETE_CLIENT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean deleteClient(@RequestBody() Client client) {
+    //Passing a body message to an HTTP DELETE action is not currently supported in Angular 2
+    @PostMapping(value = Mappings.REST_DELETE_CLIENT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public boolean deleteClient(@RequestBody Client client) {
         Client clientToBeRemoved = clientService.findClientById(client.getId());
         clientService.deleteClient(clientToBeRemoved);
         logger.info("Client removed ->" + clientToBeRemoved);
         return true;
     }
 
-    @PostMapping(value = Mappings.REST_UPDATE_CLIENT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public boolean updateClient(@Valid @RequestBody() Client clientEditData, BindingResult result) {
+    @PutMapping(value = Mappings.REST_UPDATE_CLIENT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public boolean updateClient(@Valid @RequestBody Client clientEditData, BindingResult result) {
         if (result.hasErrors()) {
             return false;
         }
@@ -62,9 +63,9 @@ public class ClientRestController {
         return true;
     }
 
-    @PostMapping(value = Mappings.REST_SAVE_NEW_CLIENT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public Long processAddNewClient(@RequestBody() Client newClient, BindingResult result) {
+    @PostMapping(value = Mappings.REST_SAVE_NEW_CLIENT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Long processAddNewClient(@RequestBody Client newClient, BindingResult result) {
         if (result.hasErrors()) {
             return -1L;
         }
