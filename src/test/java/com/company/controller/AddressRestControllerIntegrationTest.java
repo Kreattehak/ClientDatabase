@@ -1,7 +1,7 @@
 package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
-import com.company.configuration.HibernateConfigurationForTests;
+import com.company.configuration.AppTestConfig;
 import com.company.dao.AddressDao;
 import com.company.dao.ClientDao;
 import com.company.model.Address;
@@ -9,12 +9,9 @@ import com.company.model.Client;
 import com.company.service.AddressService;
 import com.company.service.ClientService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,40 +26,21 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Set;
 
 import static com.company.Constants.*;
-import static com.company.Constants.ANOTHER_CLIENT_FIRST_NAME;
-import static com.company.Constants.ANOTHER_CLIENT_LAST_NAME;
-import static com.company.Constants.ID;
-import static com.company.Constants.STRING_TO_TEST_EQUALITY;
 import static com.company.controller.AddressRestControllerTest.ANF;
 import static com.company.controller.AddressRestControllerTest.ASE;
+import static com.company.controller.AddressRestControllerTest.ASR;
 import static com.company.controller.AddressRestControllerTest.MASE;
-import static com.company.service.HibernateAddressServiceTest.FAEM;
-import static com.company.service.HibernateAddressServiceTest.SAEM;
-import static com.company.service.HibernateAddressServiceTest.UAEM;
-import static com.company.service.HibernateAddressServiceTest.UMAEM;
-import static com.company.service.HibernateAddressServiceTest.checkAddressFieldsEquality;
-import static com.company.service.HibernateAddressServiceTest.checkAddressFieldsEqualityWithClient;
+import static com.company.service.HibernateAddressServiceTest.*;
 import static com.company.service.HibernateClientServiceTest.FCEM;
-import static com.company.service.HibernateClientServiceTest.UCEM;
-import static com.company.service.HibernateClientServiceTest.checkClientFieldsEquality;
 import static com.company.util.Mappings.*;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -71,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 @Transactional
@@ -95,9 +73,6 @@ public class AddressRestControllerIntegrationTest {
     private MockMvc mockMvc;
     private Client testClient;
     private Address testAddress;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -186,6 +161,7 @@ public class AddressRestControllerIntegrationTest {
     public void shouldValidateCityNameAndNotUpdateAddressInDatabase() throws Exception {
         validateFieldsWhenTryingToEditAddress(ADDRESS_STREET_NAME, INVALID_TO_SHORT_INPUT, ADDRESS_ZIP_CODE);
     }
+
     @Test
     public void shouldValidateZipCodeAndNotUpdateAddressInDatabase() throws Exception {
         validateFieldsWhenTryingToEditAddress(ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, INVALID_TO_SHORT_INPUT);
@@ -241,16 +217,81 @@ public class AddressRestControllerIntegrationTest {
     public void shouldValidateCityNameAndNotAddAddressInDatabase() throws Exception {
         validateFieldsWhenTryingToAddAddress(ADDRESS_STREET_NAME, INVALID_TO_SHORT_INPUT, ADDRESS_ZIP_CODE);
     }
+
     @Test
     public void shouldValidateZipCodeAndNotAddAddressInDatabase() throws Exception {
         validateFieldsWhenTryingToAddAddress(ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, INVALID_TO_SHORT_INPUT);
     }
 
-    //TODO: REQUEST HEADER PROBLEM
     @Test
     public void shouldDeleteAddress() throws Exception {
+        ReflectionTestUtils.setField(addressRestController, ASR, STRING_TO_TEST_EQUALITY);
+
+        addClientWithAddress();
+        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
+                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
+        addressDao.save(anotherTestAddress);
+        testClient.addAddress(anotherTestAddress);
+        anotherTestAddress.setClient(testClient);
+
+        AddressRestController.Params params = new AddressRestController.Params();
+        params.setAddressId(anotherTestAddress.getId());
+        params.setClientId(testClient.getId());
+        String data = objectMapper.writeValueAsString(params);
+
+        mockMvc.perform(post(REST_API_PREFIX + REST_DELETE_ADDRESS)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+                .content(data)
+                .header(REFERER_HEADER, REST_REFERER_HEADER_VALUE + testClient.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
+
+        Set<Address> addresses = addressService.findAllAddresses();
+
+        assertThat(addressService.findAllAddresses(), hasSize(1));
+        assertThat(addresses.iterator().next(), is(checkAddressFieldsEqualityWithClient(
+                ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, ADDRESS_ZIP_CODE, testClient)));
     }
 
+    @Test
+    public void shouldNotDeleteAddressWhenRefererHeaderWasEmpty() throws Exception {
+        AddressRestController.Params params = new AddressRestController.Params();
+        params.setAddressId(testAddress.getId());
+        params.setClientId(testClient.getId());
+        String data = objectMapper.writeValueAsString(params);
+
+        tryToPerformActionButExceptionWasThrown(post(REST_API_PREFIX + REST_DELETE_ADDRESS)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+                .content(data), DANREM, addressService);
+    }
+
+    @Test
+    public void shouldNotDeleteAddressWhenItsMainAddress() throws Exception {
+        addClientWithAddress();
+        AddressRestController.Params params = new AddressRestController.Params();
+        params.setAddressId(testAddress.getId());
+        params.setClientId(testClient.getId());
+        String data = objectMapper.writeValueAsString(params);
+
+        tryToPerformActionButExceptionWasThrown(post(REST_API_PREFIX + REST_DELETE_ADDRESS)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+                .content(data)
+                .header(REFERER_HEADER, REST_REFERER_HEADER_VALUE + testClient.getId()), DAEM, addressService);
+    }
+
+    @Test
+    public void shouldNotDeleteAddressWhenAddressWasNotFound() throws Exception {
+        addClientWithAddress();
+        AddressRestController.Params params = new AddressRestController.Params();
+        params.setAddressId(ANOTHER_ID_VALUE);
+        params.setClientId(testClient.getId());
+        String data = objectMapper.writeValueAsString(params);
+
+        tryToPerformActionButExceptionWasThrown(post(REST_API_PREFIX + REST_DELETE_ADDRESS)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+                .content(data)
+                .header(REFERER_HEADER, REST_REFERER_HEADER_VALUE + testClient.getId()), FAEM, addressService);
+    }
 
     @Test
     public void shouldChangeMainAddress() throws Exception {
@@ -300,7 +341,7 @@ public class AddressRestControllerIntegrationTest {
 
         tryToPerformActionButExceptionWasThrown(put(REST_API_PREFIX + REST_EDIT_MAIN_ADDRESS)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
-                .content(data), UMAEM , addressService);
+                .content(data), UMAEM, addressService);
     }
 
     @Test
@@ -314,18 +355,11 @@ public class AddressRestControllerIntegrationTest {
 
         tryToPerformActionButExceptionWasThrown(put(REST_API_PREFIX + REST_EDIT_MAIN_ADDRESS)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
-                .content(data), FAEM , addressService);
+                .content(data), FAEM, addressService);
     }
 
-
-    //TODO: REWORK AFTER EXCEPTION HANDLER
-    @Test
-    public void shouldNotPerformAnyActionOperatingOnDatabaseWhenRequestParamWasNull() throws Exception {
-
-    }
-
-    private void validateFieldsWhenTryingToEditAddress(String streetName, String cityName, String zipCode)
-            throws Exception {
+    private void validateFieldsWhenTryingToEditAddress(String streetName, String cityName,
+                                                       String zipCode) throws Exception {
         ReflectionTestUtils.setField(addressRestController, ANF, STRING_TO_TEST_EQUALITY);
         Address address = addressDao.save(testAddress);
         testAddress.setStreetName(streetName);
@@ -363,10 +397,9 @@ public class AddressRestControllerIntegrationTest {
         clientDao.save(testClient);
     }
 
-
     //TODO: REWORK AFTER HTTP STATUS CHANGE
-    private void tryToPerformActionButExceptionWasThrown(
-            MockHttpServletRequestBuilder builder, String message, Object target) throws Exception {
+    private void tryToPerformActionButExceptionWasThrown(MockHttpServletRequestBuilder builder,
+                                                         String message, Object target) throws Exception {
         ReflectionTestUtils.setField(target, message, STRING_TO_TEST_EQUALITY);
 
         mockMvc.perform(builder)

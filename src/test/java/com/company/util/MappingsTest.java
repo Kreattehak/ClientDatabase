@@ -27,18 +27,36 @@ public class MappingsTest {
     }
 
     @Test
-    public void shouldExtractGetParamValues() {
-        String urlWithGetParam = "http://localhost:8080/admin/data?isNewClient=true";
-        String urlWithTwoGetParams = "http://localhost:8080/admin/data?isNewClient=true&account=isEnabled";
-        String getParam = "true";
+    public void shouldExtractGetParamValuesWhenRequestWasMadeFromMVCApp() {
+        String urlWithGetParam = "http://localhost:8080/admin/data?clientId=15";
+        String urlWithTwoGetParams = "http://localhost:8080/admin/data?isNewClient=15&account=isEnabled";
+        String getParam = "15";
         String anotherGetParam = "isEnabled";
         int quantityOfExtractedParams = 2;
 
         String[] extractedGetParams = extractGetParamValues(urlWithTwoGetParams, TWO_GET_PARAMS);
+
         assertThat(extractedGetParams, allOf(
                 arrayWithSize(quantityOfExtractedParams),
                 hasItemInArray(getParam),
                 hasItemInArray(anotherGetParam)));
         assertThat(extractGetParamValues(urlWithGetParam, ONE_GET_PARAM), hasItemInArray(equalTo(getParam)));
+    }
+
+    @Test
+    public void shouldExtractGetParamValuesWhenRequestWasMadeFromFrontEndApp() {
+        String urlWithParam = "http://localhost:4200/clients/details/24";
+        String urlWithTwoParams = "http://localhost:4200/clients/details/24/data/25";
+        String param = "24";
+        String anotherParam = "25";
+        int quantityOfExtractedParams = 2;
+
+        String[] extractedGetParams = extractGetParamValues(urlWithTwoParams, TWO_GET_PARAMS);
+
+        assertThat(extractedGetParams, allOf(
+                arrayWithSize(quantityOfExtractedParams),
+                hasItemInArray(param),
+                hasItemInArray(anotherParam)));
+        assertThat(extractGetParamValues(urlWithParam, ONE_GET_PARAM), hasItemInArray(equalTo(param)));
     }
 }

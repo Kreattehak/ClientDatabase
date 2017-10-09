@@ -1,10 +1,10 @@
 package com.company.service;
 
 import com.company.configuration.AppConfiguration;
-import com.company.configuration.HibernateConfigurationForTests;
+import com.company.configuration.AppTestConfig;
 import com.company.dao.ClientDao;
 import com.company.model.Client;
-import com.company.util.SyntacticallyIncorrectRequestException;
+import com.company.util.ProcessUserRequestException;
 import org.hamcrest.Matcher;
 import org.hamcrest.number.OrderingComparison;
 import org.junit.After;
@@ -21,19 +21,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.function.BiFunction;
 
 import static com.company.Constants.*;
-import static com.company.util.Mappings.ERROR_MESSAGE;
-import static com.company.util.Mappings.ERROR_PAGE;
 import static com.company.util.Mappings.ID_NOT_FOUND;
-import static com.company.util.Mappings.extractViewName;
 import static com.company.util.WebDataResolverAndCreatorTest.cleanClient;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
@@ -46,12 +41,9 @@ import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class HibernateClientServiceTest {
@@ -99,7 +91,7 @@ public class HibernateClientServiceTest {
     public void shouldThrowExceptionWhenClientWasNotFoundById() {
         ReflectionTestUtils.setField(clientService, FCEM, STRING_TO_TEST_EQUALITY);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         clientService.findClientById(ID_NOT_FOUND, requestMock);
     }
@@ -119,7 +111,7 @@ public class HibernateClientServiceTest {
     public void shouldThrowExceptionWhenClientIdWasNotFoundWhileEditingClient() {
         ReflectionTestUtils.setField(clientService, FCEM, STRING_TO_TEST_EQUALITY);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         clientService.findClientByIdAndCleanUnnecessaryData(ID_NOT_FOUND, requestMock);
     }
@@ -128,6 +120,7 @@ public class HibernateClientServiceTest {
     public void shouldReturnAllClientsFromDatabase() {
         Client anotherTestClient = new Client(ANOTHER_CLIENT_FIRST_NAME, ANOTHER_CLIENT_LAST_NAME);
         List<Client> clients = Arrays.asList(testClient, anotherTestClient);
+
         when(clientDaoMock.findAll()).thenReturn(clients);
 
         clientService.getAllClients();
@@ -140,6 +133,7 @@ public class HibernateClientServiceTest {
     public void shouldReturnAllClientsFromDatabaseAsArray() {
         Client anotherTestClient = new Client(ANOTHER_CLIENT_FIRST_NAME, ANOTHER_CLIENT_LAST_NAME);
         List<Client> clients = Arrays.asList(testClient, anotherTestClient);
+
         when(clientDaoMock.findAll()).thenReturn(clients);
 
         clientService.getAllClientsAsArray();
@@ -172,9 +166,10 @@ public class HibernateClientServiceTest {
     @Test
     public void shouldThrowExceptionWhenClientWasNotFoundWhileDeletingClient() {
         ReflectionTestUtils.setField(clientService, FCEM, STRING_TO_TEST_EQUALITY);
+
         when(clientDaoMock.findById(anyLong())).thenReturn(null);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         clientService.deleteClient(testClient.getId(), requestMock);
     }
@@ -183,10 +178,12 @@ public class HibernateClientServiceTest {
     public void shouldUpdateClientInDatabaseWithGivenData() {
         Client anotherTestClient = new Client(ANOTHER_CLIENT_FIRST_NAME, ANOTHER_CLIENT_LAST_NAME);
         anotherTestClient.setId(ANOTHER_ID_VALUE);
+
         when(clientDaoMock.update(any(Client.class))).thenReturn(testClient);
         when(clientDaoMock.findById(anyLong())).thenReturn(testClient);
 
         clientService.updateClient(anotherTestClient, requestMock);
+
         assertThat(testClient, is(checkClientFieldsEquality(
                 ANOTHER_CLIENT_FIRST_NAME, ANOTHER_CLIENT_LAST_NAME)));
 
@@ -200,7 +197,7 @@ public class HibernateClientServiceTest {
         ReflectionTestUtils.setField(clientService, UCEM, STRING_TO_TEST_EQUALITY);
         testClient.setId(null);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         clientService.updateClient(testClient, requestMock);
     }
@@ -208,9 +205,10 @@ public class HibernateClientServiceTest {
     @Test
     public void shouldThrowExceptionWhenClientWasNotFoundWhileUpdatingClient() {
         ReflectionTestUtils.setField(clientService, FCEM, STRING_TO_TEST_EQUALITY);
+
         when(clientDaoMock.findById(anyLong())).thenReturn(null);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         clientService.updateClient(testClient, requestMock);
     }

@@ -1,6 +1,7 @@
 package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
+import com.company.configuration.AppTestConfig;
 import com.company.configuration.HibernateConfigurationForTests;
 import org.junit.After;
 import org.junit.Before;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class HomeControllerTest {
@@ -65,23 +66,22 @@ public class HomeControllerTest {
 
     @Test
     public void shouldMapToBlankPage() throws Exception {
-        mockMvc.perform(get(BLANK_PAGE))
-                .andExpect(status().isOk())
-                .andExpect(view().name(extractViewName(BLANK_PAGE)));
+        performRequestForHomeController(BLANK_PAGE);
     }
 
     @Test
     public void shouldMapToAboutUsPage() throws Exception {
-        mockMvc.perform(get(ABOUT_US_PAGE))
-                .andExpect(status().isOk())
-                .andExpect(view().name(extractViewName(ABOUT_US_PAGE)));
+        performRequestForHomeController(ABOUT_US_PAGE);
     }
 
     @Test
     public void shouldMapToLoginPage() throws Exception {
-        mockMvc.perform(get(LOGIN_PAGE))
-                .andExpect(status().isOk())
-                .andExpect(view().name(extractViewName(LOGIN_PAGE)));
+        performRequestForHomeController(LOGIN_PAGE);
     }
 
+    private void performRequestForHomeController(String url) throws Exception{
+        mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(view().name(extractViewName(url)));
+    }
 }

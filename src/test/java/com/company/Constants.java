@@ -20,6 +20,7 @@ public class Constants {
     public static final String TEST_DB_URL_PROPERTY_NAME = "test.hibernate.connection.url";
 
     public static final String REFERER_HEADER_VALUE = "http://localhost:8080/admin/removeAddressFromClient?clientId=";
+    public static final String REST_REFERER_HEADER_VALUE = "http://localhost:4200/clients/details/";
 
     public static final String FIRST_NAME = "firstName";
     public static final String LAST_NAME = "lastName";

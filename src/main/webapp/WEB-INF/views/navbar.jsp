@@ -28,8 +28,6 @@
                     <ul class="dropdown-menu">
                         <li><a href="<c:url value="/admin/addClient"/>"><spring:message code="menu.addClient"/></a>
                         </li>
-                        <li><a href="#"><spring:message code="menu.notAssignedAddresses"/></a></li>
-                        <li><a href="#"><spring:message code="menu.clientsWithoutAddress"/></a></li>
                         <li role="separator" class="divider"></li>
                         <li>
                             <form action="<c:url value="/logout"/>" id="logout" method="post">

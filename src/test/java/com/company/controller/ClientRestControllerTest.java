@@ -1,6 +1,7 @@
 package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
+import com.company.configuration.AppTestConfig;
 import com.company.configuration.HibernateConfigurationForTests;
 import com.company.model.Client;
 import com.company.service.ClientService;
@@ -42,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class ClientRestControllerTest {
@@ -118,7 +119,6 @@ public class ClientRestControllerTest {
                 .content(data))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
-
 
         verify(clientServiceMock).deleteClient(anyLong(), any(HttpServletRequest.class));
         verifyNoMoreInteractions(clientServiceMock);
@@ -216,10 +216,5 @@ public class ClientRestControllerTest {
                 .content(data))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$", equalTo(ID_NOT_FOUND.intValue())));
-    }
-
-    //TODO: REWORK AFTER ADD Exception Handler
-    @Test
-    public void shouldNotPerformAnyActionOperatingOnDatabaseWhenRequestParamWasNull() throws Exception {
     }
 }

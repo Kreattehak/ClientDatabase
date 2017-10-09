@@ -41,7 +41,6 @@ public class WebDataResolverAndCreatorTest {
     public void shouldCleanUpClientDataForWebForm() {
         Client testClient = new Client(CLIENT_FIRST_NAME, CLIENT_LAST_NAME);
         Address testAddress = new Address(ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, ADDRESS_ZIP_CODE);
-
         testClient.addAddress(testAddress);
 
         WebDataResolverAndCreator.cleanClientData(testClient);
@@ -52,10 +51,10 @@ public class WebDataResolverAndCreatorTest {
     @Test
     public void shouldReturnLoggedUserName() throws Exception {
         String userName = "someUser";
-
         when(requestMock.getHeader(LOGGED_USER_HEADER)).thenReturn(userName);
 
         assertThat(WebDataResolverAndCreator.getLoggedUserName(requestMock), equalTo(userName));
+
         verify(requestMock).getHeader(LOGGED_USER_HEADER);
         verifyNoMoreInteractions(requestMock);
     }
@@ -64,16 +63,17 @@ public class WebDataResolverAndCreatorTest {
     public void shouldReturnWarningWhenNotLoggedUserWasTryingToMakeAChange() throws Exception {
         assertThat(WebDataResolverAndCreator.getLoggedUserName(requestMock),
                 equalTo(ALERT_MESSAGE_UNRECOGNIZED_USER));
+
         verify(requestMock).getHeader(LOGGED_USER_HEADER);
         verifyNoMoreInteractions(requestMock);
     }
 
     @Test
     public void shouldReturnClientIpWhenXForwardedForHeaderIsPresent() {
-
         when(requestMock.getHeader(FORWARDED_HEADER)).thenReturn(RANDOM_IP);
 
         assertThat(WebDataResolverAndCreator.getUserIp(requestMock), equalTo(RANDOM_IP));
+
         verify(requestMock).getHeader(FORWARDED_HEADER);
         verifyNoMoreInteractions(requestMock);
     }
@@ -84,6 +84,7 @@ public class WebDataResolverAndCreatorTest {
         when(requestMock.getRemoteAddr()).thenReturn(RANDOM_IP);
 
         assertThat(WebDataResolverAndCreator.getUserIp(requestMock), equalTo(RANDOM_IP));
+
         verify(requestMock).getHeader(FORWARDED_HEADER);
         verify(requestMock).getRemoteAddr();
         verifyNoMoreInteractions(requestMock);

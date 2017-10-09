@@ -1,6 +1,7 @@
 package com.company.dao;
 
 import com.company.configuration.AppConfiguration;
+import com.company.configuration.AppTestConfig;
 import com.company.configuration.HibernateConfigurationForTests;
 import com.company.model.Address;
 import com.company.model.Client;
@@ -25,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 @Transactional
@@ -47,10 +48,6 @@ public class AbstractDaoTest {
 
     @After
     public void tearDown() throws Exception {
-//        clientDao.findAll().forEach(clientDao::delete);
-//        addressDao.findAll().forEach(addressDao::delete);
-        System.out.println(clientDao.findAll());
-        System.out.println(addressDao.findAll());
         testClient = null;
         testAddress = null;
     }
@@ -161,6 +158,7 @@ public class AbstractDaoTest {
         testAddress.setStreetName(ANOTHER_ADDRESS_STREET_NAME);
         testAddress.setCityName(ANOTHER_ADDRESS_CITY_NAME);
         testAddress.setZipCode(ANOTHER_ADDRESS_ZIP_CODE);
+
         Address updatedAddress = addressDao.update(testAddress);
 
         assertEquals(addressFromDatabase.getId(), updatedAddress.getId());

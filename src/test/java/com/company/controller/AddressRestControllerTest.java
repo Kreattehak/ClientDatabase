@@ -1,6 +1,7 @@
 package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
+import com.company.configuration.AppTestConfig;
 import com.company.configuration.HibernateConfigurationForTests;
 import com.company.model.Address;
 import com.company.model.Client;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import static com.company.Constants.*;
 import static com.company.util.Mappings.ID_NOT_FOUND;
 import static com.company.util.Mappings.REST_API_PREFIX;
+import static com.company.util.Mappings.REST_DELETE_ADDRESS;
 import static com.company.util.Mappings.REST_EDIT_MAIN_ADDRESS;
 import static com.company.util.Mappings.REST_GET_ALL_ADDRESSES;
 import static com.company.util.Mappings.REST_SAVE_NEW_ADDRESS;
@@ -47,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class AddressRestControllerTest {
@@ -206,9 +208,22 @@ public class AddressRestControllerTest {
         verifyZeroInteractions(addressServiceMock);
     }
 
-    //TODO: REQUEST HEADER PROBLEM
     @Test
     public void shouldPerformDeleteAddressAction() throws Exception {
+        ReflectionTestUtils.setField(addressRestController, ASR, STRING_TO_TEST_EQUALITY);
+        AddressRestController.Params params = new AddressRestController.Params();
+        params.setAddressId(ID_VALUE);
+        params.setClientId(ID_VALUE);
+        String data = objectMapper.writeValueAsString(params);
+
+        mockMvc.perform(post(REST_API_PREFIX + REST_DELETE_ADDRESS)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+                .content(data))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
+
+        verify(addressServiceMock).deleteAddress(anyLong(), any(HttpServletRequest.class));
+        verifyNoMoreInteractions(addressServiceMock);
     }
 
     @Test
@@ -227,12 +242,6 @@ public class AddressRestControllerTest {
 
         verify(addressServiceMock).updateMainAddress(anyLong(), anyLong(),
                 any(HttpServletRequest.class));
-    }
-
-    //TODO: REWORK AFTER ADD Exception Handler
-    @Test
-    public void shouldNotPerformAnyActionOperatingOnDatabaseWhenRequestParamWasNull() throws Exception {
-
     }
 
     private void tryToEditAddressWithNotValidData(String data) throws Exception {

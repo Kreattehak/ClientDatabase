@@ -1,12 +1,11 @@
 package com.company.service;
 
 import com.company.configuration.AppConfiguration;
-import com.company.configuration.HibernateConfigurationForTests;
+import com.company.configuration.AppTestConfig;
 import com.company.dao.AddressDao;
-import com.company.dao.ClientDao;
 import com.company.model.Address;
 import com.company.model.Client;
-import com.company.util.SyntacticallyIncorrectRequestException;
+import com.company.util.ProcessUserRequestException;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -18,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -44,7 +42,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class HibernateAddressServiceTest {
@@ -101,7 +99,7 @@ public class HibernateAddressServiceTest {
     public void shouldThrowExceptionWhenAddressWasNotFoundById() {
         ReflectionTestUtils.setField(addressService, FAEM, STRING_TO_TEST_EQUALITY);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.findAddressById(ID_NOT_FOUND, requestMock);
     }
@@ -111,7 +109,6 @@ public class HibernateAddressServiceTest {
         Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
         //due to equal() implementation addresses need to have different ids, to fetch them to set
-        testAddress.setId(ID_VALUE);
         anotherTestAddress.setId(ANOTHER_ID_VALUE);
 
         List<Address> addressesList = Arrays.asList(testAddress, anotherTestAddress);
@@ -132,16 +129,7 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldReturnAllClientAddresses() throws Exception {
-        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
-                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        testAddress.setId(ID_VALUE);
-        anotherTestAddress.setId(ANOTHER_ID_VALUE);
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
-        testAddress.setClient(testClient);
-        anotherTestAddress.setClient(testClient);
-
-        System.out.println(testClient);
+        addClientWithTwoAddresses();
 
         assertThat(addressService.getAllClientAddresses(testClient), Matchers.<Set<Address>>allOf(
                 hasSize(2),
@@ -153,22 +141,14 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldReturnAllClientAddressesAsArray() throws Exception {
-        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
-                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-
-        testAddress.setId(ID_VALUE);
-        anotherTestAddress.setId(ANOTHER_ID_VALUE);
-
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
-        testAddress.setClient(testClient);
-        anotherTestAddress.setClient(testClient);
+        Address anotherTestAddress = addClientWithTwoAddresses();
 
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
 
         Address[] addresses = addressService.getAllClientAddressesAsArray(
                 testClient.getId(), requestMock);
+
         assertThat(addresses, arrayWithSize(2));
         assertTrue(Arrays.equals(addresses, new Address[]{testAddress, anotherTestAddress}));
 
@@ -178,22 +158,14 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldReturnAllClientAddressesAsMap() throws Exception {
-        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
-                        ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-
-        testAddress.setId(ID_VALUE);
-        anotherTestAddress.setId(ANOTHER_ID_VALUE);
-
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
-        testAddress.setClient(testClient);
-        anotherTestAddress.setClient(testClient);
+        Address anotherTestAddress = addClientWithTwoAddresses();
 
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
 
         Map<Long, String> addresses = addressService.getAllClientAddressesAsMap(
                 testClient.getId(), requestMock);
+
         assertThat(addresses.size(), equalTo(2));
         assertThat(addresses, allOf(
                 hasEntry(ID_VALUE,
@@ -207,22 +179,14 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldReturnAllClientAddressesAsMapButWithoutMainAddress() throws Exception {
-        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
-                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-
-        testAddress.setId(ID_VALUE);
-        anotherTestAddress.setId(ANOTHER_ID_VALUE);
-
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
-        testAddress.setClient(testClient);
-        anotherTestAddress.setClient(testClient);
+        Address anotherTestAddress = addClientWithTwoAddresses();
 
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
 
         Map<Long, String> addresses = addressService.getAllClientAddressesWithoutMainAddressAsMap(
                 testClient.getId(), requestMock);
+
         assertThat(addresses.size(), equalTo(1));
         assertThat(addresses, hasEntry(ANOTHER_ID_VALUE,
                 anotherTestAddress.getCityName() + ", " + anotherTestAddress.getStreetName()));
@@ -254,7 +218,7 @@ public class HibernateAddressServiceTest {
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.saveAddress(testAddress, testClient.getId(), requestMock);
     }
@@ -276,16 +240,7 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldDeleteAddressFromDatabaseWhenItsNotMainAddress() throws Exception {
-        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
-                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-
-        anotherTestAddress.setId(ANOTHER_ID_VALUE);
-        testAddress.setId(ID_VALUE);
-
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
-        testAddress.setClient(testClient);
-        anotherTestAddress.setClient(testClient);
+        Address anotherTestAddress = addClientWithTwoAddresses();
 
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
@@ -307,7 +262,7 @@ public class HibernateAddressServiceTest {
         ReflectionTestUtils.setField(addressService, DANREM, STRING_TO_TEST_EQUALITY);
         when(requestMock.getHeader(REFERER_HEADER)).thenReturn(null);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.deleteAddress(testAddress.getId(), requestMock);
     }
@@ -321,7 +276,7 @@ public class HibernateAddressServiceTest {
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.deleteAddress(testAddress.getId(), requestMock);
     }
@@ -330,13 +285,14 @@ public class HibernateAddressServiceTest {
     public void shouldNotDeleteAddressFromDatabaseWhenAddressToDeleteWasNotFound() throws Exception {
         ReflectionTestUtils.setField(addressService, FAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
+
         when(requestMock.getHeader(REFERER_HEADER))
                 .thenReturn(REFERER_HEADER_VALUE + testClient.getId());
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
         when(addressDao.findById(anyLong())).thenReturn(null);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.deleteAddress(ANOTHER_ID_VALUE, requestMock);
     }
@@ -346,9 +302,11 @@ public class HibernateAddressServiceTest {
         Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
         anotherTestAddress.setId(ID_VALUE);
+
         when(addressDao.findById(anyLong())).thenReturn(testAddress);
 
         addressService.updateAddress(anotherTestAddress, requestMock);
+
         assertThat(testAddress, is(checkAddressFieldsEquality(
                 ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE)));
 
@@ -362,7 +320,7 @@ public class HibernateAddressServiceTest {
         Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.updateAddress(anotherTestAddress, requestMock);
     }
@@ -374,26 +332,24 @@ public class HibernateAddressServiceTest {
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
         when(addressDao.findById(anyLong())).thenReturn(null);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.updateAddress(anotherTestAddress, requestMock);
     }
 
     @Test
     public void shouldUpdateMainAddress() throws Exception {
-        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
-                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        anotherTestAddress.setId(ANOTHER_ID_VALUE);
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
+        Address anotherTestAddress = addClientWithTwoAddresses();
 
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
         when(addressDao.findById(anyLong())).thenReturn(anotherTestAddress);
 
         addressService.updateMainAddress(anotherTestAddress.getId(), testClient.getId(), requestMock);
-        assertThat(testClient.getMainAddress(), is(checkAddressFieldsEquality(
-                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE)));
+
+        assertThat(testClient.getMainAddress(), is(checkAddressFieldsEqualityWithClient(
+                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE,
+                testClient)));
 
         verify(addressDao).findById(anyLong());
         verify(clientService).findClientById(anyLong(), any(HttpServletRequest.class));
@@ -405,10 +361,11 @@ public class HibernateAddressServiceTest {
     public void shouldNotUpdateMainAddressToMainAddress() throws Exception {
         ReflectionTestUtils.setField(addressService, UMAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
+
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.updateMainAddress(testAddress.getId(), testClient.getId(), requestMock);
     }
@@ -417,13 +374,28 @@ public class HibernateAddressServiceTest {
     public void shouldNotUpdateMainAddressWhenAddressDoesNotExist() throws Exception {
         ReflectionTestUtils.setField(addressService, UMAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
+
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
         when(addressDao.findById(anyLong())).thenReturn(null);
 
-        expectedException.expect(SyntacticallyIncorrectRequestException.class);
+        expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.updateMainAddress(testAddress.getId(), testClient.getId(), requestMock);
+    }
+
+    private Address addClientWithTwoAddresses() {
+        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
+                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
+
+        anotherTestAddress.setId(ANOTHER_ID_VALUE);
+
+        testClient.addAddress(testAddress);
+        testClient.addAddress(anotherTestAddress);
+        testAddress.setClient(testClient);
+        anotherTestAddress.setClient(testClient);
+
+        return anotherTestAddress;
     }
 
     public static Matcher<Address> checkAddressFieldsEquality(String streetName,

@@ -52,6 +52,7 @@ public class ClientTest {
     @Test
     public void shouldCreateClientWithDateOfRegistration() {
         LocalDate.now();
+
         assertThat(testClient.getDateOfRegistration(), OrderingComparison.lessThan(new Date()));
     }
 }

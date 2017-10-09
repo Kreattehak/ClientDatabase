@@ -14,6 +14,9 @@ public class Mappings {
     private static final String ADMIN_PREFIX = "/admin";
     public static final String REST_API_PREFIX = "/api";
 
+    public static final String REST_AUTHORIZATION = REST_API_PREFIX + "/auth";
+    public static final String REST_AUTHORIZATION_REFRESH = REST_API_PREFIX + "/refresh";
+
     public static final String LOGIN_PAGE = ADMIN_PREFIX + "/login";
     public static final String TABLE_OF_CLIENTS = "/clientsTable";
     public static final String ADD_CLIENT = ADMIN_PREFIX + "/addClient";
@@ -69,13 +72,21 @@ public class Mappings {
     }
 
     static String[] extractGetParamValues(String url, int quantityOfParams) {
-        Pattern p = Pattern.compile("(\\?|&)([^=]+)=([^&]+)", Pattern.MULTILINE);
+        Pattern p = Pattern.compile("(\\?|&)([^=]+)=([^&]+)");
         Matcher m = p.matcher(url);
         String params[] = new String[quantityOfParams];
         int i = 0;
         while(m.find()) {
             params[i] = m.group(3);
             i++;
+        }
+        //when request was made from angular front end app
+        if(i == 0) {
+            m.usePattern(Pattern.compile("(/\\w+)(/)(\\d+)"));
+            while(m.find()) {
+                params[i] = m.group(3);
+                i++;
+            }
         }
         return params;
     }

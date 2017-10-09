@@ -2,15 +2,10 @@ package com.company.controller;
 
 import com.company.model.Address;
 import com.company.service.AddressService;
-import com.company.util.Mappings;
-import com.company.util.SyntacticallyIncorrectRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,14 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
-import static com.company.util.Mappings.*;
-import static com.company.util.Mappings.ERROR_MESSAGE;
-import static com.company.util.Mappings.HTTP_STATUS;
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.MediaType.*;
+import static com.company.util.Mappings.REST_API_PREFIX;
+import static com.company.util.Mappings.REST_DELETE_ADDRESS;
+import static com.company.util.Mappings.REST_EDIT_MAIN_ADDRESS;
+import static com.company.util.Mappings.REST_GET_ALL_ADDRESSES;
+import static com.company.util.Mappings.REST_SAVE_NEW_ADDRESS;
+import static com.company.util.Mappings.REST_UPDATE_ADDRESS;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
 @RequestMapping(REST_API_PREFIX)
@@ -59,8 +56,8 @@ public class AddressRestController {
 
     @PutMapping(value = REST_UPDATE_ADDRESS, consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<String> updateAddress(@Valid @RequestBody Address addressEditData, BindingResult result,
-                                                HttpServletRequest request) {
+    public ResponseEntity<String> updateAddress(@Valid @RequestBody Address addressEditData,
+                                                BindingResult result, HttpServletRequest request) {
         if (result.hasErrors()) {
             return new ResponseEntity<>(addressNotFound, UNPROCESSABLE_ENTITY);
         }
@@ -94,15 +91,6 @@ public class AddressRestController {
                                                                HttpServletRequest request) {
         addressService.updateMainAddress(params.getAddressId(), params.getClientId(), request);
         return new ResponseEntity<>(mainAddressSuccessfullyEdited, OK);
-    }
-
-    //TODO: REQUEST
-    @ExceptionHandler(SyntacticallyIncorrectRequestException.class)
-    public ResponseEntity<Map<String, String>> conflict(Exception e) {
-        Map<String, String> responseBody = new HashMap<>();
-        responseBody.put(ERROR_MESSAGE, e.getMessage());
-        responseBody.put(HTTP_STATUS, String.valueOf(UNPROCESSABLE_ENTITY.value()));
-        return new ResponseEntity<>(responseBody, UNPROCESSABLE_ENTITY);
     }
 
     static class Params implements Serializable {

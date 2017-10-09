@@ -3,7 +3,7 @@ package com.company.configuration;
 import com.company.controller.AddressController;
 import com.company.controller.ClientController;
 import com.company.util.SpringAndHibernateValidator;
-import com.company.util.SyntacticallyIncorrectRequestException;
+import com.company.util.ProcessUserRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
@@ -20,12 +20,12 @@ import static com.company.util.Mappings.HTTP_STATUS;
 import static com.company.util.Mappings.extractViewName;
 
 @ControllerAdvice(assignableTypes = { AddressController.class, ClientController.class })
-public class GlobalControllerAdvice {
+public class GlobalMvcControllerAdvice {
 
     private SpringAndHibernateValidator sahValidator;
 
     @Autowired
-    public GlobalControllerAdvice(SpringAndHibernateValidator sahValidator) {
+    public GlobalMvcControllerAdvice(SpringAndHibernateValidator sahValidator) {
         this.sahValidator = sahValidator;
     }
 
@@ -34,9 +34,8 @@ public class GlobalControllerAdvice {
         binder.setValidator(sahValidator);
     }
 
-
     //TODO: REQUEST
-    @ExceptionHandler(SyntacticallyIncorrectRequestException.class)
+    @ExceptionHandler(ProcessUserRequestException.class)
     public String conflict(Model model, HttpServletResponse response, Exception e) {
         response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
         model.addAttribute(ERROR_MESSAGE, e.getMessage());

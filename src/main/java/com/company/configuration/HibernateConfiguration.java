@@ -57,8 +57,6 @@ public class HibernateConfiguration {
         properties.put(FORMAT_SQL, env.getRequiredProperty(FORMAT_SQL));
         properties.put(STATEMENT_BATCH_SIZE, env.getRequiredProperty(STATEMENT_BATCH_SIZE));
         properties.put(HBM2DDL_AUTO, env.getRequiredProperty(HBM2DDL_AUTO));
-//        properties.put(CURRENT_SESSION_CONTEXT_CLASS, env.getRequiredProperty(CURRENT_SESSION_CONTEXT_CLASS));
-//        properties.put(ENABLE_LAZY_LOAD_NO_TRANS, env.getRequiredProperty(ENABLE_LAZY_LOAD_NO_TRANS));
         return properties;
     }
 

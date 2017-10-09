@@ -1,7 +1,7 @@
 package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
-import com.company.configuration.HibernateConfigurationForTests;
+import com.company.configuration.AppTestConfig;
 import com.company.dao.ClientDao;
 import com.company.model.Client;
 import com.company.service.ClientService;
@@ -9,9 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +27,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
 import static com.company.Constants.*;
-import static com.company.controller.ClientController.NEW_CLIENT;
 import static com.company.controller.ClientRestControllerTest.CNF;
 import static com.company.controller.ClientRestControllerTest.CSE;
 import static com.company.controller.ClientRestControllerTest.CSR;
@@ -48,12 +45,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 @Transactional
@@ -72,9 +67,6 @@ public class ClientRestControllerIntegrationTest {
 
     private MockMvc mockMvc;
     private Client testClient;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -216,12 +208,6 @@ public class ClientRestControllerIntegrationTest {
         validateFieldsWhenTryingToAddClient(CLIENT_LAST_NAME, INVALID_TO_SHORT_INPUT);
     }
 
-    //TODO: REWORK AFTER EXCEPTION HANDLER
-    @Test
-    public void shouldNotPerformAnyActionOperatingOnDatabaseWhenRequestParamWasNull() throws Exception {
-
-    }
-
     private void validateFieldsWhenTryingToEditClient(String firstName, String lastName)
             throws Exception {
         ReflectionTestUtils.setField(clientRestController, CNF, STRING_TO_TEST_EQUALITY);
@@ -261,4 +247,5 @@ public class ClientRestControllerIntegrationTest {
                 .andExpect(jsonPath("$.httpStatus",
                         equalTo(String.valueOf(HttpStatus.UNPROCESSABLE_ENTITY.value()))));
     }
+
 }

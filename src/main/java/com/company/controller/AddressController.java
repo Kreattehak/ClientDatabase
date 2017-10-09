@@ -2,13 +2,11 @@ package com.company.controller;
 
 import com.company.model.Address;
 import com.company.service.AddressService;
-import com.company.util.SyntacticallyIncorrectRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,9 +39,9 @@ public class AddressController {
     }
 
     @PostMapping(ADD_ADDRESS)
-    public String processAddNewAddress(@Valid @ModelAttribute(NEW_ADDRESS) Address newAddress, BindingResult result,
-                                       @RequestParam Long clientId, HttpServletResponse response,
-                                       HttpServletRequest request) {
+    public String processAddNewAddress(@Valid @ModelAttribute(NEW_ADDRESS) Address newAddress,
+                                       BindingResult result, @RequestParam Long clientId,
+                                       HttpServletResponse response, HttpServletRequest request) {
         if (result.hasErrors()) {
             response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
             return extractViewName(ADD_ADDRESS);
@@ -102,6 +100,4 @@ public class AddressController {
         addressService.deleteAddress(addressId, request);
         return REDIRECT + TABLE_OF_CLIENTS;
     }
-
-
 }

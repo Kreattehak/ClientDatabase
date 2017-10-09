@@ -1,7 +1,7 @@
 package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
-import com.company.configuration.HibernateConfigurationForTests;
+import com.company.configuration.AppTestConfig;
 import com.company.model.Client;
 import com.company.service.ClientService;
 import org.junit.After;
@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -41,7 +40,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -51,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class ClientControllerTest {
@@ -90,6 +89,7 @@ public class ClientControllerTest {
         Client anotherTestClient = new Client(ANOTHER_CLIENT_FIRST_NAME, ANOTHER_CLIENT_LAST_NAME);
         anotherTestClient.setId(ANOTHER_ID_VALUE);
         List<Client> clients = Arrays.asList(testClient, anotherTestClient);
+
         when(clientServiceMock.getAllClients()).thenReturn(clients);
 
         mockMvc.perform(get(TABLE_OF_CLIENTS))
@@ -239,11 +239,5 @@ public class ClientControllerTest {
                 .andExpect(view().name(extractViewName(EDIT_CLIENT)));
 
         verifyZeroInteractions(clientServiceMock);
-    }
-
-    //TODO: REWORK AFTER ADD Exception Handler
-    @Test
-    public void shouldNotPerformAnyActionOperatingOnDatabaseWhenRequestParamWasNull() throws Exception {
-
     }
 }

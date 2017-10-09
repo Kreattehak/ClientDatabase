@@ -18,7 +18,7 @@ public class AbstractDao<T, ID extends Serializable> implements Dao<T, ID> {
 
     }
 
-    public Class<T> getPersistentClass() {
+    protected Class<T> getPersistentClass() {
         return persistentClass;
     }
 

@@ -1,11 +1,10 @@
 package com.company.service;
 
 import com.company.dao.AddressDao;
-import com.company.dao.ClientDao;
 import com.company.model.Address;
 import com.company.model.Client;
 import com.company.util.InjectLogger;
-import com.company.util.SyntacticallyIncorrectRequestException;
+import com.company.util.ProcessUserRequestException;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +43,6 @@ public class HibernateAddressService implements AddressService {
     @Value("${exception.deleteAddressNoRefererHeader}")
     private String deleteAddressNoRefererExceptionMessage;
 
-
     @InjectLogger(ADDRESS_SERVICE_LOGGER_NAME)
     private static Logger logger;
 
@@ -67,7 +65,7 @@ public class HibernateAddressService implements AddressService {
         if (!isRequestProper) {
             logger.warn("{} tried to get address with id {}, but that address doesn't exist. "
                     + "This request was handmade.", getUserData(request), addressId);
-            throw new SyntacticallyIncorrectRequestException(findAddressExceptionMessage);
+            throw new ProcessUserRequestException(findAddressExceptionMessage);
         }
 
         return addressFromDatabase;
@@ -88,12 +86,14 @@ public class HibernateAddressService implements AddressService {
         Client client = clientService.findClientById(clientId, request);
         Address[] addresses = getAllClientAddresses(client).toArray(new Address[0]);
         Arrays.sort(addresses, Comparator.comparing(Address::getId));
+
         return addresses;
     }
 
     @Override
     public Map<Long, String> getAllClientAddressesAsMap(Long clientId, HttpServletRequest request) {
         Client clientFromDatabase = clientService.findClientById(clientId, request);
+
         return clientFromDatabase.getAddress()
                 .stream()
                 .collect(collectAddressesToMapWithLocation);
@@ -103,6 +103,7 @@ public class HibernateAddressService implements AddressService {
     public Map<Long, String> getAllClientAddressesWithoutMainAddressAsMap(Long clientId, HttpServletRequest request) {
         Client clientFromDatabase = clientService.findClientById(clientId, request);
         Long mainAddressId = clientFromDatabase.getMainAddress().getId();
+
         return clientFromDatabase.getAddress()
                 .stream()
                 .filter(address -> !Objects.equals(address.getId(), mainAddressId))
@@ -113,18 +114,13 @@ public class HibernateAddressService implements AddressService {
     @Transactional(readOnly = false)
     public Address saveAddress(Address newAddress, Long clientId, HttpServletRequest request) {
         Client clientFromDatabase = clientService.findClientById(clientId, request);
-        Long addresses = clientFromDatabase.getAddress()
-                .stream()
-                .filter(address -> Objects.equals(address.getStreetName(), newAddress.getStreetName()) &&
-                        Objects.equals(address.getZipCode(), newAddress.getZipCode()) &&
-                        Objects.equals(address.getCityName(), newAddress.getCityName()))
-                .count();
+        Long addresses = checkIfAddressAlreadyExsists(clientFromDatabase, newAddress);
         boolean isRequestProper = (addresses <= 0);
         if (!isRequestProper) {
             logger.warn("{} tried to add address for client with id {}. " +
                             "This request was handmade, with data: clientId= {}!",
                     getUserData(request), clientId, clientId);
-            throw new SyntacticallyIncorrectRequestException(saveAddressExceptionMessage);
+            throw new ProcessUserRequestException(saveAddressExceptionMessage);
         }
 
         Address addressStoredInDatabase = addressDao.save(newAddress);
@@ -135,6 +131,7 @@ public class HibernateAddressService implements AddressService {
         logger.trace("New {} was added for Client {} {} with id {}",
                 addressStoredInDatabase, clientFromDatabase.getFirstName(),
                 clientFromDatabase.getLastName(), clientFromDatabase.getId());
+
         return addressStoredInDatabase;
     }
 
@@ -144,7 +141,7 @@ public class HibernateAddressService implements AddressService {
         Long clientId = fetchClientIdFromRequest(request);
         if (clientId.equals(ID_NOT_FOUND)) {
             logger.warn(getUserData(request) + " tried to remove address, but request doesn't have a referer header!");
-            throw new SyntacticallyIncorrectRequestException(deleteAddressNoRefererExceptionMessage);
+            throw new ProcessUserRequestException(deleteAddressNoRefererExceptionMessage);
         }
         Client clientFromDatabase = clientService.findClientById(clientId, request);
         boolean isRequestProper = !Objects.equals(clientFromDatabase.getMainAddress().getId(), addressId);
@@ -152,7 +149,7 @@ public class HibernateAddressService implements AddressService {
             logger.warn("{} tried to delete address for client with id {}. "
                             + "This request was handmade, with data: addressId= {}, clientId= {}!",
                     getUserData(request), clientId, addressId, clientId);
-            throw new SyntacticallyIncorrectRequestException(deleteAddressExceptionMessage);
+            throw new ProcessUserRequestException(deleteAddressExceptionMessage);
         }
         Address addressToBeRemoved = findAddressById(addressId, request);
 
@@ -165,6 +162,7 @@ public class HibernateAddressService implements AddressService {
                 + " with id " + clientFromDatabase.getId());
     }
 
+    //TODO: CHECK IF ADDRESS ALREADY EXISTS
     @Override
     @Transactional(readOnly = false)
     public Address updateAddress(Address editedAddress, HttpServletRequest request) {
@@ -173,7 +171,7 @@ public class HibernateAddressService implements AddressService {
         if (!isRequestProper) {
             logger.warn("{} tried to address. This request was handmade,with data: {}",
                     getUserData(request), editedAddress);
-            throw new SyntacticallyIncorrectRequestException(updateAddressExceptionMessage);
+            throw new ProcessUserRequestException(updateAddressExceptionMessage);
         }
         Address addressFromDatabase = findAddressById(addressId, request);
 
@@ -185,6 +183,7 @@ public class HibernateAddressService implements AddressService {
                 editedAddress.getId(), addressFromDatabase.getStreetName(), addressFromDatabase.getCityName(),
                 addressFromDatabase.getZipCode());
         logger.trace("{} was edited with data {}", addressData, addressFromDatabase);
+
         return addressFromDatabase;
     }
 
@@ -198,7 +197,7 @@ public class HibernateAddressService implements AddressService {
             logger.warn("{} tried to edit main address for client with id {}. "
                             + "This request was handmade, with data: addressId= {}, clientId= {}!",
                     getUserData(request), clientId, addressId, clientId);
-            throw new SyntacticallyIncorrectRequestException(updateMainAddressExceptionMessage);
+            throw new ProcessUserRequestException(updateMainAddressExceptionMessage);
         }
         Address addressFromDatabase = findAddressById(addressId, request);
 
@@ -208,5 +207,14 @@ public class HibernateAddressService implements AddressService {
         logger.info("Address with id {} was set as main address for client with id {}",
                 addressId, clientId);
         logger.trace("{} was set as main address for {}", addressFromDatabase, clientData);
+    }
+
+    private Long checkIfAddressAlreadyExsists(Client client, Address newAddress) {
+        return client.getAddress()
+                .stream()
+                .filter(address -> Objects.equals(address.getStreetName(), newAddress.getStreetName()) &&
+                        Objects.equals(address.getZipCode(), newAddress.getZipCode()) &&
+                        Objects.equals(address.getCityName(), newAddress.getCityName()))
+                .count();
     }
 }

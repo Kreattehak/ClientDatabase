@@ -1,6 +1,5 @@
 package com.company.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,11 +38,6 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
     private static final String I18_INTERCEPTOR_NAME = "language";
     private static final String I18_MESSAGE_SOURCE_BASENAME = "languages/messages";
     private static final String RESOURCES = "/resources";
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
 
     @Bean
     public InternalResourceViewResolver viewResolver() {

@@ -1,18 +1,17 @@
 package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
-import com.company.configuration.HibernateConfigurationForTests;
+import com.company.configuration.AppTestConfig;
 import com.company.dao.ClientDao;
 import com.company.model.Client;
 import com.company.service.ClientService;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -49,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 @Transactional
@@ -65,9 +64,6 @@ public class ClientControllerIntegrationTest {
     private MockMvc mockMvc;
     private Client testClient;
     private List<Client> allClientsCurrrentlyInDatabase;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -210,12 +206,6 @@ public class ClientControllerIntegrationTest {
         validateFieldsWhenTryingToEditClient(CLIENT_FIRST_NAME, INVALID_TO_SHORT_INPUT, LAST_NAME);
     }
 
-    //TODO: REWORK AFTER EXCEPTION HANDLER
-    @Test
-    public void shouldNotPerformAnyActionOperatingOnDatabaseWhenRequestParamWasNull() throws Exception {
-
-    }
-
     private void validateFieldsWhenTryingToEditClient(String firstName, String lastName, String whatToValid)
             throws Exception {
         Client client = clientDao.save(testClient);
@@ -241,6 +231,7 @@ public class ClientControllerIntegrationTest {
                 .andExpect(model().attributeHasFieldErrors(NEW_CLIENT, whatToValid));
     }
 
+    //TODO: REWORK AFTER HTTP STATUS CHANGE
     private void tryToPerformActionButExceptionWasThrown(MockHttpServletRequestBuilder builder,
                                                          String message, Object target) throws Exception {
         ReflectionTestUtils.setField(target, message, STRING_TO_TEST_EQUALITY);
@@ -248,6 +239,7 @@ public class ClientControllerIntegrationTest {
         mockMvc.perform(builder)
                 .andExpect(status().is4xxClientError())
                 .andExpect(view().name(extractViewName(ERROR_PAGE)))
-                .andExpect(model().attribute(ERROR_MESSAGE, STRING_TO_TEST_EQUALITY));
+                .andExpect(model().attribute(ERROR_MESSAGE, STRING_TO_TEST_EQUALITY))
+                .andExpect(model().attribute(HTTP_STATUS, HttpStatus.UNPROCESSABLE_ENTITY.value()));
     }
 }

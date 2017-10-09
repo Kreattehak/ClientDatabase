@@ -1,9 +1,7 @@
 package com.company.util;
 
 import com.company.model.Client;
-import org.springframework.web.util.WebUtils;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import static com.company.util.Mappings.ID_NOT_FOUND;

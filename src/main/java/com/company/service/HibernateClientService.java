@@ -3,7 +3,7 @@ package com.company.service;
 import com.company.dao.ClientDao;
 import com.company.model.Client;
 import com.company.util.InjectLogger;
-import com.company.util.SyntacticallyIncorrectRequestException;
+import com.company.util.ProcessUserRequestException;
 import com.company.util.WebDataResolverAndCreator;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class HibernateClientService implements ClientService {
         if (!isRequestProper) {
             logger.warn("{} tried to get client with id {}, but that client doesn't exist. "
                     + "This request was handmade.", getUserData(request), clientId);
-            throw new SyntacticallyIncorrectRequestException(findClientExceptionMessage);
+            throw new ProcessUserRequestException(findClientExceptionMessage);
         }
 
         return clientFromDatabase;
@@ -56,6 +56,7 @@ public class HibernateClientService implements ClientService {
     public Client findClientByIdAndCleanUnnecessaryData(Long clientId, HttpServletRequest request) {
         Client clientFromDatabase = findClientById(clientId, request);
         WebDataResolverAndCreator.cleanClientData(clientFromDatabase);
+
         return clientFromDatabase;
     }
 
@@ -81,6 +82,7 @@ public class HibernateClientService implements ClientService {
         return clientStoredInDatabase;
     }
 
+    //TODO: THINK ABOUT IMPLEMENTATION
     @Override
     @Transactional(readOnly = false)
     public void deleteClient(Long clientId, HttpServletRequest request) {
@@ -90,7 +92,7 @@ public class HibernateClientService implements ClientService {
 //        if (!isRequestProper) {
 //            logger.warn("{} tried to delete client with id {}. This request was handmade.",
 //                    getUserData(request), clientId);
-//            throw new SyntacticallyIncorrectRequestException(deleteClientExceptionMessage);
+//            throw new ProcessUserRequestException(deleteClientExceptionMessage);
 //        }
 
         clientDao.delete(clientFromDatabase);
@@ -108,7 +110,7 @@ public class HibernateClientService implements ClientService {
         if (!isRequestProper) {
             logger.warn("{} tried to update client. This request was handmade, with data: {}",
                     getUserData(request), editedClient);
-            throw new SyntacticallyIncorrectRequestException(updateClientExceptionMessage);
+            throw new ProcessUserRequestException(updateClientExceptionMessage);
         }
         Client clientFromDatabase = findClientById(clientId, request);
 

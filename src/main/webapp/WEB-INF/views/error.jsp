@@ -12,7 +12,7 @@
 <div class="container">
     <div class="row">
         <div class="jumbotron col-lg-10 col-lg-offset-1">
-            <h1>BAD REQUEST - ${httpStatusCode}</h1>
+            <h1>BAD REQUEST - ${httpStatus}</h1>
         </div>
         <div class="col-lg-10 col-lg-offset-1 alert alert-danger" role="alert">
             <strong>ERROR:</strong>

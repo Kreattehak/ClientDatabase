@@ -15,12 +15,15 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.company.util.Mappings.LOGIN_PAGE;
-import static com.company.util.Mappings.extractViewName;
+import static com.company.util.Mappings.REST_AUTHORIZATION;
+import static com.company.util.Mappings.REST_AUTHORIZATION_REFRESH;
 
 @RestController
 public class AuthenticationRestController {
@@ -37,7 +40,7 @@ public class AuthenticationRestController {
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @PostMapping("${jwt.route.authentication.path}")
+    @PostMapping(REST_AUTHORIZATION)
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
 
@@ -58,7 +61,7 @@ public class AuthenticationRestController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 
-    @GetMapping("${jwt.route.authentication.refresh}")
+    @GetMapping(REST_AUTHORIZATION_REFRESH)
     public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
         String username = jwtTokenUtil.getUsernameFromToken(token);

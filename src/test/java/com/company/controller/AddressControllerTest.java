@@ -1,6 +1,7 @@
 package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
+import com.company.configuration.AppTestConfig;
 import com.company.configuration.HibernateConfigurationForTests;
 import com.company.model.Address;
 import com.company.model.Client;
@@ -51,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {HibernateConfigurationForTests.class, AppConfiguration.class})
+@ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class AddressControllerTest {
@@ -295,11 +296,5 @@ public class AddressControllerTest {
 
         verify(addressServiceMock).deleteAddress(anyLong(), any(HttpServletRequest.class));
         verifyNoMoreInteractions(addressServiceMock);
-    }
-
-    //TODO: REWORK AFTER ADD Exception Handler
-    @Test
-    public void shouldNotPerformAnyActionOperatingOnDatabaseWhenRequestParamWasNull() throws Exception {
-
     }
 }
