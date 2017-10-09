@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.company.util.Mappings.LOGIN_PAGE;
+import static com.company.util.Mappings.extractViewName;
+
 @RestController
 public class AuthenticationRestController {
 
@@ -68,5 +71,4 @@ public class AuthenticationRestController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-
 }

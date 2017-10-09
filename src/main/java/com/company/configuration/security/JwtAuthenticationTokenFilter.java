@@ -17,9 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.company.util.Mappings.LOGIN_LOGGER_NAME;
+
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-    @InjectLogger("com.company.controller.JwtAuthenticationTokenFilter")
+    @InjectLogger(LOGIN_LOGGER_NAME)
     private static Logger logger;
 
     @Autowired

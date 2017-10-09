@@ -1,12 +1,12 @@
 package com.company.dao;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface Dao<T, ID> {
 
     T findById(ID id);
 
-    List<T> findAll();
+    Collection<T> findAll();
 
     T save(T entity);
 

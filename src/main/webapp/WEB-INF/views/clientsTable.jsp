@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="<c:url value="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/style.css"/>">
     <title><spring:message code="clientsTable.title"/></title>
 </head>
@@ -48,8 +48,10 @@
             <spring:message code="button.editAddresses"/></button>
         <button type="submit" id="bEditMainAddress" class="btn btn-info">
             <spring:message code="button.editMainAddress"/></button>
-        <button type="submit" id="bRemove" class="btn btn-warning">
-            <spring:message code="button.editRemove"/></button>
+        <button type="submit" id="bRemoveClient" class="btn btn-warning">
+            <spring:message code="button.removeClient"/></button>
+        <button type="submit" id="bRemoveAddress" class="btn btn-warning">
+            <spring:message code="button.removeAddress"/></button>
     </div>
 </div>
 

@@ -3,18 +3,7 @@ package com.company.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -23,15 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "listofclients")
-//@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
-public class Client implements Serializable {
-
-    private static final long serialVersionUID = 466741405964712741L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "client_id", unique = true, nullable = false, updatable = false)
-    private Long id;
+public class Client extends BaseEntity implements Serializable {
 
     @Column(name = "firstName", length = 50)
     @Length(min = 3, message = "{validation.minLength}")
@@ -41,7 +22,7 @@ public class Client implements Serializable {
     @Length(min = 3, message = "{validation.minLength}")
     private String lastName;
 
-    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Address> address;
 
@@ -59,17 +40,9 @@ public class Client implements Serializable {
     }
 
     public Client(String firstName, String lastName) {
+        this();
         this.firstName = firstName;
         this.lastName = lastName;
-
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFirstName() {
@@ -103,6 +76,10 @@ public class Client implements Serializable {
         this.address.add(address);
     }
 
+    public boolean removeAddress(Address address) {
+        return this.address.remove(address);
+    }
+
     public Date getDateOfRegistration() {
         return dateOfRegistration;
     }
@@ -120,24 +97,9 @@ public class Client implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Client client = (Client) o;
-
-        return id != null ? id.equals(client.id) : client.id == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
-
-    @Override
     public String toString() {
         return "Client{" +
-                "id=" + id +
+                "id=" + super.getId()+
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", address=" + address +

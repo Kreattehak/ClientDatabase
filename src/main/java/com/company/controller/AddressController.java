@@ -1,109 +1,107 @@
 package com.company.controller;
 
 import com.company.model.Address;
-import com.company.model.Client;
 import com.company.service.AddressService;
-import com.company.service.ClientService;
-import com.company.util.InjectLogger;
-import com.company.util.Mappings;
-import org.apache.logging.log4j.Logger;
+import com.company.util.SyntacticallyIncorrectRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Map;
-import java.util.stream.Collectors;
+
+import static com.company.util.Mappings.*;
 
 @Controller
 public class AddressController {
 
-    @InjectLogger("com.company.controller.AddressController")
-    private static Logger logger;
+    private final AddressService addressService;
 
-    private ClientService clientService;
-    private AddressService addressService;
+    static final String NEW_ADDRESS = "newAddress";
+    static final String CLIENT_ADDRESSES = "clientAddresses";
+    static final String ADDRESS_TO_BE_EDITED = "addressToBeEdited";
 
     @Autowired
-    public AddressController(ClientService clientService, AddressService addressService) {
-        this.clientService = clientService;
+    public AddressController(AddressService addressService) {
         this.addressService = addressService;
     }
 
-    @GetMapping(Mappings.ADD_ADDRESS)
-    public String addNewAddress(@ModelAttribute("newAddress") Address newAddress) {
-        return "addAddress";
+    @GetMapping(ADD_ADDRESS)
+    public String addNewAddress(@ModelAttribute(NEW_ADDRESS) Address newAddress) {
+        return extractViewName(ADD_ADDRESS);
     }
 
-    @PostMapping(Mappings.ADD_ADDRESS)
-    public String processAddNewAddress(@Valid @ModelAttribute("newAddress") Address newAddress, BindingResult result,
-                                       @RequestParam() Long id) {
+    @PostMapping(ADD_ADDRESS)
+    public String processAddNewAddress(@Valid @ModelAttribute(NEW_ADDRESS) Address newAddress, BindingResult result,
+                                       @RequestParam Long clientId, HttpServletResponse response,
+                                       HttpServletRequest request) {
         if (result.hasErrors()) {
-            return "addAddress";
+            response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            return extractViewName(ADD_ADDRESS);
         }
-        Client clientFromDatabase = clientService.findClientById(id);
-        clientFromDatabase.addAddress(newAddress);
-        newAddress.setClient(clientFromDatabase);
-        clientService.updateClient(clientFromDatabase);
-        logger.info("Address added ->" + newAddress + " for client " + clientFromDatabase);
-        return "redirect:/clientsTable";
+        addressService.saveAddress(newAddress, clientId, request);
+        return REDIRECT + TABLE_OF_CLIENTS;
     }
 
-    @GetMapping(Mappings.EDIT_ADDRESSES)
-    public String editUsersAddresses(@RequestParam Long id, Model model) {
-        model.addAttribute("usersAddresses", addressSetAsSelectList(id));
-        return "editAddresses";
+    @GetMapping(EDIT_ADDRESSES)
+    public String editClientAddresses(@RequestParam Long clientId, Model model, HttpServletRequest request) {
+        model.addAttribute(CLIENT_ADDRESSES, addressService.getAllClientAddressesAsMap(clientId, request));
+        return extractViewName(EDIT_ADDRESSES);
     }
 
-    @GetMapping(Mappings.EDIT_ADDRESS)
-    public String editUserAddress(@RequestParam Long addressId, Model model) {
-        model.addAttribute("addressToBeEdited", addressService.findAddressById(addressId));
-        return "editAddress";
+    @GetMapping(EDIT_ADDRESS)
+    public String editClientAddress(@RequestParam Long addressId, Model model, HttpServletRequest request) {
+        model.addAttribute(ADDRESS_TO_BE_EDITED, addressService.findAddressById(addressId, request));
+        return extractViewName(EDIT_ADDRESS);
     }
 
-    @PostMapping(Mappings.EDIT_ADDRESS)
-    public String processEditUserAddress(@Valid @ModelAttribute("addressToBeEdited") Address addressData,
-                                         BindingResult result) {
+    @PutMapping(EDIT_ADDRESS)
+    public String processEditClientAddress(@Valid @ModelAttribute(ADDRESS_TO_BE_EDITED) Address addressToBeEdited,
+                                           BindingResult result, HttpServletResponse response,
+                                           HttpServletRequest request) {
         if (result.hasErrors()) {
-            return "editAddress";
+            response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            return extractViewName(EDIT_ADDRESS);
         }
-        Address addressFromDatabase = addressService.findAddressById(addressData.getId());
-        addressFromDatabase.setCityName(addressData.getCityName());
-        addressFromDatabase.setStreetName(addressData.getStreetName());
-        addressFromDatabase.setZipCode(addressData.getZipCode());
-        Address address = addressService.updateAddress(addressFromDatabase);
-        logger.info("Address edited ->" + addressData);
-        return "redirect:/clientsTable";
+        addressService.updateAddress(addressToBeEdited, request);
+        return REDIRECT + TABLE_OF_CLIENTS;
     }
 
-    @GetMapping(Mappings.EDIT_MAIN_ADDRESS)
-    public String editUsersMainAddress(@RequestParam Long id, Model model) {
-
-        model.addAttribute("usersAddresses", addressSetAsSelectList(id));
-        return "editMainAddress";
+    @GetMapping(EDIT_MAIN_ADDRESS)
+    public String editClientMainAddress(@RequestParam Long clientId, Model model, HttpServletRequest request) {
+        model.addAttribute(CLIENT_ADDRESSES,
+                addressService.getAllClientAddressesWithoutMainAddressAsMap(clientId, request));
+        return extractViewName(EDIT_MAIN_ADDRESS);
     }
 
-    @PostMapping(Mappings.EDIT_MAIN_ADDRESS)
-    public String processEditUsersMainAddress(@RequestParam Long addressId, @RequestParam() Long id) {
-        Client clientFromDatabase = clientService.findClientById(id);
-        Address addressFromDatabase = addressService.findAddressById(addressId);
-        clientFromDatabase.setMainAddress(addressFromDatabase);
-        clientService.updateClient(clientFromDatabase);
-        logger.info("Main address for " + clientFromDatabase + " was changed to ->" + addressFromDatabase);
-        return "redirect:/clientsTable";
+    @PutMapping(EDIT_MAIN_ADDRESS)
+    public String processEditClientMainAddress(@RequestParam Long addressId, @RequestParam Long clientId,
+                                               HttpServletRequest request) {
+        addressService.updateMainAddress(addressId, clientId, request);
+        return REDIRECT + TABLE_OF_CLIENTS;
     }
 
-    private Map<Long, String> addressSetAsSelectList(Long id) {
-        return addressService.getAllClientAddresses(clientService.findClientById(id))
-                .stream()
-                .collect(Collectors.toMap(Address::getId,
-                        (address) -> address.getCityName() + ", " + address.getStreetName()));
-
+    @GetMapping(REMOVE_ADDRESS_FROM_CLIENT)
+    public String deleteAddress(@RequestParam Long clientId, Model model, HttpServletRequest request) {
+        model.addAttribute(CLIENT_ADDRESSES,
+                addressService.getAllClientAddressesWithoutMainAddressAsMap(clientId, request));
+        return extractViewName(REMOVE_ADDRESS);
     }
+
+    @GetMapping(REMOVE_ADDRESS)
+    public String processRemoveAddress(@RequestParam Long addressId, HttpServletRequest request) {
+        addressService.deleteAddress(addressId, request);
+        return REDIRECT + TABLE_OF_CLIENTS;
+    }
+
 
 }

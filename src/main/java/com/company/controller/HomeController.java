@@ -1,29 +1,37 @@
 package com.company.controller;
 
-import com.company.util.Mappings;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import static com.company.util.Mappings.REDIRECT;
+import static com.company.util.Mappings.TABLE_OF_CLIENTS;
+import static com.company.util.Mappings.extractViewName;
 
 @Controller
 public class HomeController {
 
-    @RequestMapping(Mappings.DEFAULT_PAGE)
+    static final String DEFAULT_PAGE = "/";
+    static final String BLANK_PAGE = "/blank";
+    static final String ABOUT_US_PAGE = "/aboutUs";
+    static final String LOGIN_PAGE = "/login";
+
+    @RequestMapping(DEFAULT_PAGE)
     public String hello() {
-        return "redirect:/clientsTable";
+        return REDIRECT + TABLE_OF_CLIENTS;
     }
 
-    @RequestMapping(Mappings.BLANK_PAGE)
+    @RequestMapping(BLANK_PAGE)
     public String blank() {
-        return "blank";
+        return extractViewName(BLANK_PAGE);
     }
 
-    @RequestMapping(Mappings.ABOUT_US_PAGE)
+    @RequestMapping(ABOUT_US_PAGE)
     public String aboutUs() {
-        return "aboutUs";
+        return extractViewName(ABOUT_US_PAGE);
     }
 
-    @RequestMapping(Mappings.LOGIN_PAGE)
+    @RequestMapping(LOGIN_PAGE)
     public String login() {
-        return "login";
+        return extractViewName(LOGIN_PAGE);
     }
 }

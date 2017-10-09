@@ -2,81 +2,86 @@ package com.company.controller;
 
 import com.company.model.Client;
 import com.company.service.ClientService;
-import com.company.util.FormDataCleaner;
-import com.company.util.InjectLogger;
-import com.company.util.Mappings;
-import org.apache.logging.log4j.Logger;
+import com.company.util.SyntacticallyIncorrectRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import static com.company.util.Mappings.*;
 
 @Controller
 public class ClientController {
 
-    @InjectLogger("com.company.controller.ClientController")
-    private static Logger logger;
+    private final ClientService clientService;
 
-    private ClientService clientService;
+    static final String CLIENTS = "clients";
+    static final String NEW_CLIENT = "newClient";
+    static final String CLIENT_TO_BE_EDITED = "clientToBeEdited";
+    static final String WITH_CLIENT_ID_GET_PARAMETER = "?clientId=";
 
     @Autowired
     public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
 
-    @GetMapping(Mappings.TABLE_OF_CLIENTS)
-    public String hello(Model model) {
-        model.addAttribute("clients", clientService.findAllClients());
-        return "clientsTable";
+    @GetMapping(TABLE_OF_CLIENTS)
+    public String mainPage(Model model) {
+        model.addAttribute(CLIENTS, clientService.getAllClients());
+        return extractViewName(TABLE_OF_CLIENTS);
     }
 
-    @GetMapping(Mappings.ADD_CLIENT)
-    public String addNewClient(@ModelAttribute("newClient") Client newClient) {
-        return "addClient";
+    @GetMapping(ADD_CLIENT)
+    public String addNewClient(@ModelAttribute(NEW_CLIENT) Client newClient) {
+        return extractViewName(ADD_CLIENT);
     }
 
-    @PostMapping(Mappings.ADD_CLIENT)
-    public String processAddNewClient(@Valid @ModelAttribute("newClient") Client newClient, BindingResult result,
-                                      @RequestParam(defaultValue = "false") boolean shouldAddAddress) {
+    @PostMapping(ADD_CLIENT)
+    public String processAddNewClient(@Valid @ModelAttribute(NEW_CLIENT) Client newClient, BindingResult result,
+                                      @RequestParam(defaultValue = "false") boolean shouldAddAddress,
+                                      HttpServletRequest request, HttpServletResponse response) {
         if (result.hasErrors()) {
-            return "addClient";
+            response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            return extractViewName(ADD_CLIENT);
         }
-        Client client = clientService.saveClient(newClient);
-        logger.info("Client added ->" + client);
-        return shouldAddAddress ? "redirect:/admin/addAddress?id=" + client.getId() : "redirect:/clientsTable";
+        Client client = clientService.saveClient(newClient, request);
+        return shouldAddAddress ? REDIRECT + ADD_ADDRESS + WITH_CLIENT_ID_GET_PARAMETER + client.getId() :
+                REDIRECT + TABLE_OF_CLIENTS;
     }
 
-    @GetMapping(value = Mappings.REMOVE_CLIENT)
-    public String removeClient(@RequestParam long id) {
-        Client clientToBeRemoved = clientService.findClientById(id);
-        clientService.deleteClient(clientToBeRemoved);
-        logger.info("Client removed ->" + clientToBeRemoved);
-        return "redirect:/clientsTable";
+    @GetMapping(REMOVE_CLIENT)
+    public String removeClient(@RequestParam long clientId, HttpServletRequest request) {
+        clientService.deleteClient(clientId, request);
+        return REDIRECT + TABLE_OF_CLIENTS;
     }
 
-    @GetMapping(value = Mappings.EDIT_CLIENT)
-    public String editClient(@RequestParam long id, Model model) {
-        Client clientFromDatabase = clientService.findClientById(id);
-        FormDataCleaner.cleanClientData(clientFromDatabase);
-        model.addAttribute("clientToBeEdited", clientFromDatabase);
-        return "editClient";
+    @GetMapping(EDIT_CLIENT)
+    public String editClient(@RequestParam long clientId, Model model, HttpServletRequest request) {
+        model.addAttribute(CLIENT_TO_BE_EDITED,
+                clientService.findClientByIdAndCleanUnnecessaryData(clientId, request));
+        return extractViewName(EDIT_CLIENT);
     }
 
-    @PutMapping(Mappings.EDIT_CLIENT)
-    public String processEditClient(@Valid @ModelAttribute Client clientToBeEdited,
-                                    BindingResult result) {
+    @PutMapping(EDIT_CLIENT)
+    public String processEditClient(@Valid @ModelAttribute(CLIENT_TO_BE_EDITED) Client clientToBeEdited,
+                                    BindingResult result, HttpServletRequest request,
+                                    HttpServletResponse response) {
         if (result.hasErrors()) {
-            return "editClient";
+            response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            return extractViewName(EDIT_CLIENT);
         }
-        Client clientToChange = clientService.findClientById(clientToBeEdited.getId());
-        clientToChange.setFirstName(clientToBeEdited.getFirstName());
-        clientToChange.setLastName(clientToBeEdited.getLastName());
-        Client client = clientService.updateClient(clientToChange);
-        logger.info("Client edited ->" + clientToChange);
-        return "redirect:/clientsTable";
+        clientService.updateClient(clientToBeEdited, request);
+        return REDIRECT + TABLE_OF_CLIENTS;
     }
-
 }

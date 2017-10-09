@@ -7,7 +7,8 @@
         bEditClient = document.querySelector("#bEditClient"),
         bEditAddresses = document.querySelector("#bEditAddresses"),
         bEditMainAddress = document.querySelector("#bEditMainAddress"),
-        bRemove = document.querySelector("#bRemove"),
+        bRemoveClient = document.querySelector("#bRemoveClient"),
+        bRemoveAddress = document.querySelector("#bRemoveAddress"),
         activeRow;
 
     function makeArray(nodeList) {
@@ -71,6 +72,22 @@
             classList.remove("success")
             activeRow = undefined;
         }
+
+        if (activeRow && !activeRow.children[4].innerText) {
+            disableAddressButtons();
+        } else if(!activeRow || activeRow.children[4].innerText){
+            enableAddressButtons();
+        }
+    }
+
+    function disableAddressButtons() {
+        bRemoveAddress.disabled = true;
+        bEditMainAddress.disabled = true;
+    }
+
+    function enableAddressButtons() {
+        bRemoveAddress.disabled = false;
+        bEditMainAddress.disabled = false;
     }
 
     function showErrors(button) {
@@ -101,24 +118,20 @@
         trs[i].onclick = markAsActive;
     }
 
-    function addFunctionalityToButton(button, address) {
+    function addFunctionalityToButton(button, address, id) {
         button.addEventListener("click", function () {
             if (activeRow !== undefined) {
-                window.location = "/" + address + "?id=" + activeRow.children[0].textContent;
+                window.location = "/" + address + "?clientId=" + activeRow.children[0].textContent;
             } else {
                 showErrors(button);
             }
         }, false);
     }
 
-    function clientDeleteOnButtonClick(button, address) {
+    function onDeleteButtonClick(button, address) {
         button.addEventListener("click", function () {
             if (activeRow !== undefined) {
-                var deleteUrl = "/" + address + "?id=" + activeRow.children[0].textContent;
-                var xhr  = new XMLHttpRequest();
-                xhr.open('DELETE', deleteUrl, true);
-                xhr.send(null);
-                window.location = "/" + address + "?id=" + activeRow.children[0].textContent;
+                window.location = "/" + address + "?clientId=" + activeRow.children[0].textContent;
             } else {
                 showErrors(button);
             }
@@ -129,6 +142,7 @@
     addFunctionalityToButton(bEditClient, "admin/editClient");
     addFunctionalityToButton(bEditAddresses, "admin/editAddresses");
     addFunctionalityToButton(bEditMainAddress, "admin/editMainAddress");
-    clientDeleteOnButtonClick(bRemove, "admin/removeClient");
+    onDeleteButtonClick(bRemoveClient, "admin/removeClient");
+    onDeleteButtonClick(bRemoveAddress, "admin/removeAddressFromClient");
 
 })();

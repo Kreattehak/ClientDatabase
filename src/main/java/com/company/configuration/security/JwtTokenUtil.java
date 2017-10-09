@@ -16,7 +16,7 @@ import java.util.Map;
 @Component
 public class JwtTokenUtil implements Serializable {
 
-    private static final long serialVersionUID = 9035453634083347626L;
+    private static final long serialVersionUID = 2030183885201440521L;
 
     static final String CLAIM_KEY_USERNAME = "sub";
     static final String CLAIM_KEY_AUDIENCE = "audience";

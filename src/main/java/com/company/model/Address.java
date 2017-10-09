@@ -5,9 +5,6 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
@@ -17,14 +14,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "addresses")
-public class Address implements Serializable {
-
-    private static final long serialVersionUID = -6641053848769429668L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id", unique = true, nullable = false, updatable = false)
-    private Long id;
+public class Address extends BaseEntity implements Serializable {
 
     @ManyToOne
     @JoinTable(name = "client_address", joinColumns = @JoinColumn(name = "address_id"),
@@ -51,14 +41,6 @@ public class Address implements Serializable {
         this.streetName = streetName;
         this.cityName = cityName;
         this.zipCode = zipCode;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Client getClient() {
@@ -94,24 +76,9 @@ public class Address implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Address address = (Address) o;
-
-        return id != null ? id.equals(address.id) : address.id == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
-
-    @Override
     public String toString() {
         return "Address{" +
-                "id=" + id +
+                "id=" + super.getId() +
                 ", streetName='" + streetName + '\'' +
                 ", cityName='" + cityName + '\'' +
                 ", zipCode='" + zipCode + '\'' +

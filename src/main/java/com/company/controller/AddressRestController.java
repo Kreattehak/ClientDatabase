@@ -1,112 +1,129 @@
 package com.company.controller;
 
 import com.company.model.Address;
-import com.company.model.Client;
 import com.company.service.AddressService;
-import com.company.service.ClientService;
-import com.company.util.InjectLogger;
 import com.company.util.Mappings;
-import org.apache.logging.log4j.Logger;
+import com.company.util.SyntacticallyIncorrectRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Arrays;
-import java.util.Comparator;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.company.util.Mappings.*;
+import static com.company.util.Mappings.ERROR_MESSAGE;
+import static com.company.util.Mappings.HTTP_STATUS;
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.MediaType.*;
 
 @RestController
-@RequestMapping(Mappings.REST_API_PREFIX)
+@RequestMapping(REST_API_PREFIX)
 public class AddressRestController {
 
-    @InjectLogger("com.company.controller.AddressRestController")
-    private static Logger logger;
+    @Value("${addressSuccessfullyRemoved}")
+    private String addressSuccessfullyRemoved;
+    @Value("${addressNotFound}")
+    private String addressNotFound;
+    @Value("${addressSuccessfullyEdited}")
+    private String addressSuccessfullyEdited;
+    @Value("${mainAddressSuccessfullyEdited}")
+    private String mainAddressSuccessfullyEdited;
 
-    private ClientService clientService;
-    private AddressService addressService;
+    private final AddressService addressService;
 
     @Autowired
-    public AddressRestController(ClientService clientService, AddressService addressService) {
-        this.clientService = clientService;
+    public AddressRestController(AddressService addressService) {
         this.addressService = addressService;
     }
 
-    @GetMapping(value = Mappings.REST_GET_ALL_ADDRESSES, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Address[] getAllClientAddresses(@RequestParam long id) {
-        Client client = clientService.findClientById(id);
-        Address[] addresses = addressService.getAllClientAddresses(client).toArray(new Address[0]);
-        Arrays.sort(addresses, Comparator.comparing(Address::getId));
-        return addresses;
+    @GetMapping(value = REST_GET_ALL_ADDRESSES, produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Address[]> getAllClientAddresses(@RequestParam long id, HttpServletRequest request) {
+        Address[] addresses = addressService.getAllClientAddressesAsArray(id, request);
+        return new ResponseEntity<>(addresses, OK);
     }
 
-    @PutMapping(value = Mappings.REST_UPDATE_ADDRESS, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean updateAddress(@Valid @RequestBody Address addressEditData, BindingResult result) {
+    @PutMapping(value = REST_UPDATE_ADDRESS, consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> updateAddress(@Valid @RequestBody Address addressEditData, BindingResult result,
+                                                HttpServletRequest request) {
         if (result.hasErrors()) {
-            return false;
+            return new ResponseEntity<>(addressNotFound, UNPROCESSABLE_ENTITY);
         }
-        Address addressFromDatabase = addressService.findAddressById(addressEditData.getId());
-        addressFromDatabase.setCityName(addressEditData.getCityName());
-        addressFromDatabase.setStreetName(addressEditData.getStreetName());
-        addressFromDatabase.setZipCode(addressEditData.getZipCode());
-        Address address = addressService.updateAddress(addressFromDatabase);
-        logger.info("Address edited ->" + addressEditData);
-        return true;
+        addressService.updateAddress(addressEditData, request);
+        return new ResponseEntity<>(addressSuccessfullyEdited, OK);
     }
 
-    @PostMapping(Mappings.REST_SAVE_NEW_ADDRESS)
-    public boolean processAddNewAddress(@RequestBody Address newAddress, BindingResult result,
-                                        @RequestParam Long id) {
+    @PostMapping(value = REST_SAVE_NEW_ADDRESS, consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Long> processAddNewAddress(@Valid @RequestBody Address newAddress, BindingResult result,
+                                                     @RequestParam Long id, HttpServletRequest request) {
         if (result.hasErrors()) {
-            return false;
+            return new ResponseEntity<>(-1L, UNPROCESSABLE_ENTITY);
         }
-        System.out.println(newAddress);
-        Client clientFromDatabase = clientService.findClientById(id);
-        clientFromDatabase.addAddress(newAddress);
-        newAddress.setClient(clientFromDatabase);
-        clientService.updateClient(clientFromDatabase);
-        logger.info("Address added ->" + newAddress + " for client " + clientFromDatabase);
-        return true;
+        Address savedAddress = addressService.saveAddress(newAddress, id, request);
+        return new ResponseEntity<>(savedAddress.getId(), OK);
     }
 
-    //Passing a body message to an HTTP DELETE action is not currently supported in Angular 2
-    @PostMapping(value = Mappings.REST_DELETE_ADDRESS, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public boolean deleteClient(@RequestBody Address address) {
-        Address addressToBeDeleted = addressService.findAddressById(address.getId());
-        addressService.deleteAddress(addressToBeDeleted);
-        logger.info("Address removed ->" + address);
-        return true;
+    //TODO: REFERER HEADER MUST BE AVAILABLE
+    //Passing a request with body to an HTTP DELETE action is not currently supported in Angular 2
+    @PostMapping(value = REST_DELETE_ADDRESS, consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> deleteAddress(@RequestBody Params params, HttpServletRequest request) {
+        addressService.deleteAddress(params.getAddressId(), request);
+        return new ResponseEntity<>(addressSuccessfullyRemoved, OK);
     }
 
-    @PutMapping(Mappings.REST_EDIT_MAIN_ADDRESS)
-    public boolean processEditUsersMainAddress(@RequestBody Params params) {
-        Client clientFromDatabase = clientService.findClientById(Long.valueOf(params.getClientId()));
-        Address addressFromDatabase = addressService.findAddressById(Long.valueOf(params.getAddressId()));
-        clientFromDatabase.setMainAddress(addressFromDatabase);
-        clientService.updateClient(clientFromDatabase);
-        logger.info("Main address for " + clientFromDatabase + " was changed to ->" + addressFromDatabase);
-        return true;
+    @PutMapping(value = REST_EDIT_MAIN_ADDRESS, consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> processEditClientMainAddress(@RequestBody Params params,
+                                                               HttpServletRequest request) {
+        addressService.updateMainAddress(params.getAddressId(), params.getClientId(), request);
+        return new ResponseEntity<>(mainAddressSuccessfullyEdited, OK);
     }
 
-    static class Params {
-        private String addressId;
-        private String clientId;
+    //TODO: REQUEST
+    @ExceptionHandler(SyntacticallyIncorrectRequestException.class)
+    public ResponseEntity<Map<String, String>> conflict(Exception e) {
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put(ERROR_MESSAGE, e.getMessage());
+        responseBody.put(HTTP_STATUS, String.valueOf(UNPROCESSABLE_ENTITY.value()));
+        return new ResponseEntity<>(responseBody, UNPROCESSABLE_ENTITY);
+    }
 
-        public String getAddressId() {
+    static class Params implements Serializable {
+
+        private static final long serialVersionUID = -3722622423938546175L;
+        private Long addressId;
+        private Long clientId;
+
+        public Long getAddressId() {
             return addressId;
         }
 
-        public void setAddressId(String addressId) {
+        void setAddressId(Long addressId) {
             this.addressId = addressId;
         }
 
-        public String getClientId() {
+        public Long getClientId() {
             return clientId;
         }
 
-        public void setClientId(String clientId) {
+        void setClientId(Long clientId) {
             this.clientId = clientId;
         }
     }

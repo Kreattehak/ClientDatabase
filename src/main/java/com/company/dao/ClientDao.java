@@ -6,9 +6,7 @@ import java.util.List;
 
 public interface ClientDao extends Dao<Client, Long> {
 
-    List<Client> findByFirstName(String firstName);
-
-    List<Client> findByLastName(String lastName);
+    //further implementations
 
 }
 

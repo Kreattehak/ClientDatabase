@@ -1,15 +1,18 @@
 package com.company.configuration;
 
-import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.io.IOException;
+
+import static com.company.util.Mappings.DEFAULT_ENCODING_VALUE;
 
 public class EncodingFilter implements Filter {
-    private String encoding = "UTF-8";
+
+    private String encoding = DEFAULT_ENCODING_VALUE;
 
     @Override
     public void destroy() {
@@ -26,8 +29,9 @@ public class EncodingFilter implements Filter {
 
     @Override
     public void init(FilterConfig config) throws ServletException {
-        if (config.getInitParameter("encoding") != null) {
-            encoding = config.getInitParameter("encoding");
+        String encodingParameter = "encoding";
+        if (config.getInitParameter(encodingParameter) != null) {
+            encoding = config.getInitParameter(encodingParameter);
         }
     }
 }

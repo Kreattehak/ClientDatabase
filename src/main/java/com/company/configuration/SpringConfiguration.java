@@ -1,9 +1,9 @@
 package com.company.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.mobile.device.DeviceWebArgumentResolver;
@@ -23,39 +23,57 @@ import javax.validation.Validator;
 import java.util.List;
 import java.util.Locale;
 
+import static com.company.util.Mappings.ANY_SUBPATH;
+import static com.company.util.Mappings.DEFAULT_ENCODING_VALUE;
+import static com.company.util.Mappings.RESOLVER_PREFIX;
+import static com.company.util.Mappings.RESOLVER_SUFFIX;
+import static com.company.util.Mappings.SLASH;
+
 @Configuration
 @EnableWebMvc
 public class SpringConfiguration extends WebMvcConfigurerAdapter {
 
+    private static final String DEFAULT_LANGUAGE = "en";
+    private static final String LOCALE_COOKIE_NAME = "myLocaleCookie";
+    private static final int LOCALE_COOKIE_MAX_AGE = 4800;
+    private static final String I18_INTERCEPTOR_NAME = "language";
+    private static final String I18_MESSAGE_SOURCE_BASENAME = "languages/messages";
+    private static final String RESOURCES = "/resources";
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
     @Bean
     public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-        resolver.setPrefix("/WEB-INF/views/");
-        resolver.setSuffix(".jsp");
+        resolver.setPrefix(RESOLVER_PREFIX);
+        resolver.setSuffix(RESOLVER_SUFFIX);
         return resolver;
     }
 
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("languages/messages");
-        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setBasename(I18_MESSAGE_SOURCE_BASENAME);
+        messageSource.setDefaultEncoding(DEFAULT_ENCODING_VALUE);
         return messageSource;
     }
 
     @Bean
     public LocaleResolver localeResolver() {
         CookieLocaleResolver resolver = new CookieLocaleResolver();
-        resolver.setDefaultLocale(new Locale("en"));
-        resolver.setCookieName("myLocaleCookie");
-        resolver.setCookieMaxAge(4800);
+        resolver.setDefaultLocale(new Locale(DEFAULT_LANGUAGE));
+        resolver.setCookieName(LOCALE_COOKIE_NAME);
+        resolver.setCookieMaxAge(LOCALE_COOKIE_MAX_AGE);
         return resolver;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
-        interceptor.setParamName("language");
+        interceptor.setParamName(I18_INTERCEPTOR_NAME);
         registry.addInterceptor(interceptor);
         DeviceResolverHandlerInterceptor deviceInterceptor = new DeviceResolverHandlerInterceptor();
         registry.addInterceptor(deviceInterceptor);
@@ -63,7 +81,7 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+        registry.addResourceHandler(RESOURCES + ANY_SUBPATH).addResourceLocations(RESOURCES + SLASH);
     }
 
     @Bean

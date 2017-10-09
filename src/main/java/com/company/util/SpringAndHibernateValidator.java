@@ -18,6 +18,8 @@ public class SpringAndHibernateValidator implements Validator {
 
     private Set<Validator> springValidators;
 
+    private final String ERROR_CODE = "error";
+
     @Autowired
     public SpringAndHibernateValidator(javax.validation.Validator beanValidator) {
         this.springValidators = new HashSet<>();
@@ -36,7 +38,7 @@ public class SpringAndHibernateValidator implements Validator {
                 beanValidator.validate(o);
 
         for (ConstraintViolation<Object> constraintViolation : constraintViolations) {
-            errors.rejectValue(constraintViolation.getPropertyPath().toString(), "error",
+            errors.rejectValue(constraintViolation.getPropertyPath().toString(), ERROR_CODE,
                     constraintViolation.getMessage());
         }
 

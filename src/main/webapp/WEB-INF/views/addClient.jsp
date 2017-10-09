@@ -5,7 +5,7 @@
 <!DOCTYPE>
 <html>
 <head>
-    <link rel="stylesheet" href="<c:url value="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>">
+    <link rel="stylesheet" href="<c:url value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/style.css"/>">
     <title><spring:message code="addForm.client.title"></spring:message></title>
 </head>
@@ -14,7 +14,7 @@
 <jsp:include page="navbar.jsp"/>
 
 <section class="container">
-    <form:form modelAttribute="newClient" class="form-horizontal" method="PUT">
+    <form:form modelAttribute="newClient" class="form-horizontal" method="POST">
         <form:errors path="*" cssClass="alert alert-danger" element="div"/>
         <fieldset>
             <legend><spring:message code="addForm.client.legendMessage"/></legend>

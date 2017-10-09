@@ -1,57 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn">
-	<Appenders>
-		<Console name="console" target="SYSTEM_OUT">
-			<PatternLayout
-				pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n" />
-		</Console>
-	<RollingFile name="smtrace" fileName="${sys:user.home}\UserDatabase\logs\smtrace.log"
-		filePattern="${sys:user.home}\UserDatabase\logs\%d{yyyy-MM-dd}\smtrace-%d{HH-mm-ss}.log">
-		<PatternLayout>
-			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n
-			</pattern>
-		</PatternLayout>
-		<Policies>
-		  <OnStartupTriggeringPolicy />
-		</Policies>
-	</RollingFile>
-	<RollingFile name="allLogs" fileName="${sys:user.home}\UserDatabase\logs\allLogs.log"
-    	filePattern="${sys:user.home}\UserDatabase\logs\%d{yyyy-MM-dd}\allLogs-%d{HH-mm-ss}.log">
-    	<PatternLayout>
-    		<pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n
-    		</pattern>
-    	</PatternLayout>
-    	<Policies>
-    		 <OnStartupTriggeringPolicy />
-    	</Policies>
-    </RollingFile>
-    <RollingFile name="databaseLogs" fileName="${sys:user.home}\UserDatabase\logs\databaseLogs.log"
-        	filePattern="${sys:user.home}\UserDatabase\logs\%d{yyyy-MM-dd}\databaseLogs-%d{HH-mm-ss}.log">
-        	<PatternLayout>
-        		<pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n
-        		</pattern>
-        	</PatternLayout>
-        	<Policies>
-        		 <OnStartupTriggeringPolicy />
-        	</Policies>
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M-&gt; %msg%n" />
+        </Console>
+        <RollingFile name="smtrace" fileName="${sys:user.home}\ClientDatabase\logs\smtrace.log"
+        filePattern="${sys:user.home}\ClientDatabase\logs\%d{yyyy-MM-dd}\smtrace-%d{HH-mm-ss}.log">
+            <PatternLayout>
+                <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M- %msg%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
         </RollingFile>
-	</Appenders>
-	<Loggers>
-        <Logger name="com.company" level="trace" additivity="false">
-            <AppenderRef ref="console" level="ALL"/>
+        <RollingFile name="databaseLogs" fileName="${sys:user.home}\ClientDatabase\logs\databaseLogs.log"
+        filePattern="${sys:user.home}\ClientDatabase\logs\%d{yyyy-MM-dd}\databaseLogs-%d{HH-mm-ss}.log">
+            <PatternLayout>
+                <pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M-&gt; %msg%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="fullDatabaseLogs" fileName="${sys:user.home}\ClientDatabase\logs\fullDatabaseLogs.log"
+        filePattern="${sys:user.home}\ClientDatabase\logs\%d{yyyy-MM-dd}\fullDatabaseLogs-%d{HH-mm-ss}.log">
+            <PatternLayout>
+                <pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M-&gt; %msg%n </pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="databaseErrors" fileName="${sys:user.home}\ClientDatabase\logs\databaseErrors.log"
+        filePattern="${sys:user.home}\ClientDatabase\logs\%d{yyyy-MM-dd}\databaseErrors-%d{HH-mm-ss}.log">
+            <PatternLayout>
+                <pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M-&gt; %msg%n </pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="loginLogs" fileName="${sys:user.home}\ClientDatabase\logs\loginLogs.log"
+        filePattern="${sys:user.home}\ClientDatabase\logs\%d{yyyy-MM-dd}\loginLogs-%d{HH-mm-ss}.log">
+            <PatternLayout>
+                <pattern> %logger{36} [%-5level] %d{yyyy-MM-dd HH:mm:ss} [%t] %M-&gt; %msg%n </pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="org.hibernate.type" level="TRACE" additivity="false">
+            <AppenderRef ref="smtrace" level="TRACE" />
         </Logger>
-        <Logger name="com.company" level="all" additivity="false">
-            <AppenderRef ref="allLogs" level="ALL"/>
-            <AppenderRef ref="smtrace" level="WARN"/>
+        <Logger name="com.company.service.HibernateClientService" level="TRACE" additivity="false">
+            <AppenderRef ref="databaseLogs" level="INFO" />
+            <AppenderRef ref="fullDatabaseLogs" level="TRACE" />
+            <AppenderRef ref="console" level="ERROR" />
+            <AppenderRef ref="databaseErrors" level="ERROR" />
         </Logger>
-        <Logger name="org.hibernate.type" level="trace" additivity="false">
-            <AppenderRef ref="smtrace" level="TRACE"/>
+        <Logger name="com.company.service.HibernateAddressService" level="TRACE" additivity="false">
+            <AppenderRef ref="databaseLogs" level="INFO" />
+            <AppenderRef ref="fullDatabaseLogs" level="TRACE" />
+            <AppenderRef ref="console" level="ERROR" />
+            <AppenderRef ref="databaseErrors" level="ERROR" />
         </Logger>
-        <Logger name="com.company.controller.ClientController" level="info" additivity="false">
-            <AppenderRef ref="databaseLogs" level="INFO"/>
+        <Logger name="com.company.controller.JwtAuthenticationTokenFilter" level="INFO" additivity="false">
+            <AppenderRef ref="loginLogs" level="INFO" />
         </Logger>
-        <Root level="error">
-            <AppenderRef ref="console"/>
+        <Root level="ERROR">
+            <AppenderRef ref="console" />
         </Root>
-	</Loggers>
+    </Loggers>
 </Configuration>

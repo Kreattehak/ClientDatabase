@@ -1,21 +1,21 @@
 package com.company.dao;
 
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.List;
+import java.util.Collection;
 
 public class AbstractDao<T, ID extends Serializable> implements Dao<T, ID> {
 
-    @Autowired
-    protected SessionFactory sessionFactory;
+    protected final SessionFactory sessionFactory;
 
     private Class<T> persistentClass;
 
-    public AbstractDao() {
+    public AbstractDao(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
         persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+
     }
 
     public Class<T> getPersistentClass() {
@@ -28,7 +28,7 @@ public class AbstractDao<T, ID extends Serializable> implements Dao<T, ID> {
     }
 
     @Override
-    public List<T> findAll() {
+    public Collection<T> findAll() {
         return sessionFactory.getCurrentSession().createQuery("FROM " + getPersistentClass().getSimpleName(),
                 getPersistentClass()).list();
     }

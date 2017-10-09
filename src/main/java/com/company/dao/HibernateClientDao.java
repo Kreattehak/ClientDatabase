@@ -1,20 +1,22 @@
 package com.company.dao;
 
 import com.company.model.Client;
+import com.company.model.security.User;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
 public class HibernateClientDao extends AbstractDao<Client, Long> implements ClientDao {
 
-    @Override
-    public List<Client> findByFirstName(String firstName) {
-        return null;
+    @Autowired
+    public HibernateClientDao(SessionFactory sessionFactory) {
+        super(sessionFactory);
     }
 
-    @Override
-    public List<Client> findByLastName(String lastName) {
-        return null;
-    }
+    //further implementations
+
 }

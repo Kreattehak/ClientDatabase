@@ -2,19 +2,24 @@ package com.company.service;
 
 import com.company.model.Client;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface ClientService {
 
-    Client findClientById(Long id);
+    Client findClientById(Long clientId, HttpServletRequest request);
 
-    List<Client> findAllClients();
+    Client findClientByIdAndCleanUnnecessaryData(Long clientId, HttpServletRequest request);
 
-    Client saveClient(Client client);
+    List<Client> getAllClients();
 
-    void deleteClient(Client client);
+    Client[] getAllClientsAsArray();
 
-    Client updateClient(Client client);
+    Client saveClient(Client client, HttpServletRequest request);
+
+    void deleteClient(Long clientId, HttpServletRequest request);
+
+    Client updateClient(Client client, HttpServletRequest request);
 
     void flush();
 }
