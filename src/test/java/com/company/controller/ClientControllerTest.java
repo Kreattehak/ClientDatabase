@@ -29,11 +29,9 @@ import static com.company.controller.ClientController.CLIENT_TO_BE_EDITED;
 import static com.company.controller.ClientController.NEW_CLIENT;
 import static com.company.controller.ClientController.WITH_CLIENT_ID_GET_PARAMETER;
 import static com.company.util.Mappings.*;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.verify;
@@ -106,7 +104,7 @@ public class ClientControllerTest {
         mockMvc.perform(get(ADD_CLIENT))
                 .andExpect(status().isOk())
                 .andExpect(view().name(extractViewName(ADD_CLIENT)))
-                .andExpect(model().attribute(NEW_CLIENT, allOf(notNullValue(), isA(Client.class))));
+                .andExpect(model().attribute(NEW_CLIENT, isA(Client.class)));
     }
 
     @Test

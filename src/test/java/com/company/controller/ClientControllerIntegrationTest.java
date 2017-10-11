@@ -74,7 +74,6 @@ public class ClientControllerIntegrationTest {
 
     @After
     public void tearDown() throws Exception {
-//        clientService.getAllClients().forEach(client -> clientService.deleteClient(client.getId()));
         mockMvc = null;
         testClient = null;
     }
@@ -108,8 +107,8 @@ public class ClientControllerIntegrationTest {
         Client clientFromDatabase = allClientsAfterPersist.get(0);
 
         assertThat(allClientsAfterPersist, hasSize(1));
-        assertThat(clientFromDatabase, is(checkClientFieldsEquality(CLIENT_FIRST_NAME,
-                CLIENT_LAST_NAME)));
+        assertThat(clientFromDatabase,
+                is(checkClientFieldsEquality(CLIENT_FIRST_NAME, CLIENT_LAST_NAME)));
     }
 
     @Test
@@ -128,6 +127,7 @@ public class ClientControllerIntegrationTest {
 
         List<Client> allClientsAfterPersist = clientService.getAllClients();
         Client clientFromDatabase = allClientsAfterPersist.get(0);
+
         mockMvc.perform(get(REMOVE_CLIENT)
                 .param(CLIENT_ID, clientFromDatabase.getId().toString()));
 
@@ -165,6 +165,7 @@ public class ClientControllerIntegrationTest {
 
         List<Client> allClientsAfterEdit = clientService.getAllClients();
         Client editedClient = allClientsAfterEdit.get(0);
+
         assertThat(allClientsAfterEdit, hasSize(1));
         assertThat(editedClient, is(checkClientFieldsEquality(
                 ANOTHER_CLIENT_FIRST_NAME, ANOTHER_CLIENT_LAST_NAME)));
@@ -190,10 +191,10 @@ public class ClientControllerIntegrationTest {
     public void shouldNotUpdateClientWhenClientWasNotFound() throws Exception {
         tryToPerformActionButExceptionWasThrown(
                 put(EDIT_CLIENT)
-                .contentType(APPLICATION_JSON_UTF8_VALUE)
-                .param(ID, ID_NOT_FOUND_VALUE_STRING)
-                .param(FIRST_NAME, ANOTHER_CLIENT_FIRST_NAME)
-                .param(LAST_NAME, ANOTHER_CLIENT_LAST_NAME), FCEM, clientService);
+                        .contentType(APPLICATION_JSON_UTF8_VALUE)
+                        .param(ID, ID_NOT_FOUND_VALUE_STRING)
+                        .param(FIRST_NAME, ANOTHER_CLIENT_FIRST_NAME)
+                        .param(LAST_NAME, ANOTHER_CLIENT_LAST_NAME), FCEM, clientService);
     }
 
     @Test

@@ -77,7 +77,6 @@ public class ClientRestControllerIntegrationTest {
 
     @After
     public void tearDown() throws Exception {
-//        clientService.getAllClients().forEach(client -> clientService.deleteClient(client.getId()));
         mockMvc = null;
         testClient = null;
     }

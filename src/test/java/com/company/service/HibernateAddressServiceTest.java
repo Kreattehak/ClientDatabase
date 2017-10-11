@@ -110,8 +110,8 @@ public class HibernateAddressServiceTest {
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
         //due to equal() implementation addresses need to have different ids, to fetch them to set
         anotherTestAddress.setId(ANOTHER_ID_VALUE);
-
         List<Address> addressesList = Arrays.asList(testAddress, anotherTestAddress);
+
         when(addressDao.findAll()).thenReturn(addressesList);
 
         Set<Address> addresses = addressService.findAllAddresses();
@@ -202,6 +202,7 @@ public class HibernateAddressServiceTest {
                 .thenReturn(testClient);
 
         addressService.saveAddress(testAddress, testClient.getId(), requestMock);
+
         assertThat(testClient.getAddress(), hasItem(testAddress));
         assertThat(testAddress, hasProperty(CLIENT, equalTo(testClient)));
 
@@ -215,6 +216,7 @@ public class HibernateAddressServiceTest {
     public void shouldNotAddTwoSameAddressesForOneClient() throws Exception {
         ReflectionTestUtils.setField(addressService, SAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
+
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
 
@@ -230,6 +232,7 @@ public class HibernateAddressServiceTest {
                 .thenReturn(testClient);
 
         addressService.saveAddress(testAddress, testClient.getId(), requestMock);
+
         assertThat(testClient.getMainAddress(), equalTo(testAddress));
 
         verify(addressDao).save(any(Address.class));
@@ -260,6 +263,7 @@ public class HibernateAddressServiceTest {
     @Test
     public void shouldNotDeleteAddressFromDatabaseWhenRefererHeaderWasNotPresent() throws Exception {
         ReflectionTestUtils.setField(addressService, DANREM, STRING_TO_TEST_EQUALITY);
+
         when(requestMock.getHeader(REFERER_HEADER)).thenReturn(null);
 
         expectedException.expect(ProcessUserRequestException.class);
@@ -271,6 +275,7 @@ public class HibernateAddressServiceTest {
     public void shouldNotDeleteAddressFromDatabaseWhenItIsMainAddress() throws Exception {
         ReflectionTestUtils.setField(addressService, DAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
+
         when(requestMock.getHeader(REFERER_HEADER))
                 .thenReturn(REFERER_HEADER_VALUE + testClient.getId());
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
@@ -330,6 +335,7 @@ public class HibernateAddressServiceTest {
         ReflectionTestUtils.setField(addressService, UAEM, STRING_TO_TEST_EQUALITY);
         Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
+
         when(addressDao.findById(anyLong())).thenReturn(null);
 
         expectedException.expect(ProcessUserRequestException.class);

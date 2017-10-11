@@ -2,7 +2,6 @@ package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
 import com.company.configuration.AppTestConfig;
-import com.company.configuration.HibernateConfigurationForTests;
 import com.company.model.Client;
 import com.company.service.ClientService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,6 +84,7 @@ public class ClientRestControllerTest {
         Client anotherTestClient = new Client(ANOTHER_CLIENT_FIRST_NAME, ANOTHER_CLIENT_LAST_NAME);
         anotherTestClient.setId(ANOTHER_ID_VALUE);
         Client[] clients = {testClient, anotherTestClient};
+
         when(clientServiceMock.getAllClientsAsArray()).thenReturn(clients);
 
         mockMvc.perform(get(REST_API_PREFIX + REST_GET_ALL_CLIENTS))

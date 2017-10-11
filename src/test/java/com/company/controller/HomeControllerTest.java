@@ -2,7 +2,6 @@ package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
 import com.company.configuration.AppTestConfig;
-import com.company.configuration.HibernateConfigurationForTests;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,7 +78,7 @@ public class HomeControllerTest {
         performRequestForHomeController(LOGIN_PAGE);
     }
 
-    private void performRequestForHomeController(String url) throws Exception{
+    private void performRequestForHomeController(String url) throws Exception {
         mockMvc.perform(get(url))
                 .andExpect(status().isOk())
                 .andExpect(view().name(extractViewName(url)));

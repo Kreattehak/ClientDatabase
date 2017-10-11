@@ -82,9 +82,11 @@ public class LoggerInjectorTest {
         addressServiceLogger.trace(INPUT);
         addressServiceLogger.error(INPUT);
         addressServiceLogger.warn(INPUT);
+
         clientServiceLogger.info(INPUT);
         clientServiceLogger.trace(INPUT);
         clientServiceLogger.error(INPUT);
+
         loginLogger.info(INPUT);
 
         logFromDatabaseLogs = Files.lines(Paths.get(DATABASE_LOGS))
@@ -133,7 +135,8 @@ public class LoggerInjectorTest {
     @Test
     public void shouldPrintErrorsFromAddressAndClientServiceLoggers() throws Exception {
         assertThat(replaceDateAndTimeWithEmptySpace(outContent.toString().trim()), equalTo(
-                prepareProperOutput(ADDRESS_SERVICE_LOGGER_NAME, ERROR) + System.getProperty("line.separator")
+                prepareProperOutput(ADDRESS_SERVICE_LOGGER_NAME, ERROR)
+                        + System.getProperty("line.separator")
                         + prepareProperOutput(CLIENT_SERVICE_LOGGER_NAME, ERROR)));
     }
 
@@ -155,6 +158,7 @@ public class LoggerInjectorTest {
         if (m.find()) {
             return m.replaceAll(" ");
         }
+
         return log;
     }
 

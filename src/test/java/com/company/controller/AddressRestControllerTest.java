@@ -2,7 +2,6 @@ package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
 import com.company.configuration.AppTestConfig;
-import com.company.configuration.HibernateConfigurationForTests;
 import com.company.model.Address;
 import com.company.model.Client;
 import com.company.service.AddressService;
@@ -26,13 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import javax.servlet.http.HttpServletRequest;
 
 import static com.company.Constants.*;
-import static com.company.util.Mappings.ID_NOT_FOUND;
-import static com.company.util.Mappings.REST_API_PREFIX;
-import static com.company.util.Mappings.REST_DELETE_ADDRESS;
-import static com.company.util.Mappings.REST_EDIT_MAIN_ADDRESS;
-import static com.company.util.Mappings.REST_GET_ALL_ADDRESSES;
-import static com.company.util.Mappings.REST_SAVE_NEW_ADDRESS;
-import static com.company.util.Mappings.REST_UPDATE_ADDRESS;
+import static com.company.util.Mappings.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,6 +90,7 @@ public class AddressRestControllerTest {
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
         anotherTestAddress.setId(ANOTHER_ID_VALUE);
         Address[] addresses = {testAddress, anotherTestAddress};
+
         when(addressServiceMock.getAllClientAddressesAsArray(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(addresses);
 
@@ -113,6 +107,7 @@ public class AddressRestControllerTest {
     public void shouldPerformEditAddressAction() throws Exception {
         ReflectionTestUtils.setField(addressRestController, ASE, STRING_TO_TEST_EQUALITY);
         String data = objectMapper.writeValueAsString(testAddress);
+
         when(addressServiceMock.updateAddress(any(Address.class), any(HttpServletRequest.class)))
                 .thenReturn(testAddress);
 

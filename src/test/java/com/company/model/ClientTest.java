@@ -13,7 +13,7 @@ import static com.company.Constants.ADDRESS_STREET_NAME;
 import static com.company.Constants.ADDRESS_ZIP_CODE;
 import static com.company.Constants.CLIENT_FIRST_NAME;
 import static com.company.Constants.CLIENT_LAST_NAME;
-import static org.hamcrest.Matchers.equalTo;
+import static com.company.service.HibernateAddressServiceTest.checkAddressFieldsEquality;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -35,6 +35,7 @@ public class ClientTest {
     @Test
     public void shouldAddAddress() throws Exception {
         Address testAddress = new Address(ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, ADDRESS_ZIP_CODE);
+
         testClient.addAddress(testAddress);
 
         assertThat(testClient.getAddress(), hasSize(1));
@@ -44,9 +45,11 @@ public class ClientTest {
     @Test
     public void shouldSetFirstAddedAddressAsMainAddress() throws Exception {
         Address testAddress = new Address(ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, ADDRESS_ZIP_CODE);
+
         testClient.addAddress(testAddress);
 
-        assertThat(testClient.getMainAddress(), equalTo(testAddress));
+        assertThat(testClient.getMainAddress(), checkAddressFieldsEquality(
+                ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, ADDRESS_ZIP_CODE));
     }
 
     @Test

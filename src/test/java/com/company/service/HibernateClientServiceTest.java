@@ -221,5 +221,4 @@ public class HibernateClientServiceTest {
                 hasProperty(MAIN_ADDRESS, nullValue()),
                 hasProperty(DATE_OF_REGISTRATION, OrderingComparison.lessThan(new Date())));
     }
-
 }

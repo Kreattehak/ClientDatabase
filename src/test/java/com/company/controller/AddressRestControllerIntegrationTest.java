@@ -84,7 +84,6 @@ public class AddressRestControllerIntegrationTest {
 
     @After
     public void tearDown() throws Exception {
-//        clientService.getAllClients().forEach(client -> clientService.deleteClient(client.getId()));
         mockMvc = null;
         testClient = null;
         testAddress = null;
@@ -92,12 +91,7 @@ public class AddressRestControllerIntegrationTest {
 
     @Test
     public void shouldReturnClientAddressesArray() throws Exception {
-        addClientWithAddress();
-        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
-                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        addressDao.save(anotherTestAddress);
-        testClient.addAddress(anotherTestAddress);
-        anotherTestAddress.setClient(testClient);
+        Address anotherTestAddress = saveClientWithTwoAddresses();
 
         mockMvc.perform(get(REST_API_PREFIX + REST_GET_ALL_ADDRESSES)
                 .param(ID, testClient.getId().toString()))
@@ -198,7 +192,7 @@ public class AddressRestControllerIntegrationTest {
 
     @Test
     public void shouldThrowExceptionWhenTryingToAddTheSameAddress() throws Exception {
-        addClientWithAddress();
+        saveClientWithAddress();
 
         String data = objectMapper.writeValueAsString(testAddress);
 
@@ -227,12 +221,7 @@ public class AddressRestControllerIntegrationTest {
     public void shouldDeleteAddress() throws Exception {
         ReflectionTestUtils.setField(addressRestController, ASR, STRING_TO_TEST_EQUALITY);
 
-        addClientWithAddress();
-        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
-                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        addressDao.save(anotherTestAddress);
-        testClient.addAddress(anotherTestAddress);
-        anotherTestAddress.setClient(testClient);
+        Address anotherTestAddress = saveClientWithTwoAddresses();
 
         AddressRestController.Params params = new AddressRestController.Params();
         params.setAddressId(anotherTestAddress.getId());
@@ -267,7 +256,7 @@ public class AddressRestControllerIntegrationTest {
 
     @Test
     public void shouldNotDeleteAddressWhenItsMainAddress() throws Exception {
-        addClientWithAddress();
+        saveClientWithAddress();
         AddressRestController.Params params = new AddressRestController.Params();
         params.setAddressId(testAddress.getId());
         params.setClientId(testClient.getId());
@@ -281,7 +270,7 @@ public class AddressRestControllerIntegrationTest {
 
     @Test
     public void shouldNotDeleteAddressWhenAddressWasNotFound() throws Exception {
-        addClientWithAddress();
+        saveClientWithAddress();
         AddressRestController.Params params = new AddressRestController.Params();
         params.setAddressId(ANOTHER_ID_VALUE);
         params.setClientId(testClient.getId());
@@ -295,12 +284,7 @@ public class AddressRestControllerIntegrationTest {
 
     @Test
     public void shouldChangeMainAddress() throws Exception {
-        addClientWithAddress();
-        Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
-                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        addressDao.save(anotherTestAddress);
-        testClient.addAddress(anotherTestAddress);
-        anotherTestAddress.setClient(testClient);
+        Address anotherTestAddress = saveClientWithTwoAddresses();
 
         ReflectionTestUtils.setField(addressRestController, MASE, STRING_TO_TEST_EQUALITY);
         AddressRestController.Params params = new AddressRestController.Params();
@@ -332,7 +316,7 @@ public class AddressRestControllerIntegrationTest {
 
     @Test
     public void shouldThrowExceptionWhenTryingToChangeMainAddressToTheSameAddress() throws Exception {
-        addClientWithAddress();
+        saveClientWithAddress();
 
         AddressRestController.Params params = new AddressRestController.Params();
         params.setAddressId(testAddress.getId());
@@ -346,7 +330,7 @@ public class AddressRestControllerIntegrationTest {
 
     @Test
     public void shouldThrowExceptionAddressIdWasNotFoundWhileEditingMainAddress() throws Exception {
-        addClientWithAddress();
+        saveClientWithAddress();
 
         AddressRestController.Params params = new AddressRestController.Params();
         params.setAddressId(ID_NOT_FOUND);
@@ -390,8 +374,22 @@ public class AddressRestControllerIntegrationTest {
                 .andExpect(jsonPath("$", equalTo(ID_NOT_FOUND.intValue())));
     }
 
-    private void addClientWithAddress() {
+    private Address saveClientWithTwoAddresses() {
+        Address anotherTestAddress = new Address(
+                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
+        clientDao.save(testClient);
         addressDao.save(testAddress);
+        addressDao.save(anotherTestAddress);
+
+        testClient.addAddress(testAddress);
+        testClient.addAddress(anotherTestAddress);
+        testAddress.setClient(testClient);
+        anotherTestAddress.setClient(testClient);
+
+        return anotherTestAddress;
+    }
+
+    private void saveClientWithAddress() {
         testClient.addAddress(testAddress);
         testAddress.setClient(testClient);
         clientDao.save(testClient);

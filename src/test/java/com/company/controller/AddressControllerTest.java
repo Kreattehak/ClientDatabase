@@ -2,7 +2,6 @@ package com.company.controller;
 
 import com.company.configuration.AppConfiguration;
 import com.company.configuration.AppTestConfig;
-import com.company.configuration.HibernateConfigurationForTests;
 import com.company.model.Address;
 import com.company.model.Client;
 import com.company.service.AddressService;
@@ -13,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -31,18 +29,17 @@ import static com.company.controller.AddressController.ADDRESS_TO_BE_EDITED;
 import static com.company.controller.AddressController.CLIENT_ADDRESSES;
 import static com.company.controller.AddressController.NEW_ADDRESS;
 import static com.company.util.Mappings.*;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -95,7 +92,7 @@ public class AddressControllerTest {
         mockMvc.perform(get(ADD_ADDRESS))
                 .andExpect(status().isOk())
                 .andExpect(view().name(extractViewName(ADD_ADDRESS)))
-                .andExpect(model().attribute(NEW_ADDRESS, allOf(notNullValue(), isA(Address.class))));
+                .andExpect(model().attribute(NEW_ADDRESS, isA(Address.class)));
     }
 
     @Test

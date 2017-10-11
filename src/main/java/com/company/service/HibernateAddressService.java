@@ -126,6 +126,7 @@ public class HibernateAddressService implements AddressService {
         Address addressStoredInDatabase = addressDao.save(newAddress);
         clientFromDatabase.addAddress(newAddress);
         newAddress.setClient(clientFromDatabase);
+
         logger.info("New address with id {} was added for client with id {}",
                 addressStoredInDatabase.getId(), clientId);
         logger.trace("New {} was added for Client {} {} with id {}",
@@ -156,6 +157,7 @@ public class HibernateAddressService implements AddressService {
         clientFromDatabase.removeAddress(addressToBeRemoved);
         addressToBeRemoved.setClient(null);
         addressDao.delete(addressToBeRemoved);
+
         logger.info("Address with id " + addressId + " was deleted from client with id " + clientId);
         logger.trace(addressToBeRemoved + " was deleted from " + "Client "
                 + clientFromDatabase.getFirstName() + " " + clientFromDatabase.getLastName()
@@ -179,6 +181,7 @@ public class HibernateAddressService implements AddressService {
         addressFromDatabase.setCityName(editedAddress.getCityName());
         addressFromDatabase.setStreetName(editedAddress.getStreetName());
         addressFromDatabase.setZipCode(editedAddress.getZipCode());
+
         logger.info("Address with id {} was edited with data streetName={}, cityName={}, zipCode={}",
                 editedAddress.getId(), addressFromDatabase.getStreetName(), addressFromDatabase.getCityName(),
                 addressFromDatabase.getZipCode());
@@ -204,6 +207,7 @@ public class HibernateAddressService implements AddressService {
         String clientData = "Client " + clientFromDatabase.getFirstName() + " "
                 + clientFromDatabase.getLastName() + " with id " + clientFromDatabase.getId();
         clientFromDatabase.setMainAddress(addressFromDatabase);
+
         logger.info("Address with id {} was set as main address for client with id {}",
                 addressId, clientId);
         logger.trace("{} was set as main address for {}", addressFromDatabase, clientData);

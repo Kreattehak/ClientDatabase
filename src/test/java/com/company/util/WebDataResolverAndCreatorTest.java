@@ -3,6 +3,7 @@ package com.company.util;
 import com.company.model.Address;
 import com.company.model.Client;
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -35,6 +36,11 @@ public class WebDataResolverAndCreatorTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        requestMock = null;
     }
 
     @Test
@@ -91,8 +97,18 @@ public class WebDataResolverAndCreatorTest {
     }
 
     @Test
-    public void shouldFetchClientIdFromRequest() throws Exception {
+    public void shouldFetchClientIdFromMvcRequest() throws Exception {
         when(requestMock.getHeader(REFERER_HEADER)).thenReturn(REFERER_HEADER_VALUE + ID_VALUE);
+
+        assertThat(WebDataResolverAndCreator.fetchClientIdFromRequest(requestMock), equalTo(ID_VALUE));
+
+        verify(requestMock).getHeader(REFERER_HEADER);
+        verifyNoMoreInteractions(requestMock);
+    }
+
+    @Test
+    public void shouldFetchClientIdFromRestRequest() throws Exception {
+        when(requestMock.getHeader(REFERER_HEADER)).thenReturn(REST_REFERER_HEADER_VALUE + ID_VALUE);
 
         assertThat(WebDataResolverAndCreator.fetchClientIdFromRequest(requestMock), equalTo(ID_VALUE));
 

@@ -90,8 +90,6 @@ public class AddressControllerIntegrationTest {
 
     @After
     public void tearDown() throws Exception {
-//        addressService.findAllAddresses().forEach(
-//                address -> addressService.deleteAddress(address.getId(), address.getClient().getId()));
         mockMvc = null;
         testAddress = null;
         testClient = null;
@@ -99,7 +97,7 @@ public class AddressControllerIntegrationTest {
 
     @Test
     public void shouldAddAddressToDatabaseFromWebPageForm() throws Exception {
-        Client clientFromDatabase = saveClientToDatabase(testClient);
+        Client clientFromDatabase = clientDao.save(testClient);
         allAddressesCurrrentlyInDatabase = addressService.findAllAddresses();
 
         mockMvc.perform(post(ADD_ADDRESS)
@@ -115,9 +113,8 @@ public class AddressControllerIntegrationTest {
         Address addressFromDatabase = allAddressesAfterPersist.iterator().next();
 
         assertThat(allAddressesAfterPersist, hasSize(1));
-        assertThat(addressFromDatabase, is(
-                checkAddressFieldsEqualityWithClient(
-                        ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, ADDRESS_ZIP_CODE, clientFromDatabase)));
+        assertThat(addressFromDatabase, is(checkAddressFieldsEqualityWithClient(
+                ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, ADDRESS_ZIP_CODE, clientFromDatabase)));
         //Compiler can't infer type
         assertThat(clientDao.findById(clientFromDatabase.getId()).getAddress(),
                 Matchers.<Set<Address>>allOf(hasSize(1), hasItem(addressFromDatabase)));
@@ -151,16 +148,7 @@ public class AddressControllerIntegrationTest {
 
     @Test
     public void shouldAddClientAddressesMapToModel() throws Exception {
-        Address anotherTestAddress = new Address(
-                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        saveClientToDatabase(testClient);
-        saveAddressToDatabase(testAddress);
-        saveAddressToDatabase(anotherTestAddress);
-
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
-        testAddress.setClient(testClient);
-        anotherTestAddress.setClient(testClient);
+        Address anotherTestAddress = saveClientWithTwoAddresses();
 
         mockMvc.perform(get(EDIT_ADDRESSES)
                 .param(CLIENT_ID, testClient.getId().toString()))
@@ -181,10 +169,7 @@ public class AddressControllerIntegrationTest {
 
     @Test
     public void shouldAddClientAddressToWebForm() throws Exception {
-        saveClientToDatabase(testClient);
-        saveAddressToDatabase(testAddress);
-        testClient.addAddress(testAddress);
-        testAddress.setClient(testClient);
+        saveClientWithAddress();
 
         mockMvc.perform(get(EDIT_ADDRESS)
                 .param(ADDRESS_ID, testAddress.getId().toString()))
@@ -202,23 +187,18 @@ public class AddressControllerIntegrationTest {
 
     @Test
     public void shouldEditAddressFromDatabase() throws Exception {
-        Address anotherTestAddress = new Address(
-                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        Client clientFromDatabase = saveClientToDatabase(testClient);
-        Address addressFromDatabase = saveAddressToDatabase(testAddress);
-        testClient.addAddress(testAddress);
-        testAddress.setClient(testClient);
+        saveClientWithAddress();
 
         mockMvc.perform(put(EDIT_ADDRESS)
                 .contentType(APPLICATION_FORM_URLENCODED_VALUE)
-                .param(ID, addressFromDatabase.getId().toString())
-                .param(STREET_NAME, anotherTestAddress.getStreetName())
-                .param(CITY_NAME, anotherTestAddress.getCityName())
-                .param(ZIP_CODE, anotherTestAddress.getZipCode()));
+                .param(ID, testAddress.getId().toString())
+                .param(STREET_NAME, ANOTHER_ADDRESS_STREET_NAME)
+                .param(CITY_NAME, ANOTHER_ADDRESS_CITY_NAME)
+                .param(ZIP_CODE, ANOTHER_ADDRESS_ZIP_CODE));
 
-        assertThat(addressDao.findById(addressFromDatabase.getId()),
+        assertThat(addressDao.findById(testAddress.getId()),
                 is(checkAddressFieldsEqualityWithClient(ANOTHER_ADDRESS_STREET_NAME,
-                        ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, clientFromDatabase)));
+                        ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, testClient)));
     }
 
     @Test
@@ -257,16 +237,7 @@ public class AddressControllerIntegrationTest {
 
     @Test
     public void shouldAddClientAddressesWithoutMainAddressMapToModel() throws Exception {
-        Address anotherTestAddress = new Address(
-                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        saveClientToDatabase(testClient);
-        saveAddressToDatabase(testAddress);
-        saveAddressToDatabase(anotherTestAddress);
-
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
-        testAddress.setClient(testClient);
-        anotherTestAddress.setClient(testClient);
+        Address anotherTestAddress = saveClientWithTwoAddresses();
 
         mockMvc.perform(get(EDIT_MAIN_ADDRESS)
                 .param(CLIENT_ID, testClient.getId().toString()))
@@ -287,22 +258,14 @@ public class AddressControllerIntegrationTest {
 
     @Test
     public void shouldEditMainAddress() throws Exception {
-        Address anotherTestAddress = new Address(
-                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        Client clientFromDatabase = saveClientToDatabase(testClient);
-        Address addressFromDatabase = saveAddressToDatabase(testAddress);
-        Address anotherAddressFromDatabase = saveAddressToDatabase(anotherTestAddress);
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
-        testAddress.setClient(testClient);
-        anotherAddressFromDatabase.setClient(testClient);
+        Address anotherTestAddress = saveClientWithTwoAddresses();
 
         mockMvc.perform(put(EDIT_MAIN_ADDRESS)
                 .contentType(APPLICATION_FORM_URLENCODED_VALUE)
-                .param(ADDRESS_ID, anotherAddressFromDatabase.getId().toString())
-                .param(CLIENT_ID, clientFromDatabase.getId().toString()));
+                .param(ADDRESS_ID, anotherTestAddress.getId().toString())
+                .param(CLIENT_ID, testClient.getId().toString()));
 
-        assertThat(clientDao.findById(clientFromDatabase.getId()).getMainAddress(),
+        assertThat(clientDao.findById(testClient.getId()).getMainAddress(),
                 is(checkAddressFieldsEqualityWithClient(
                         ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, testClient)));
     }
@@ -317,60 +280,46 @@ public class AddressControllerIntegrationTest {
 
     @Test
     public void shouldNotProcessEditMainAddressWhenAddressToChangeIsAlsoMainAddress() throws Exception {
-        testClient.addAddress(testAddress);
-        testAddress.setClient(testClient);
+        saveClientWithAddress();
 
-        Client clientFromDatabase = clientDao.save(testClient);
         tryToPerformActionButExceptionWasThrown(
                 put(EDIT_MAIN_ADDRESS)
-                        .param(CLIENT_ID, clientFromDatabase.getId().toString())
+                        .param(CLIENT_ID, testClient.getId().toString())
                         .param(ADDRESS_ID, ID_NOT_FOUND_VALUE_STRING), UMAEM, addressService);
     }
 
     @Test
     public void shouldNotProcessEditMainAddressWhenAddressWasNotFound() throws Exception {
-        testClient.addAddress(testAddress);
-        testAddress.setClient(testClient);
+        saveClientWithAddress();
 
-        Client clientFromDatabase = clientDao.save(testClient);
         tryToPerformActionButExceptionWasThrown(
                 put(EDIT_MAIN_ADDRESS)
-                        .param(CLIENT_ID, clientFromDatabase.getId().toString())
+                        .param(CLIENT_ID, testClient.getId().toString())
                         .param(ADDRESS_ID, ID_NOT_FOUND_VALUE_STRING), FAEM, addressService);
     }
 
     @Test
     public void shouldDeleteAddressFromDatabaseWhenItsNotMainAddress() throws Exception {
-        Address anotherTestAddress = new Address(
-                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
-        Client clientFromDatabase = saveClientToDatabase(testClient);
-        Address addressFromDatabase = saveAddressToDatabase(testAddress);
-        Address anotherAddressFromDatabase = saveAddressToDatabase(anotherTestAddress);
-        testClient.addAddress(testAddress);
-        testClient.addAddress(anotherTestAddress);
-        testAddress.setClient(testClient);
-        anotherAddressFromDatabase.setClient(testClient);
+        Address anotherTestAddress = saveClientWithTwoAddresses();
 
         mockMvc.perform(get(REMOVE_ADDRESS)
                 .contentType(APPLICATION_FORM_URLENCODED_VALUE)
-                .header(REFERER_HEADER, REFERER_HEADER_VALUE + clientFromDatabase.getId())
-                .param(ADDRESS_ID, anotherAddressFromDatabase.getId().toString()));
+                .header(REFERER_HEADER, REFERER_HEADER_VALUE + testClient.getId())
+                .param(ADDRESS_ID, anotherTestAddress.getId().toString()));
 
-        assertThat(clientDao.findById(clientFromDatabase.getId()).getAddress(),
-                Matchers.<Set<Address>>allOf(hasSize(1), hasItem(addressFromDatabase)));
+        assertThat(clientDao.findById(testClient.getId()).getAddress(),
+                Matchers.<Set<Address>>allOf(hasSize(1), hasItem(is(checkAddressFieldsEqualityWithClient(
+                        ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, ADDRESS_ZIP_CODE, testClient)))));
     }
 
     @Test
     public void shouldNotDeleteAddressFromDatabaseWhenRefererHeaderWasNull() throws Exception {
-        Client clientFromDatabase = saveClientToDatabase(testClient);
-        Address addressFromDatabase = saveAddressToDatabase(testAddress);
-        testClient.addAddress(testAddress);
-        testAddress.setClient(testClient);
+        saveClientWithAddress();
 
         tryToPerformActionButExceptionWasThrown(
                 get(REMOVE_ADDRESS)
                         .contentType(APPLICATION_FORM_URLENCODED_VALUE)
-                        .param(ADDRESS_ID, addressFromDatabase.getId().toString()), DANREM, addressService);
+                        .param(ADDRESS_ID, testAddress.getId().toString()), DANREM, addressService);
     }
 
     @Test
@@ -393,40 +342,47 @@ public class AddressControllerIntegrationTest {
 
     @Test
     public void shouldNotDeleteAddressFromDatabaseWhenItsMainAddress() throws Exception {
-        Client clientFromDatabase = saveClientToDatabase(testClient);
-        Address addressFromDatabase = saveAddressToDatabase(testAddress);
-        testClient.addAddress(testAddress);
-        testAddress.setClient(testClient);
+        saveClientWithAddress();
 
         tryToPerformActionButExceptionWasThrown(
                 get(REMOVE_ADDRESS)
                         .contentType(APPLICATION_FORM_URLENCODED_VALUE)
-                        .header(REFERER_HEADER, REFERER_HEADER_VALUE + clientFromDatabase.getId())
-                        .param(ADDRESS_ID, addressFromDatabase.getId().toString()), DAEM, addressService);
+                        .header(REFERER_HEADER, REFERER_HEADER_VALUE + testClient.getId())
+                        .param(ADDRESS_ID, testAddress.getId().toString()), DAEM, addressService);
         ;
     }
 
     @Test
     public void shouldDeleteAddressFromDatabaseWhenClientWasDeleted() throws Exception {
-        Client clientFromDatabase = saveClientToDatabase(testClient);
-        Address addressFromDatabase = saveAddressToDatabase(testAddress);
-        testClient.addAddress(testAddress);
-        testAddress.setClient(testClient);
+        saveClientWithAddress();
 
         mockMvc.perform(get(REMOVE_CLIENT)
                 .contentType(APPLICATION_FORM_URLENCODED_VALUE)
-                .param(CLIENT_ID, clientFromDatabase.getId().toString()));
+                .param(CLIENT_ID, testClient.getId().toString()));
 
         assertThat(addressDao.findById(testAddress.getId()), nullValue());
 
     }
 
-    private Client saveClientToDatabase(Client client) {
-        return clientDao.save(client);
+    private Address saveClientWithTwoAddresses() {
+        Address anotherTestAddress = new Address(
+                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
+        clientDao.save(testClient);
+        addressDao.save(testAddress);
+        addressDao.save(anotherTestAddress);
+
+        testClient.addAddress(testAddress);
+        testClient.addAddress(anotherTestAddress);
+        testAddress.setClient(testClient);
+        anotherTestAddress.setClient(testClient);
+
+        return anotherTestAddress;
     }
 
-    private Address saveAddressToDatabase(Address address) {
-        return addressDao.save(address);
+    private void saveClientWithAddress() {
+        testClient.addAddress(testAddress);
+        testAddress.setClient(testClient);
+        clientDao.save(testClient);
     }
 
     private String addressValueInMap(Address address) {
@@ -434,7 +390,7 @@ public class AddressControllerIntegrationTest {
     }
 
     private void tryToAddAddress(String streetName, String cityName, String zipCode, String fieldWithError) throws Exception {
-        Client clientFromDatabase = saveClientToDatabase(testClient);
+        Client clientFromDatabase = clientDao.save(testClient);
 
         mockMvc.perform(post(ADD_ADDRESS)
                 .contentType(APPLICATION_FORM_URLENCODED_VALUE)
@@ -449,8 +405,8 @@ public class AddressControllerIntegrationTest {
 
     private void tryToEditAddress(String streetName, String cityName, String zipCode, String fieldWithError)
             throws Exception {
-        Client clientFromDatabase = saveClientToDatabase(testClient);
-        Address addressFromDatabase = saveAddressToDatabase(testAddress);
+        Client clientFromDatabase = clientDao.save(testClient);
+        Address addressFromDatabase = addressDao.save(testAddress);
         testClient.addAddress(testAddress);
         testAddress.setClient(testClient);
 

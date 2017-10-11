@@ -40,7 +40,8 @@ public class MappingsTest {
                 arrayWithSize(quantityOfExtractedParams),
                 hasItemInArray(getParam),
                 hasItemInArray(anotherGetParam)));
-        assertThat(extractGetParamValues(urlWithGetParam, ONE_GET_PARAM), hasItemInArray(equalTo(getParam)));
+        assertThat(extractGetParamValues(urlWithGetParam, ONE_GET_PARAM),
+                hasItemInArray(equalTo(getParam)));
     }
 
     @Test
@@ -57,6 +58,7 @@ public class MappingsTest {
                 arrayWithSize(quantityOfExtractedParams),
                 hasItemInArray(param),
                 hasItemInArray(anotherParam)));
-        assertThat(extractGetParamValues(urlWithParam, ONE_GET_PARAM), hasItemInArray(equalTo(param)));
+        assertThat(extractGetParamValues(urlWithParam, ONE_GET_PARAM),
+                hasItemInArray(equalTo(param)));
     }
 }

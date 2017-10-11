@@ -1,6 +1,14 @@
 package com.company;
 
-import com.company.controller.*;
+import com.company.controller.AddressControllerIntegrationTest;
+import com.company.controller.AddressControllerTest;
+import com.company.controller.AddressRestControllerIntegrationTest;
+import com.company.controller.AddressRestControllerTest;
+import com.company.controller.ClientControllerIntegrationTest;
+import com.company.controller.ClientControllerTest;
+import com.company.controller.ClientRestControllerIntegrationTest;
+import com.company.controller.ClientRestControllerTest;
+import com.company.controller.HomeControllerTest;
 import com.company.dao.AbstractDaoTest;
 import com.company.model.ClientTest;
 import com.company.service.HibernateAddressServiceTest;

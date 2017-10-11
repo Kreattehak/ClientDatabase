@@ -21,6 +21,7 @@ import java.util.Collection;
 import static com.company.Constants.*;
 import static com.company.service.HibernateAddressServiceTest.checkAddressFieldsEquality;
 import static com.company.service.HibernateClientServiceTest.checkClientFieldsEquality;
+import static com.company.util.Mappings.ID_NOT_FOUND;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -169,7 +170,7 @@ public class AbstractDaoTest {
 
     @Test
     public void shouldNotFindClientOrAddressWithUnregisteredId() {
-        assertThat(clientDao.findById(0L), nullValue());
-        assertThat(addressDao.findById(0L), nullValue());
+        assertThat(clientDao.findById(ID_NOT_FOUND), nullValue());
+        assertThat(addressDao.findById(ID_NOT_FOUND), nullValue());
     }
 }
