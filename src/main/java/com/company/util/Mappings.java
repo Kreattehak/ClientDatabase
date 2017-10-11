@@ -46,6 +46,7 @@ public class Mappings {
 
     public static final String RESOLVER_PREFIX = "/WEB-INF/views/";
     public static final String RESOLVER_SUFFIX = ".jsp";
+    public static final String FAVICON = "/favicon.ico";
 
     public static final String DEFAULT_COMPONENT_SCAN_PACKAGE = "com.company";
     public static final String ADDRESS_SERVICE_LOGGER_NAME =

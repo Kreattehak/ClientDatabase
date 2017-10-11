@@ -22,9 +22,9 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         LoggerInjectorTest.class,
-        WebDataResolverAndCreatorTest.class,
         MappingsTest.class,
 //        FastTests.class,
+        WebDataResolverAndCreatorTest.class,
         ClientTest.class,
         AbstractDaoTest.class,
         HibernateClientServiceTest.class,

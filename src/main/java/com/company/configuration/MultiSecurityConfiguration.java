@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,11 +28,10 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String[] PERMITTED_URLS = {
             REST_AUTHORIZATION + ANY_SUBPATH, REST_API_PREFIX + REST_GET_ALL_CLIENTS,
-            LOGIN_PAGE, SLASH, TABLE_OF_CLIENTS, RESOURCES + ANY_SUBPATH
+            SLASH, TABLE_OF_CLIENTS, FAVICON
     };
 
     private static final int BCRYPT_STRENGTH = 12;
-    private static final String AUTHORIZATION = "/auth";
 
     @Autowired
     private SimpleUrlAuthenticationFailureHandler authFailureHandler;
@@ -80,7 +80,7 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
                 .authorizeRequests()
-                .antMatchers(PERMITTED_URLS).permitAll()
+                .antMatchers(LOGIN_PAGE).permitAll()
                 .antMatchers(OPTIONS, ANY_SUBPATH).permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
@@ -96,6 +96,13 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         // disable page caching
         httpSecurity.headers().cacheControl();
+    }
+
+    @Override
+    public void configure(WebSecurity webSecurity) throws Exception {
+        webSecurity
+                .ignoring()
+                .antMatchers(PERMITTED_URLS);
     }
 
     @Bean

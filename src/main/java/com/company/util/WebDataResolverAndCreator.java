@@ -51,7 +51,6 @@ public class WebDataResolverAndCreator {
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
                     if (("currentUser").equals(cookie.getName())) {//TODO:CHANGE
-                        System.out.println(jwtTokenUtil);
                         userName = jwtTokenUtil.getUsernameFromToken(cookie.getValue());
                         break;
                     }

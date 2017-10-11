@@ -55,9 +55,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         String username = jwtTokenUtil.getUsernameFromToken(authToken);
 
-        logger.info("Checking authentication for user " + username);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            logger.info("Checking authentication for user " + username + " " + request.getRequestURL());
 
             // It is not compelling necessary to load the use details from the database. You could also store the information
             // in the token and read it from it. It's up to you ;)
@@ -68,7 +68,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                logger.info("Authenticated user " + username + ", setting security context");
+                logger.info("Authenticated user " + username + ", setting security context"  + " " + request.getRequestURL());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

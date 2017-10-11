@@ -1,7 +1,6 @@
 package com.company.configuration.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mobile.device.Device;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,8 +31,6 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
         // Add a session cookie
         Cookie sessionCookie = new Cookie("currentUser", token);
         response.addCookie(sessionCookie);
-
-        System.out.println(sessionCookie.getValue());
 
         clearAuthenticationAttributes(request);
 
