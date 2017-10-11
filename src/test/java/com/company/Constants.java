@@ -44,4 +44,8 @@ public class Constants {
 
     public static final String STRING_TO_TEST_EQUALITY = "1a2b3c4d5e6";
 
+    public static final String TEST_JWT_TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzb21lVXNlciIsImF1ZGllbm" +
+            "NlIjoidW5rbm93biIsImNyZWF0ZWQiOjE1MDc3NDU3NDYyMzksImV4cCI6MTUwODM1MDU0Nn0.kuV3N4oxhzN8r5Yga" +
+            "_eC0idDL78Uj4uRhkFoCBBa1VZfTAO6Ub5kxMWxB--aSs6EMm4GEOYqPccj5SqKnD9aqQ";
+
 }

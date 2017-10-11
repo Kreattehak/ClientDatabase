@@ -5,6 +5,7 @@ import com.company.configuration.AppTestConfig;
 import com.company.dao.ClientDao;
 import com.company.model.Client;
 import com.company.util.ProcessUserRequestException;
+import com.company.util.WebDataResolverAndCreator;
 import org.hamcrest.Matcher;
 import org.hamcrest.number.OrderingComparison;
 import org.junit.After;
@@ -56,6 +57,8 @@ public class HibernateClientServiceTest {
     private ClientDao clientDaoMock;
     @Mock
     private HttpServletRequest requestMock;
+    @Mock
+    private WebDataResolverAndCreator webDataResolverAndCreatorMock;
 
     @InjectMocks
     private HibernateClientService clientService;
@@ -100,10 +103,10 @@ public class HibernateClientServiceTest {
     public void shouldFindClientByIdAndCleanUnnecessaryData() {
         when(clientDaoMock.findById(anyLong())).thenReturn(testClient);
 
-        assertThat(clientService.findClientByIdAndCleanUnnecessaryData(
-                anyLong(), requestMock), cleanClient());
+        clientService.findClientByIdAndCleanUnnecessaryData(anyLong(), requestMock);
 
         verify(clientDaoMock).findById(anyLong());
+        verify(webDataResolverAndCreatorMock).cleanClientData(any(Client.class));
         verifyNoMoreInteractions(clientDaoMock);
     }
 

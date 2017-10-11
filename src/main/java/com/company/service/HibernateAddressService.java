@@ -5,6 +5,7 @@ import com.company.model.Address;
 import com.company.model.Client;
 import com.company.util.InjectLogger;
 import com.company.util.ProcessUserRequestException;
+import com.company.util.WebDataResolverAndCreator;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,8 +24,6 @@ import java.util.stream.Collectors;
 
 import static com.company.util.Mappings.ADDRESS_SERVICE_LOGGER_NAME;
 import static com.company.util.Mappings.ID_NOT_FOUND;
-import static com.company.util.WebDataResolverAndCreator.fetchClientIdFromRequest;
-import static com.company.util.WebDataResolverAndCreator.getUserData;
 
 @Service
 @Transactional(readOnly = true)
@@ -48,14 +47,17 @@ public class HibernateAddressService implements AddressService {
 
     private final AddressDao addressDao;
     private final ClientService clientService;
+    private final WebDataResolverAndCreator webDataResolverAndCreator;
 
     private final Collector<Address, ?, Map<Long, String>> collectAddressesToMapWithLocation =
             Collectors.toMap(Address::getId, (address) -> address.getCityName() + ", " + address.getStreetName());
 
     @Autowired
-    public HibernateAddressService(AddressDao addressDao, ClientService clientService) {
+    public HibernateAddressService(AddressDao addressDao, ClientService clientService,
+                                   WebDataResolverAndCreator webDataResolverAndCreator) {
         this.addressDao = addressDao;
         this.clientService = clientService;
+        this.webDataResolverAndCreator = webDataResolverAndCreator;
     }
 
     @Override
@@ -64,7 +66,8 @@ public class HibernateAddressService implements AddressService {
         boolean isRequestProper = (addressFromDatabase != null);
         if (!isRequestProper) {
             logger.warn("{} tried to get address with id {}, but that address doesn't exist. "
-                    + "This request was handmade.", getUserData(request), addressId);
+                            + "This request was handmade.",
+                    webDataResolverAndCreator.getUserData(request), addressId);
             throw new ProcessUserRequestException(findAddressExceptionMessage);
         }
 
@@ -119,7 +122,7 @@ public class HibernateAddressService implements AddressService {
         if (!isRequestProper) {
             logger.warn("{} tried to add address for client with id {}. " +
                             "This request was handmade, with data: clientId= {}!",
-                    getUserData(request), clientId, clientId);
+                    webDataResolverAndCreator.getUserData(request), clientId, clientId);
             throw new ProcessUserRequestException(saveAddressExceptionMessage);
         }
 
@@ -139,9 +142,10 @@ public class HibernateAddressService implements AddressService {
     @Override
     @Transactional(readOnly = false)
     public void deleteAddress(Long addressId, HttpServletRequest request) {
-        Long clientId = fetchClientIdFromRequest(request);
+        Long clientId = webDataResolverAndCreator.fetchClientIdFromRequest(request);
         if (clientId.equals(ID_NOT_FOUND)) {
-            logger.warn(getUserData(request) + " tried to remove address, but request doesn't have a referer header!");
+            logger.warn(webDataResolverAndCreator.getUserData(request)
+                    + " tried to remove address, but request doesn't have a referer header!");
             throw new ProcessUserRequestException(deleteAddressNoRefererExceptionMessage);
         }
         Client clientFromDatabase = clientService.findClientById(clientId, request);
@@ -149,7 +153,7 @@ public class HibernateAddressService implements AddressService {
         if (!isRequestProper) {
             logger.warn("{} tried to delete address for client with id {}. "
                             + "This request was handmade, with data: addressId= {}, clientId= {}!",
-                    getUserData(request), clientId, addressId, clientId);
+                    webDataResolverAndCreator.getUserData(request), clientId, addressId, clientId);
             throw new ProcessUserRequestException(deleteAddressExceptionMessage);
         }
         Address addressToBeRemoved = findAddressById(addressId, request);
@@ -172,7 +176,7 @@ public class HibernateAddressService implements AddressService {
         boolean isRequestProper = (addressId != null);
         if (!isRequestProper) {
             logger.warn("{} tried to address. This request was handmade,with data: {}",
-                    getUserData(request), editedAddress);
+                    webDataResolverAndCreator.getUserData(request), editedAddress);
             throw new ProcessUserRequestException(updateAddressExceptionMessage);
         }
         Address addressFromDatabase = findAddressById(addressId, request);
@@ -199,7 +203,7 @@ public class HibernateAddressService implements AddressService {
         if (!isRequestProper) {
             logger.warn("{} tried to edit main address for client with id {}. "
                             + "This request was handmade, with data: addressId= {}, clientId= {}!",
-                    getUserData(request), clientId, addressId, clientId);
+                    webDataResolverAndCreator.getUserData(request), clientId, addressId, clientId);
             throw new ProcessUserRequestException(updateMainAddressExceptionMessage);
         }
         Address addressFromDatabase = findAddressById(addressId, request);

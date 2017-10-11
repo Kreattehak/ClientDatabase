@@ -6,6 +6,7 @@ import com.company.dao.AddressDao;
 import com.company.model.Address;
 import com.company.model.Client;
 import com.company.util.ProcessUserRequestException;
+import com.company.util.WebDataResolverAndCreator;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -60,6 +61,8 @@ public class HibernateAddressServiceTest {
     private ClientService clientService;
     @Mock
     private HttpServletRequest requestMock;
+    @Mock
+    private WebDataResolverAndCreator webDataResolverAndCreatorMock;
 
     @InjectMocks
     private HibernateAddressService addressService;
@@ -265,6 +268,8 @@ public class HibernateAddressServiceTest {
         ReflectionTestUtils.setField(addressService, DANREM, STRING_TO_TEST_EQUALITY);
 
         when(requestMock.getHeader(REFERER_HEADER)).thenReturn(null);
+        when(webDataResolverAndCreatorMock.fetchClientIdFromRequest(requestMock))
+                .thenReturn(ID_NOT_FOUND);
 
         expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);

@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -38,8 +39,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String authToken = request.getHeader(this.tokenHeader);
 
-        if(authToken != null && authToken.startsWith("Bearer ")) {
+        if (authToken != null && authToken.startsWith("Bearer ")) {
             authToken = authToken.substring(7);
+        } else {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (("currentUser").equals(cookie.getName())) {//TODO:CHANGE
+                        authToken = cookie.getValue();
+                        break;
+                    }
+                }
+            }
         }
 
         String username = jwtTokenUtil.getUsernameFromToken(authToken);
@@ -61,7 +72,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-
         chain.doFilter(request, response);
     }
 }

@@ -1,5 +1,7 @@
 package com.company.util;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,7 +10,7 @@ public class Mappings {
     public static final String REDIRECT = "redirect:";
     public static final String SLASH = "/";
     public static final String ANY_SUBPATH = "/**";
-
+    public static final String RESOURCES = "/resources";
     public static final String ERROR_PAGE = "/error";
 
     private static final String ADMIN_PREFIX = "/admin";
@@ -17,7 +19,7 @@ public class Mappings {
     public static final String REST_AUTHORIZATION = REST_API_PREFIX + "/auth";
     public static final String REST_AUTHORIZATION_REFRESH = REST_API_PREFIX + "/refresh";
 
-    public static final String LOGIN_PAGE = ADMIN_PREFIX + "/login";
+    public static final String LOGIN_PAGE = "/login";
     public static final String TABLE_OF_CLIENTS = "/clientsTable";
     public static final String ADD_CLIENT = ADMIN_PREFIX + "/addClient";
     public static final String REMOVE_CLIENT = ADMIN_PREFIX + "/removeClient";
@@ -62,6 +64,15 @@ public class Mappings {
 
     public static final String ERROR_MESSAGE = "errorMessage";
     public static final String HTTP_STATUS = "httpStatus";
+
+    public static final String LOGGED_USER_HEADER = "Logged-User";
+
+//    public static String cookieName;
+//
+//    @Value("${cookie.name}")
+//    public void setCookieName(String name) {
+//        cookieName = name;
+//    }
 
 
     private Mappings() {}

@@ -26,6 +26,7 @@ import static com.company.util.Mappings.ANY_SUBPATH;
 import static com.company.util.Mappings.DEFAULT_ENCODING_VALUE;
 import static com.company.util.Mappings.RESOLVER_PREFIX;
 import static com.company.util.Mappings.RESOLVER_SUFFIX;
+import static com.company.util.Mappings.RESOURCES;
 import static com.company.util.Mappings.SLASH;
 
 @Configuration
@@ -37,7 +38,6 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
     private static final int LOCALE_COOKIE_MAX_AGE = 4800;
     private static final String I18_INTERCEPTOR_NAME = "language";
     private static final String I18_MESSAGE_SOURCE_BASENAME = "languages/messages";
-    private static final String RESOURCES = "/resources";
 
     @Bean
     public InternalResourceViewResolver viewResolver() {
@@ -75,7 +75,8 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(RESOURCES + ANY_SUBPATH).addResourceLocations(RESOURCES + SLASH);
+        registry.addResourceHandler(RESOURCES + ANY_SUBPATH)
+                .addResourceLocations(RESOURCES + SLASH);
     }
 
     @Bean

@@ -12,7 +12,7 @@ import static com.company.util.Mappings.DEFAULT_COMPONENT_SCAN_PACKAGE;
 
 @Configuration
 @ComponentScan(DEFAULT_COMPONENT_SCAN_PACKAGE)
-@Import({HibernateConfiguration.class, SpringConfiguration.class, SecurityConfiguration.class})
+@Import({HibernateConfiguration.class, SpringConfiguration.class, MultiSecurityConfiguration.class})
 @PropertySource({APP_PROPERTIES_LOCATION, EN_MESSAGES_LOCATION, PL_MESSAGES_LOCATION})
 public class AppConfiguration {
     static final String APP_PROPERTIES_LOCATION = "classpath:app.properties";

@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.company.util.Mappings.CLIENT_SERVICE_LOGGER_NAME;
-import static com.company.util.WebDataResolverAndCreator.getUserData;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,10 +32,12 @@ public class HibernateClientService implements ClientService {
     private static Logger logger;
 
     private final ClientDao clientDao;
+    private final WebDataResolverAndCreator webDataResolverAndCreator;
 
     @Autowired
-    public HibernateClientService(ClientDao clientDao) {
+    public HibernateClientService(ClientDao clientDao, WebDataResolverAndCreator webDataResolverAndCreator) {
         this.clientDao = clientDao;
+        this.webDataResolverAndCreator = webDataResolverAndCreator;
     }
 
     @Override
@@ -45,7 +46,8 @@ public class HibernateClientService implements ClientService {
         boolean isRequestProper = (clientFromDatabase != null);
         if (!isRequestProper) {
             logger.warn("{} tried to get client with id {}, but that client doesn't exist. "
-                    + "This request was handmade.", getUserData(request), clientId);
+                            + "This request was handmade.",
+                    webDataResolverAndCreator.getUserData(request), clientId);
             throw new ProcessUserRequestException(findClientExceptionMessage);
         }
 
@@ -55,7 +57,7 @@ public class HibernateClientService implements ClientService {
     @Override
     public Client findClientByIdAndCleanUnnecessaryData(Long clientId, HttpServletRequest request) {
         Client clientFromDatabase = findClientById(clientId, request);
-        WebDataResolverAndCreator.cleanClientData(clientFromDatabase);
+        webDataResolverAndCreator.cleanClientData(clientFromDatabase);
 
         return clientFromDatabase;
     }
@@ -109,7 +111,7 @@ public class HibernateClientService implements ClientService {
         boolean isRequestProper = (clientId != null);
         if (!isRequestProper) {
             logger.warn("{} tried to update client. This request was handmade, with data: {}",
-                    getUserData(request), editedClient);
+                    webDataResolverAndCreator.getUserData(request), editedClient);
             throw new ProcessUserRequestException(updateClientExceptionMessage);
         }
         Client clientFromDatabase = findClientById(clientId, request);
