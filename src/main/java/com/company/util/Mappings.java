@@ -68,14 +68,6 @@ public class Mappings {
 
     public static final String LOGGED_USER_HEADER = "Logged-User";
 
-//    public static String cookieName;
-//
-//    @Value("${cookie.name}")
-//    public void setCookieName(String name) {
-//        cookieName = name;
-//    }
-
-
     private Mappings() {}
 
     public static String extractViewName(String viewName) {
