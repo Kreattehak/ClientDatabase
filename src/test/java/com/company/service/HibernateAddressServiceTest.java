@@ -91,6 +91,7 @@ public class HibernateAddressServiceTest {
         addressService = null;
         testAddress = null;
         testClient = null;
+
     }
 
     @Test

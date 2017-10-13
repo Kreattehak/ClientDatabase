@@ -2,11 +2,8 @@ package com.company.util;
 
 import com.company.configuration.AppConfiguration;
 import com.company.configuration.AppTestConfig;
-import com.company.configuration.security.JwtUser;
-import com.company.configuration.security.JwtUserFactory;
 import com.company.model.Address;
 import com.company.model.Client;
-import com.company.model.security.User;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,6 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import static com.company.Constants.*;
+import static com.company.util.Mappings.COOKIE_NAME;
 import static com.company.util.Mappings.LOGGED_USER_HEADER;
 import static com.company.util.Mappings.REFERER_HEADER;
 import static com.company.util.WebDataResolverAndCreator.ALERT_MESSAGE_UNRECOGNIZED_USER;
@@ -87,10 +84,10 @@ public class WebDataResolverAndCreatorTest {
         verifyNoMoreInteractions(requestMock);
     }
 
-    @Test//TODO:CHANGE THIS TEST
+    @Test
     public void shouldReturnLoggedUserNameFromCookie() throws Exception {
         String userName = "someUser";
-        Cookie cookie = new Cookie("currentUser", TEST_JWT_TOKEN);
+        Cookie cookie = new Cookie(COOKIE_NAME, TEST_JWT_TOKEN);
         when(requestMock.getHeader(LOGGED_USER_HEADER)).thenReturn(null);
         when(requestMock.getCookies()).thenReturn(new Cookie[]{cookie});
 

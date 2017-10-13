@@ -48,6 +48,7 @@ public class HibernateClientService implements ClientService {
             logger.warn("{} tried to get client with id {}, but that client doesn't exist. "
                             + "This request was handmade.",
                     webDataResolverAndCreator.getUserData(request), clientId);
+            System.out.println(findClientExceptionMessage);
             throw new ProcessUserRequestException(findClientExceptionMessage);
         }
 
@@ -77,8 +78,9 @@ public class HibernateClientService implements ClientService {
     public Client saveClient(Client client, HttpServletRequest request) {
         Client clientStoredInDatabase = clientDao.save(client);
 
-        logger.info("New client added " + client.getId());
-        logger.trace(webDataResolverAndCreator.getUserData(request) + " added a new client " + client);
+        logger.info("New client added {}.", client.getId());
+        logger.trace("{} added a new client firstName={}, lastName={}.",
+                webDataResolverAndCreator.getUserData(request), client.getFirstName(), client.getLastName());
 
         return clientStoredInDatabase;
     }
@@ -87,7 +89,7 @@ public class HibernateClientService implements ClientService {
     @Override
     @Transactional(readOnly = false)
     public void deleteClient(Long clientId, HttpServletRequest request) {
-        Client clientFromDatabase = null;
+        Client clientFromDatabase;
         try {
             clientFromDatabase = findClientById(clientId, request);
         } catch (ProcessUserRequestException cause) {
@@ -98,8 +100,8 @@ public class HibernateClientService implements ClientService {
 
         clientDao.delete(clientFromDatabase);
 
-        logger.info("Client with id " + clientId + " was deleted.");
-        logger.trace("Client {} {} with id {} was deleted.",
+        logger.info("Client with id {} was deleted.", clientId);
+        logger.trace(webDataResolverAndCreator.getUserData(request) + " deleted client {} {} with id {}.",
                 clientFromDatabase.getFirstName(), clientFromDatabase.getLastName(), clientFromDatabase.getId());
     }
 
@@ -109,21 +111,22 @@ public class HibernateClientService implements ClientService {
         Long clientId = editedClient.getId();
         boolean isRequestProper = (clientId != null);
         if (!isRequestProper) {
-            logger.warn("{} tried to update client. This request was handmade, with data: {}",
+            logger.warn("{} tried to update client. This request was handmade, with data: {}.",
                     webDataResolverAndCreator.getUserData(request), editedClient);
             throw new ProcessUserRequestException(updateClientExceptionMessage);
         }
         Client clientFromDatabase = findClientById(clientId, request);
 
-        String oldClientData = "Client " + clientFromDatabase.getFirstName() + " "
+        String oldClientData = "client " + clientFromDatabase.getFirstName() + " "
                 + clientFromDatabase.getLastName() + " with id " + clientFromDatabase.getId();
         clientFromDatabase.setFirstName(editedClient.getFirstName());
         clientFromDatabase.setLastName(editedClient.getLastName());
 
-        logger.info("Client with id {} was edited with data firstName= {}, lastName= {}",
+        logger.info("Client with id {} was edited with data firstName{}, lastName={}.",
                 clientFromDatabase.getId(), clientFromDatabase.getFirstName(), clientFromDatabase.getLastName());
-        logger.trace("{} was edited with data firstName= {}, lastName= {}",
-                oldClientData, clientFromDatabase.getFirstName(), clientFromDatabase.getLastName());
+        logger.trace("{} edited {} with data firstName={}, lastName={}.",
+                webDataResolverAndCreator.getUserData(request), oldClientData,
+                clientFromDatabase.getFirstName(), clientFromDatabase.getLastName());
 
         return clientDao.update(clientFromDatabase);
     }

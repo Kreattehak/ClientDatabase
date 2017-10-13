@@ -3,7 +3,16 @@ package com.company.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -16,10 +25,12 @@ public class Client extends BaseEntity implements Serializable {
 
     @Column(name = "firstName", length = 50)
     @Length(min = 3, message = "{validation.minLength}")
+    @NotNull
     private String firstName;
 
     @Column(name = "lastName", length = 50)
     @Length(min = 3, message = "{validation.minLength}")
+    @NotNull
     private String lastName;
 
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -69,6 +80,7 @@ public class Client extends BaseEntity implements Serializable {
         this.address = adress;
     }
 
+    //TODO: Should addAddress also set client for address?
     public void addAddress(Address address) {
         if (this.address.isEmpty()) {
             this.mainAddress = address;

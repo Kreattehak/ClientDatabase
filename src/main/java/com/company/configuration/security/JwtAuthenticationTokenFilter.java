@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.company.util.Mappings.COOKIE_NAME;
 import static com.company.util.Mappings.LOGIN_LOGGER_NAME;
 
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
@@ -45,7 +46,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if (("currentUser").equals(cookie.getName())) {//TODO:CHANGE
+                    if ((COOKIE_NAME).equals(cookie.getName())) {
                         authToken = cookie.getValue();
                         break;
                     }
@@ -68,7 +69,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                logger.info("Authenticated user " + username + ", setting security context"  + " " + request.getRequestURL());
+                logger.info("Authenticated user " + username + ", setting security context" + " " + request.getRequestURL());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

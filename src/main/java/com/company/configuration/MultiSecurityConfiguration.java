@@ -88,7 +88,7 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .successHandler(authSuccessHandler)
                 .and()
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout")
-                .deleteCookies("currentUser", "JSESSIONID").invalidateHttpSession(true);
+                .deleteCookies(COOKIE_NAME, "JSESSIONID").invalidateHttpSession(true);
 
         // Custom JWT based security filter
         httpSecurity.addFilterBefore(

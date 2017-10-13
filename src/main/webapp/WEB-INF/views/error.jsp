@@ -3,7 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <link rel="stylesheet" href="<c:url value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>">
+    <link rel="stylesheet"
+          href="<c:url value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/style.css"/>">
     <title><spring:message code="errorPage.title"/></title>
 </head>
@@ -11,8 +12,8 @@
 
 <div class="container">
     <div class="row">
-        <div class="jumbotron col-lg-10 col-lg-offset-1">
-            <h1>BAD REQUEST - ${httpStatus}</h1>
+        <div class="col-lg-10 col-lg-offset-1 alert alert-info">
+            <h2>UNPROCESSABLE ENTITY - 422</h2>
         </div>
         <div class="col-lg-10 col-lg-offset-1 alert alert-danger" role="alert">
             <strong>ERROR:</strong>

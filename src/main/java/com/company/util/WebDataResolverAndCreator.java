@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import static com.company.util.Mappings.COOKIE_NAME;
 import static com.company.util.Mappings.ID_NOT_FOUND;
 import static com.company.util.Mappings.LOGGED_USER_HEADER;
 import static com.company.util.Mappings.ONE_GET_PARAM;
@@ -46,11 +47,10 @@ public class WebDataResolverAndCreator {
     String getLoggedUserName(HttpServletRequest request) {
         String userName = request.getHeader(LOGGED_USER_HEADER);
         if (userName == null) {
-            String authToken = null;
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
-                    if (("currentUser").equals(cookie.getName())) {//TODO:CHANGE
+                    if ((COOKIE_NAME).equals(cookie.getName())) {
                         userName = jwtTokenUtil.getUsernameFromToken(cookie.getValue());
                         break;
                     }

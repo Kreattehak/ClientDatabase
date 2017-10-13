@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static com.company.util.Mappings.REST_AUTHORIZATION;
 import static com.company.util.Mappings.REST_AUTHORIZATION_REFRESH;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestController
 public class AuthenticationRestController {
@@ -45,13 +46,17 @@ public class AuthenticationRestController {
             @RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
 
         // Perform the security
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(),
-                        authenticationRequest.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            final Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationRequest.getUsername(),
+                            authenticationRequest.getPassword()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (AuthenticationException e) {
+            return new ResponseEntity<>("Username or password is incorrect", UNAUTHORIZED);
+        }
 
         // Reload password post-security so we can generate token
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());

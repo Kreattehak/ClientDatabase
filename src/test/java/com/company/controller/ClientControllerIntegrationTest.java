@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -237,7 +236,6 @@ public class ClientControllerIntegrationTest {
                 .andExpect(model().attributeHasFieldErrors(NEW_CLIENT, whatToValid));
     }
 
-    //TODO: REWORK AFTER HTTP STATUS CHANGE
     private void tryToPerformActionButExceptionWasThrown(MockHttpServletRequestBuilder builder,
                                                          String message, Object target) throws Exception {
         ReflectionTestUtils.setField(target, message, STRING_TO_TEST_EQUALITY);
@@ -245,7 +243,6 @@ public class ClientControllerIntegrationTest {
         mockMvc.perform(builder)
                 .andExpect(status().is4xxClientError())
                 .andExpect(view().name(extractViewName(ERROR_PAGE)))
-                .andExpect(model().attribute(ERROR_MESSAGE, STRING_TO_TEST_EQUALITY))
-                .andExpect(model().attribute(HTTP_STATUS, HttpStatus.UNPROCESSABLE_ENTITY.value()));
+                .andExpect(model().attribute(ERROR_MESSAGE, STRING_TO_TEST_EQUALITY));
     }
 }

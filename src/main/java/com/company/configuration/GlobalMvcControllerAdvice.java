@@ -2,8 +2,8 @@ package com.company.configuration;
 
 import com.company.controller.AddressController;
 import com.company.controller.ClientController;
-import com.company.util.SpringAndHibernateValidator;
 import com.company.util.ProcessUserRequestException;
+import com.company.util.SpringAndHibernateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
@@ -16,10 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import static com.company.util.Mappings.ERROR_MESSAGE;
 import static com.company.util.Mappings.ERROR_PAGE;
-import static com.company.util.Mappings.HTTP_STATUS;
 import static com.company.util.Mappings.extractViewName;
 
-@ControllerAdvice(assignableTypes = { AddressController.class, ClientController.class })
+@ControllerAdvice(assignableTypes = {AddressController.class, ClientController.class})
 public class GlobalMvcControllerAdvice {
 
     private SpringAndHibernateValidator sahValidator;
@@ -34,12 +33,10 @@ public class GlobalMvcControllerAdvice {
         binder.setValidator(sahValidator);
     }
 
-    //TODO: REQUEST
     @ExceptionHandler(ProcessUserRequestException.class)
     public String conflict(Model model, HttpServletResponse response, Exception e) {
         response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
         model.addAttribute(ERROR_MESSAGE, e.getMessage());
-        model.addAttribute(HTTP_STATUS, HttpStatus.UNPROCESSABLE_ENTITY.value());
         return extractViewName(ERROR_PAGE);
     }
 }

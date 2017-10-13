@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -241,16 +240,12 @@ public class ClientRestControllerIntegrationTest {
                 .andExpect(jsonPath("$", equalTo(ID_NOT_FOUND.intValue())));
     }
 
-    //TODO: REWORK AFTER HTTP STATUS CHANGE
     private void tryToPerformActionButExceptionWasThrown(
             MockHttpServletRequestBuilder builder, String message, Object target) throws Exception {
         ReflectionTestUtils.setField(target, message, STRING_TO_TEST_EQUALITY);
 
         mockMvc.perform(builder)
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.errorMessage", equalTo(STRING_TO_TEST_EQUALITY)))
-                .andExpect(jsonPath("$.httpStatus",
-                        equalTo(String.valueOf(HttpStatus.UNPROCESSABLE_ENTITY.value()))));
+                .andExpect(jsonPath("$.errorMessage", equalTo(STRING_TO_TEST_EQUALITY)));
     }
-
 }

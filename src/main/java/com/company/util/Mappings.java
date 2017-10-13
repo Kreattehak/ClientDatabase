@@ -1,7 +1,5 @@
 package com.company.util;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,8 +68,10 @@ public class Mappings {
     public static final String HTTP_STATUS = "httpStatus";
 
     public static final String LOGGED_USER_HEADER = "Logged-User";
+    public static final String COOKIE_NAME = "currentUser";
 
-    private Mappings() {}
+    private Mappings() {
+    }
 
     public static String extractViewName(String viewName) {
         String[] properViewName = viewName.split("/");
@@ -83,14 +83,14 @@ public class Mappings {
         Matcher m = p.matcher(url);
         String params[] = new String[quantityOfParams];
         int i = 0;
-        while(m.find()) {
+        while (m.find()) {
             params[i] = m.group(3);
             i++;
         }
         //when request was made from angular front end app
-        if(i == 0) {
+        if (i == 0) {
             m.usePattern(Pattern.compile("(/\\w+)(/)(\\d+)"));
-            while(m.find()) {
+            while (m.find()) {
                 params[i] = m.group(3);
                 i++;
             }

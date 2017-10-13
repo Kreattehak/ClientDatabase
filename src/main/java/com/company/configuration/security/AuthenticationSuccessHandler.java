@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.company.util.Mappings.COOKIE_NAME;
+
 @Component
 public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
@@ -29,7 +31,7 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
         final String token = jwtTokenUtil.generateToken(userDetails, null);//TODO: Device
 
         // Add a session cookie
-        Cookie sessionCookie = new Cookie("currentUser", token);
+        Cookie sessionCookie = new Cookie(COOKIE_NAME, token);
         response.addCookie(sessionCookie);
 
         clearAuthenticationAttributes(request);

@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -24,14 +25,17 @@ public class Address extends BaseEntity implements Serializable {
 
     @Column(name = "streetName", length = 50, nullable = false)
     @Length(min = 3, message = "{validation.minLength}")
+    @NotNull
     private String streetName;
 
     @Column(name = "cityName", length = 50, nullable = false)
     @Length(min = 3, message = "{validation.minLength}")
+    @NotNull
     private String cityName;
 
     @Column(name = "zipCode", length = 6, nullable = false)
     @Pattern(regexp = "\\d{2}-\\d{3}", message = "{validation.zipCodePattern}")
+    @NotNull
     private String zipCode;
 
     public Address() {

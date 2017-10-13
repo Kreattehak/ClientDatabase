@@ -121,8 +121,8 @@ public class HibernateAddressService implements AddressService {
         boolean isRequestProper = (addresses <= 0);
         if (!isRequestProper) {
             logger.warn("{} tried to add address for client with id {}. " +
-                            "This request was handmade, with data: clientId= {}!",
-                    webDataResolverAndCreator.getUserData(request), clientId, clientId);
+                            "This request was handmade, with data: clientId= {}, {}.",
+                    webDataResolverAndCreator.getUserData(request), clientId, newAddress);
             throw new ProcessUserRequestException(saveAddressExceptionMessage);
         }
 
@@ -130,11 +130,12 @@ public class HibernateAddressService implements AddressService {
         clientFromDatabase.addAddress(newAddress);
         newAddress.setClient(clientFromDatabase);
 
-        logger.info("New address with id {} was added for client with id {}",
+        logger.info("New address with id {} was added for client with id {}.",
                 addressStoredInDatabase.getId(), clientId);
-        logger.trace("New {} was added for Client {} {} with id {}",
-                addressStoredInDatabase, clientFromDatabase.getFirstName(),
-                clientFromDatabase.getLastName(), clientFromDatabase.getId());
+        logger.trace("{} added {} for client {} {} with id {}.",
+                webDataResolverAndCreator.getUserData(request), addressStoredInDatabase,
+                clientFromDatabase.getFirstName(), clientFromDatabase.getLastName(),
+                clientFromDatabase.getId());
 
         return addressStoredInDatabase;
     }
@@ -145,14 +146,14 @@ public class HibernateAddressService implements AddressService {
         Long clientId = webDataResolverAndCreator.fetchClientIdFromRequest(request);
         if (clientId.equals(ID_NOT_FOUND)) {
             logger.warn(webDataResolverAndCreator.getUserData(request)
-                    + " tried to remove address, but request doesn't have a referer header!");
+                    + " tried to remove address, but request doesn't have a referer header.");
             throw new ProcessUserRequestException(deleteAddressNoRefererExceptionMessage);
         }
         Client clientFromDatabase = clientService.findClientById(clientId, request);
         boolean isRequestProper = !Objects.equals(clientFromDatabase.getMainAddress().getId(), addressId);
         if (!isRequestProper) {
             logger.warn("{} tried to delete address for client with id {}. "
-                            + "This request was handmade, with data: addressId= {}, clientId= {}!",
+                            + "This request was handmade, with data: addressId= {}, clientId= {}.",
                     webDataResolverAndCreator.getUserData(request), clientId, addressId, clientId);
             throw new ProcessUserRequestException(deleteAddressExceptionMessage);
         }
@@ -162,10 +163,10 @@ public class HibernateAddressService implements AddressService {
         addressToBeRemoved.setClient(null);
         addressDao.delete(addressToBeRemoved);
 
-        logger.info("Address with id " + addressId + " was deleted from client with id " + clientId);
-        logger.trace(addressToBeRemoved + " was deleted from " + "Client "
-                + clientFromDatabase.getFirstName() + " " + clientFromDatabase.getLastName()
-                + " with id " + clientFromDatabase.getId());
+        logger.info("Address with id {} was deleted from client with id {}.", addressId, clientId);
+        logger.trace("{} deleted {} from client {} {} with id {}.",
+                webDataResolverAndCreator.getUserData(request), addressToBeRemoved,
+                clientFromDatabase.getFirstName(), clientFromDatabase.getLastName(), clientFromDatabase.getId());
     }
 
     @Override
@@ -174,7 +175,7 @@ public class HibernateAddressService implements AddressService {
         Long addressId = editedAddress.getId();
         boolean isRequestProper = (addressId != null);
         if (!isRequestProper) {
-            logger.warn("{} tried to update address. This request was handmade,with data: {}",
+            logger.warn("{} tried to update address. This request was handmade, with data: {}.",
                     webDataResolverAndCreator.getUserData(request), editedAddress);
             throw new ProcessUserRequestException(updateAddressExceptionMessage);
         }
@@ -182,7 +183,7 @@ public class HibernateAddressService implements AddressService {
         isRequestProper = (checkIfAddressAlreadyExists(addressFromDatabase.getClient(),
                 editedAddress) <= 0);
         if (!isRequestProper) {
-            logger.warn("{} tried to update address with address data that already exists {}",
+            logger.warn("{} tried to update address with address data that already exists {}.",
                     webDataResolverAndCreator.getUserData(request), editedAddress);
             throw new ProcessUserRequestException(updateAddressExceptionMessage);
         }
@@ -192,14 +193,14 @@ public class HibernateAddressService implements AddressService {
         addressFromDatabase.setStreetName(editedAddress.getStreetName());
         addressFromDatabase.setZipCode(editedAddress.getZipCode());
 
-        logger.info("Address with id {} was edited with data streetName={}, cityName={}, zipCode={}",
+        logger.info("Address with id {} was edited with data streetName={}, cityName={}, zipCode={}.",
                 editedAddress.getId(), addressFromDatabase.getStreetName(), addressFromDatabase.getCityName(),
                 addressFromDatabase.getZipCode());
-        logger.trace("{} was edited with data {}", addressData, addressFromDatabase);
+        logger.trace("{} edited {} with data {}.", webDataResolverAndCreator.getUserData(request),
+                addressData, addressFromDatabase);
 
         return addressFromDatabase;
     }
-
 
     @Override
     @Transactional(readOnly = false)
@@ -208,19 +209,18 @@ public class HibernateAddressService implements AddressService {
         boolean isRequestProper = !Objects.equals(clientFromDatabase.getMainAddress().getId(), addressId);
         if (!isRequestProper) {
             logger.warn("{} tried to edit main address for client with id {}. "
-                            + "This request was handmade, with data: addressId= {}, clientId= {}!",
+                            + "This request was handmade, with data: addressId= {}, clientId= {}.",
                     webDataResolverAndCreator.getUserData(request), clientId, addressId, clientId);
             throw new ProcessUserRequestException(updateMainAddressExceptionMessage);
         }
         Address addressFromDatabase = findAddressById(addressId, request);
 
-        String clientData = "Client " + clientFromDatabase.getFirstName() + " "
-                + clientFromDatabase.getLastName() + " with id " + clientFromDatabase.getId();
         clientFromDatabase.setMainAddress(addressFromDatabase);
 
-        logger.info("Address with id {} was set as main address for client with id {}",
+        logger.info("Address with id {} was set as main address for client with id {}.",
                 addressId, clientId);
-        logger.trace("{} was set as main address for {}", addressFromDatabase, clientData);
+        logger.trace("{} updated main address {} for client with id {}.",
+                webDataResolverAndCreator.getUserData(request), addressFromDatabase, clientId);
     }
 
     private Long checkIfAddressAlreadyExists(Client client, Address newAddress) {

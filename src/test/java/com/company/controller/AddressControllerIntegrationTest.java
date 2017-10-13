@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -32,13 +31,7 @@ import static com.company.Constants.*;
 import static com.company.controller.AddressController.ADDRESS_TO_BE_EDITED;
 import static com.company.controller.AddressController.CLIENT_ADDRESSES;
 import static com.company.controller.AddressController.NEW_ADDRESS;
-import static com.company.service.HibernateAddressServiceTest.DAEM;
-import static com.company.service.HibernateAddressServiceTest.DANREM;
-import static com.company.service.HibernateAddressServiceTest.FAEM;
-import static com.company.service.HibernateAddressServiceTest.SAEM;
-import static com.company.service.HibernateAddressServiceTest.UAEM;
-import static com.company.service.HibernateAddressServiceTest.UMAEM;
-import static com.company.service.HibernateAddressServiceTest.checkAddressFieldsEqualityWithClient;
+import static com.company.service.HibernateAddressServiceTest.*;
 import static com.company.service.HibernateClientServiceTest.FCEM;
 import static com.company.util.Mappings.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -290,6 +283,7 @@ public class AddressControllerIntegrationTest {
     @Test
     public void shouldEditMainAddress() throws Exception {
         Address anotherTestAddress = saveClientWithTwoAddresses();
+        System.out.println(clientDao.findById(testClient.getId()));
 
         mockMvc.perform(put(EDIT_MAIN_ADDRESS)
                 .contentType(APPLICATION_FORM_URLENCODED_VALUE)
@@ -297,8 +291,8 @@ public class AddressControllerIntegrationTest {
                 .param(CLIENT_ID, testClient.getId().toString()));
 
         assertThat(clientDao.findById(testClient.getId()).getMainAddress(),
-                is(checkAddressFieldsEqualityWithClient(
-                        ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, testClient)));
+                is(checkAddressFieldsEqualityWithClient(ANOTHER_ADDRESS_STREET_NAME,
+                        ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, testClient)));
     }
 
     @Test
@@ -456,7 +450,6 @@ public class AddressControllerIntegrationTest {
                         ADDRESS_CITY_NAME, ADDRESS_ZIP_CODE, clientFromDatabase)));
     }
 
-    //TODO: REWORK AFTER HTTP STATUS CHANGE
     private void tryToPerformActionButExceptionWasThrown(MockHttpServletRequestBuilder builder,
                                                          String message, Object target) throws Exception {
         ReflectionTestUtils.setField(target, message, STRING_TO_TEST_EQUALITY);
@@ -464,8 +457,7 @@ public class AddressControllerIntegrationTest {
         mockMvc.perform(builder)
                 .andExpect(status().is4xxClientError())
                 .andExpect(view().name(extractViewName(ERROR_PAGE)))
-                .andExpect(model().attribute(ERROR_MESSAGE, STRING_TO_TEST_EQUALITY))
-                .andExpect(model().attribute(HTTP_STATUS, HttpStatus.UNPROCESSABLE_ENTITY.value()));
+                .andExpect(model().attribute(ERROR_MESSAGE, STRING_TO_TEST_EQUALITY));
     }
 
 }
