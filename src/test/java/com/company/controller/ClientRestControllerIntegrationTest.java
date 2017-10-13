@@ -30,6 +30,7 @@ import static com.company.Constants.*;
 import static com.company.controller.ClientRestControllerTest.CNF;
 import static com.company.controller.ClientRestControllerTest.CSE;
 import static com.company.controller.ClientRestControllerTest.CSR;
+import static com.company.service.HibernateClientServiceTest.DCEM;
 import static com.company.service.HibernateClientServiceTest.FCEM;
 import static com.company.service.HibernateClientServiceTest.UCEM;
 import static com.company.service.HibernateClientServiceTest.checkClientFieldsEquality;
@@ -77,6 +78,11 @@ public class ClientRestControllerIntegrationTest {
 
     @After
     public void tearDown() throws Exception {
+        objectMapper = null;
+        clientDao = null;
+        clientService = null;
+        webApplicationContext = null;
+        clientRestController = null;
         mockMvc = null;
         testClient = null;
     }
@@ -131,7 +137,7 @@ public class ClientRestControllerIntegrationTest {
 
         tryToPerformActionButExceptionWasThrown(post(REST_API_PREFIX + REST_DELETE_CLIENT)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
-                .content(data), FCEM, clientService);
+                .content(data), DCEM, clientService);
     }
 
     @Test

@@ -76,7 +76,6 @@ public class AddressRestController {
         return new ResponseEntity<>(savedAddress.getId(), OK);
     }
 
-    //TODO: REFERER HEADER MUST BE AVAILABLE
     //Passing a request with body to an HTTP DELETE action is not currently supported in Angular 2
     @PostMapping(value = REST_DELETE_ADDRESS, consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE)

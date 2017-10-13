@@ -44,6 +44,9 @@ public class Mappings {
     public static final String REST_DELETE_ADDRESS = ADMIN_PREFIX + "/deleteAddress";
     public static final String REST_EDIT_MAIN_ADDRESS = ADMIN_PREFIX + "/editMainAddress";
 
+    public static final String BLANK_PAGE = "/blank";
+    public static final String ABOUT_US_PAGE = "/aboutUs";
+
     public static final String RESOLVER_PREFIX = "/WEB-INF/views/";
     public static final String RESOLVER_SUFFIX = ".jsp";
     public static final String FAVICON = "/favicon.ico";

@@ -39,6 +39,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -77,6 +78,10 @@ public class HibernateClientServiceTest {
 
     @After
     public void tearDown() {
+        clientDaoMock = null;
+        requestMock = null;
+        webDataResolverAndCreatorMock = null;
+        clientService = null;
         testClient = null;
     }
 
@@ -108,6 +113,7 @@ public class HibernateClientServiceTest {
         verify(clientDaoMock).findById(anyLong());
         verify(webDataResolverAndCreatorMock).cleanClientData(any(Client.class));
         verifyNoMoreInteractions(clientDaoMock);
+        verifyNoMoreInteractions(webDataResolverAndCreatorMock);
     }
 
     @Test
@@ -152,7 +158,9 @@ public class HibernateClientServiceTest {
         clientService.saveClient(testClient, requestMock);
 
         verify(clientDaoMock).save(any(Client.class));
+        verify(webDataResolverAndCreatorMock).getUserData(requestMock);
         verifyNoMoreInteractions(clientDaoMock);
+        verifyNoMoreInteractions(webDataResolverAndCreatorMock);
     }
 
     @Test
@@ -168,7 +176,7 @@ public class HibernateClientServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenClientWasNotFoundWhileDeletingClient() {
-        ReflectionTestUtils.setField(clientService, FCEM, STRING_TO_TEST_EQUALITY);
+        ReflectionTestUtils.setField(clientService, DCEM, STRING_TO_TEST_EQUALITY);
 
         when(clientDaoMock.findById(anyLong())).thenReturn(null);
 

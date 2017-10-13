@@ -117,7 +117,7 @@ public class HibernateAddressService implements AddressService {
     @Transactional(readOnly = false)
     public Address saveAddress(Address newAddress, Long clientId, HttpServletRequest request) {
         Client clientFromDatabase = clientService.findClientById(clientId, request);
-        Long addresses = checkIfAddressAlreadyExsists(clientFromDatabase, newAddress);
+        Long addresses = checkIfAddressAlreadyExists(clientFromDatabase, newAddress);
         boolean isRequestProper = (addresses <= 0);
         if (!isRequestProper) {
             logger.warn("{} tried to add address for client with id {}. " +
@@ -168,18 +168,24 @@ public class HibernateAddressService implements AddressService {
                 + " with id " + clientFromDatabase.getId());
     }
 
-    //TODO: CHECK IF ADDRESS ALREADY EXISTS
     @Override
     @Transactional(readOnly = false)
     public Address updateAddress(Address editedAddress, HttpServletRequest request) {
         Long addressId = editedAddress.getId();
         boolean isRequestProper = (addressId != null);
         if (!isRequestProper) {
-            logger.warn("{} tried to address. This request was handmade,with data: {}",
+            logger.warn("{} tried to update address. This request was handmade,with data: {}",
                     webDataResolverAndCreator.getUserData(request), editedAddress);
             throw new ProcessUserRequestException(updateAddressExceptionMessage);
         }
         Address addressFromDatabase = findAddressById(addressId, request);
+        isRequestProper = (checkIfAddressAlreadyExists(addressFromDatabase.getClient(),
+                editedAddress) <= 0);
+        if (!isRequestProper) {
+            logger.warn("{} tried to update address with address data that already exists {}",
+                    webDataResolverAndCreator.getUserData(request), editedAddress);
+            throw new ProcessUserRequestException(updateAddressExceptionMessage);
+        }
 
         String addressData = addressFromDatabase.toString();
         addressFromDatabase.setCityName(editedAddress.getCityName());
@@ -217,7 +223,7 @@ public class HibernateAddressService implements AddressService {
         logger.trace("{} was set as main address for {}", addressFromDatabase, clientData);
     }
 
-    private Long checkIfAddressAlreadyExsists(Client client, Address newAddress) {
+    private Long checkIfAddressAlreadyExists(Client client, Address newAddress) {
         return client.getAddress()
                 .stream()
                 .filter(address -> Objects.equals(address.getStreetName(), newAddress.getStreetName()) &&

@@ -29,6 +29,7 @@ import static com.company.Constants.*;
 import static com.company.controller.ClientController.CLIENTS;
 import static com.company.controller.ClientController.CLIENT_TO_BE_EDITED;
 import static com.company.controller.ClientController.NEW_CLIENT;
+import static com.company.service.HibernateClientServiceTest.DCEM;
 import static com.company.service.HibernateClientServiceTest.FCEM;
 import static com.company.service.HibernateClientServiceTest.UCEM;
 import static com.company.service.HibernateClientServiceTest.checkClientFieldsEquality;
@@ -74,8 +75,12 @@ public class ClientControllerIntegrationTest {
 
     @After
     public void tearDown() throws Exception {
+        clientDao = null;
+        clientService = null;
+        webApplicationContext = null;
         mockMvc = null;
         testClient = null;
+        allClientsCurrrentlyInDatabase = null;
     }
 
     @Test
@@ -136,7 +141,7 @@ public class ClientControllerIntegrationTest {
 
     @Test
     public void shouldNotDeleteClientFromDatabaseWhenClientWasNotFound() throws Exception {
-        ReflectionTestUtils.setField(clientService, FCEM, STRING_TO_TEST_EQUALITY);
+        ReflectionTestUtils.setField(clientService, DCEM, STRING_TO_TEST_EQUALITY);
         clientDao.save(testClient);
 
         mockMvc.perform(get(REMOVE_CLIENT)

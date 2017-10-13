@@ -82,6 +82,8 @@ public class AddressControllerTest {
 
     @After
     public void tearDown() throws Exception {
+        addressServiceMock = null;
+        addressController = null;
         mockMvc = null;
         testAddress = null;
         testClient = null;

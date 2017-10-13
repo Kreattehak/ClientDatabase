@@ -3,19 +3,18 @@ package com.company.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import static com.company.util.Mappings.ABOUT_US_PAGE;
+import static com.company.util.Mappings.BLANK_PAGE;
+import static com.company.util.Mappings.LOGIN_PAGE;
 import static com.company.util.Mappings.REDIRECT;
+import static com.company.util.Mappings.SLASH;
 import static com.company.util.Mappings.TABLE_OF_CLIENTS;
 import static com.company.util.Mappings.extractViewName;
 
 @Controller
 public class HomeController {
 
-    static final String DEFAULT_PAGE = "/";
-    static final String BLANK_PAGE = "/blank";
-    static final String ABOUT_US_PAGE = "/aboutUs";
-    static final String LOGIN_PAGE = "/login";
-
-    @RequestMapping(DEFAULT_PAGE)
+    @RequestMapping(SLASH)
     public String hello() {
         return REDIRECT + TABLE_OF_CLIENTS;
     }

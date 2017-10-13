@@ -75,6 +75,9 @@ public class ClientRestControllerTest {
 
     @After
     public void tearDown() throws Exception {
+        objectMapper = null;
+        clientServiceMock = null;
+        clientRestController = null;
         mockMvc = null;
         testClient = null;
     }

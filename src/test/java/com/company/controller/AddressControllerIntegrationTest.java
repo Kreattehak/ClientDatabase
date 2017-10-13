@@ -35,6 +35,7 @@ import static com.company.controller.AddressController.NEW_ADDRESS;
 import static com.company.service.HibernateAddressServiceTest.DAEM;
 import static com.company.service.HibernateAddressServiceTest.DANREM;
 import static com.company.service.HibernateAddressServiceTest.FAEM;
+import static com.company.service.HibernateAddressServiceTest.SAEM;
 import static com.company.service.HibernateAddressServiceTest.UAEM;
 import static com.company.service.HibernateAddressServiceTest.UMAEM;
 import static com.company.service.HibernateAddressServiceTest.checkAddressFieldsEqualityWithClient;
@@ -90,9 +91,16 @@ public class AddressControllerIntegrationTest {
 
     @After
     public void tearDown() throws Exception {
+        addressService = null;
+        clientService = null;
+        clientDao = null;
+        addressDao = null;
+        webApplicationContext = null;
+
         mockMvc = null;
-        testAddress = null;
         testClient = null;
+        testAddress = null;
+        allAddressesCurrrentlyInDatabase = null;
     }
 
     @Test
@@ -144,6 +152,18 @@ public class AddressControllerIntegrationTest {
                         .param(CITY_NAME, testAddress.getCityName())
                         .param(ZIP_CODE, testAddress.getZipCode())
                         .param(CLIENT_ID, ID_NOT_FOUND_VALUE_STRING), FCEM, clientService);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenTryingToAddTheSameAddress() throws Exception {
+        saveClientWithAddress();
+        tryToPerformActionButExceptionWasThrown(
+                post(ADD_ADDRESS)
+                        .contentType(APPLICATION_FORM_URLENCODED_VALUE)
+                        .param(STREET_NAME, testAddress.getStreetName())
+                        .param(CITY_NAME, testAddress.getCityName())
+                        .param(ZIP_CODE, testAddress.getZipCode())
+                        .param(CLIENT_ID, testClient.getId().toString()), SAEM, addressService);
     }
 
     @Test
@@ -220,6 +240,17 @@ public class AddressControllerIntegrationTest {
     public void shouldNotEditAddressInDatabaseWhenIdWasNull() throws Exception {
         tryToPerformActionButExceptionWasThrown(put(EDIT_ADDRESS)
                 .contentType(APPLICATION_FORM_URLENCODED_VALUE)
+                .param(STREET_NAME, ADDRESS_STREET_NAME)
+                .param(CITY_NAME, ADDRESS_CITY_NAME)
+                .param(ZIP_CODE, ADDRESS_ZIP_CODE), UAEM, addressService);
+    }
+
+    @Test
+    public void shouldNotEditAddressInDatabaseWithTheSameData() throws Exception {
+        saveClientWithAddress();
+        tryToPerformActionButExceptionWasThrown(put(EDIT_ADDRESS)
+                .contentType(APPLICATION_FORM_URLENCODED_VALUE)
+                .param(ID, testAddress.getId().toString())
                 .param(STREET_NAME, ADDRESS_STREET_NAME)
                 .param(CITY_NAME, ADDRESS_CITY_NAME)
                 .param(ZIP_CODE, ADDRESS_ZIP_CODE), UAEM, addressService);
@@ -364,7 +395,7 @@ public class AddressControllerIntegrationTest {
 
     }
 
-    private Address saveClientWithTwoAddresses() {
+    public Address saveClientWithTwoAddresses() {
         Address anotherTestAddress = new Address(
                 ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
         clientDao.save(testClient);

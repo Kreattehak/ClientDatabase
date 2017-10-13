@@ -15,15 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import static com.company.controller.HomeController.ABOUT_US_PAGE;
-import static com.company.controller.HomeController.BLANK_PAGE;
-import static com.company.controller.HomeController.DEFAULT_PAGE;
-import static com.company.controller.HomeController.LOGIN_PAGE;
-import static com.company.util.Mappings.REDIRECT;
-import static com.company.util.Mappings.RESOLVER_PREFIX;
-import static com.company.util.Mappings.RESOLVER_SUFFIX;
-import static com.company.util.Mappings.TABLE_OF_CLIENTS;
-import static com.company.util.Mappings.extractViewName;
+import static com.company.util.Mappings.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,12 +44,13 @@ public class HomeControllerTest {
 
     @After
     public void tearDown() throws Exception {
+        homeController = null;
         mockMvc = null;
     }
 
     @Test
     public void defaultPageShouldRedirectToClientsTable() throws Exception {
-        mockMvc.perform(get(DEFAULT_PAGE))
+        mockMvc.perform(get(SLASH))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name(REDIRECT + TABLE_OF_CLIENTS))
                 .andExpect(redirectedUrl(TABLE_OF_CLIENTS));

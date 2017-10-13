@@ -78,6 +78,8 @@ public class ClientControllerTest {
 
     @After
     public void tearDown() throws Exception {
+        clientServiceMock = null;
+        clientController = null;
         mockMvc = null;
         testClient = null;
     }

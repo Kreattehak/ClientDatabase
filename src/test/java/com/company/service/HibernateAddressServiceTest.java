@@ -84,8 +84,13 @@ public class HibernateAddressServiceTest {
 
     @After
     public void tearDown() {
-        testClient = null;
+        addressDao = null;
+        clientService = null;
+        requestMock = null;
+        webDataResolverAndCreatorMock = null;
+        addressService = null;
         testAddress = null;
+        testClient = null;
     }
 
     @Test
@@ -309,16 +314,18 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldUpdateAddressWithGivenData() throws Exception {
+        testAddress.setClient(testClient);
         Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
         anotherTestAddress.setId(ID_VALUE);
+
 
         when(addressDao.findById(anyLong())).thenReturn(testAddress);
 
         addressService.updateAddress(anotherTestAddress, requestMock);
 
-        assertThat(testAddress, is(checkAddressFieldsEquality(
-                ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE)));
+        assertThat(testAddress, is(checkAddressFieldsEqualityWithClient(ANOTHER_ADDRESS_STREET_NAME,
+                ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, testClient)));
 
         verify(addressDao).findById(anyLong());
         verifyNoMoreInteractions(addressDao);
@@ -346,6 +353,19 @@ public class HibernateAddressServiceTest {
         expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
         addressService.updateAddress(anotherTestAddress, requestMock);
+    }
+
+    @Test
+    public void shouldNotUpdateAddressWithTheSameData() throws Exception {
+        ReflectionTestUtils.setField(addressService, UAEM, STRING_TO_TEST_EQUALITY);
+        testAddress.setClient(testClient);
+        testClient.addAddress(testAddress);
+
+        when(addressDao.findById(anyLong())).thenReturn(testAddress);
+
+        expectedException.expect(ProcessUserRequestException.class);
+        expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
+        addressService.updateAddress(testAddress, requestMock);
     }
 
     @Test

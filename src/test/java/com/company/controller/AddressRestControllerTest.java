@@ -79,9 +79,12 @@ public class AddressRestControllerTest {
 
     @After
     public void tearDown() throws Exception {
+        objectMapper = null;
+        addressServiceMock = null;
+        addressRestController = null;
         mockMvc = null;
-        testClient = null;
         testAddress = null;
+        testClient = null;
     }
 
     @Test

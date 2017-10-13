@@ -84,6 +84,14 @@ public class AddressRestControllerIntegrationTest {
 
     @After
     public void tearDown() throws Exception {
+        objectMapper = null;
+        clientDao = null;
+        addressDao = null;
+        clientService = null;
+        addressService = null;
+        webApplicationContext = null;
+        addressRestController = null;
+
         mockMvc = null;
         testClient = null;
         testAddress = null;
@@ -109,7 +117,7 @@ public class AddressRestControllerIntegrationTest {
     @Test
     public void shouldEditAddressInDatabase() throws Exception {
         ReflectionTestUtils.setField(addressRestController, ASE, STRING_TO_TEST_EQUALITY);
-        addressDao.save(testAddress);
+        saveClientWithAddress();
 
         Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
@@ -123,8 +131,8 @@ public class AddressRestControllerIntegrationTest {
                 .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
 
         assertThat(addressDao.findById(testAddress.getId()),
-                is(checkAddressFieldsEquality(ANOTHER_ADDRESS_STREET_NAME,
-                        ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE)));
+                is(checkAddressFieldsEqualityWithClient(ANOTHER_ADDRESS_STREET_NAME,
+                        ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, testClient)));
     }
 
     @Test
@@ -159,6 +167,16 @@ public class AddressRestControllerIntegrationTest {
     @Test
     public void shouldValidateZipCodeAndNotUpdateAddressInDatabase() throws Exception {
         validateFieldsWhenTryingToEditAddress(ADDRESS_STREET_NAME, ADDRESS_CITY_NAME, INVALID_TO_SHORT_INPUT);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenTryingToUpdateAddressWithTheSameAddress() throws Exception {
+        saveClientWithAddress();
+        String data = objectMapper.writeValueAsString(testAddress);
+
+        tryToPerformActionButExceptionWasThrown(put(REST_API_PREFIX + REST_UPDATE_ADDRESS)
+                .contentType(APPLICATION_JSON_UTF8_VALUE)
+                .content(data), UAEM, addressService);
     }
 
     @Test

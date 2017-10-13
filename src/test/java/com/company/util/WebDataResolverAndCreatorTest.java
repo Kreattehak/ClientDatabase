@@ -61,6 +61,7 @@ public class WebDataResolverAndCreatorTest {
 
     @After
     public void tearDown() throws Exception {
+        webDataResolverAndCreator = null;
         requestMock = null;
     }
 
@@ -76,7 +77,7 @@ public class WebDataResolverAndCreatorTest {
     }
 
     @Test
-    public void shouldReturnLoggedUserName() throws Exception {
+    public void shouldReturnLoggedUserNameFromHeaderSendByFrontEndApp() throws Exception {
         String userName = "someUser";
         when(requestMock.getHeader(LOGGED_USER_HEADER)).thenReturn(userName);
 

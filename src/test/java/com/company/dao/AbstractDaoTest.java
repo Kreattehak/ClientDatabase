@@ -49,8 +49,10 @@ public class AbstractDaoTest {
 
     @After
     public void tearDown() throws Exception {
-        testClient = null;
+        clientDao = null;
+        addressDao = null;
         testAddress = null;
+        testClient = null;
     }
 
     @Test

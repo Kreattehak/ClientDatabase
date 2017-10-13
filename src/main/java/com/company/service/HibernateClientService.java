@@ -72,30 +72,29 @@ public class HibernateClientService implements ClientService {
         return clientDao.findAll().toArray(new Client[0]);
     }
 
-    //TODO: SHOULD I ADD UserData
     @Override
     @Transactional(readOnly = false)
     public Client saveClient(Client client, HttpServletRequest request) {
         Client clientStoredInDatabase = clientDao.save(client);
 
         logger.info("New client added " + client.getId());
-        logger.trace("New client added " + client);
+        logger.trace(webDataResolverAndCreator.getUserData(request) + " added a new client " + client);
 
         return clientStoredInDatabase;
     }
 
-    //TODO: THINK ABOUT IMPLEMENTATION
+    //TODO: Is catching and rethrowing exception really a good idea?
     @Override
     @Transactional(readOnly = false)
     public void deleteClient(Long clientId, HttpServletRequest request) {
-        Client clientFromDatabase = findClientById(clientId, request);
-//        Client clientFromDatabase = clientDao.findById(clientId);
-//        boolean isRequestProper = (clientFromDatabase != null);
-//        if (!isRequestProper) {
-//            logger.warn("{} tried to delete client with id {}. This request was handmade.",
-//                    getUserData(request), clientId);
-//            throw new ProcessUserRequestException(deleteClientExceptionMessage);
-//        }
+        Client clientFromDatabase = null;
+        try {
+            clientFromDatabase = findClientById(clientId, request);
+        } catch (ProcessUserRequestException cause) {
+            logger.warn("{} tried to delete client with id {}. This request was handmade.",
+                    webDataResolverAndCreator.getUserData(request), clientId);
+            throw new ProcessUserRequestException(deleteClientExceptionMessage, cause);
+        }
 
         clientDao.delete(clientFromDatabase);
 
