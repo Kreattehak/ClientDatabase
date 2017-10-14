@@ -30,7 +30,6 @@ import java.util.List;
 
 import static com.company.Constants.*;
 import static com.company.util.Mappings.ID_NOT_FOUND;
-import static com.company.util.WebDataResolverAndCreatorTest.cleanClient;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasProperty;
@@ -39,7 +38,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -171,7 +169,9 @@ public class HibernateClientServiceTest {
 
         verify(clientDaoMock).findById(anyLong());
         verify(clientDaoMock).delete(any(Client.class));
+        verify(webDataResolverAndCreatorMock).getUserData(requestMock);
         verifyNoMoreInteractions(clientDaoMock);
+        verifyNoMoreInteractions(webDataResolverAndCreatorMock);
     }
 
     @Test
@@ -200,7 +200,9 @@ public class HibernateClientServiceTest {
 
         verify(clientDaoMock).findById(anyLong());
         verify(clientDaoMock).update(any(Client.class));
+        verify(webDataResolverAndCreatorMock).getUserData(requestMock);
         verifyNoMoreInteractions(clientDaoMock);
+        verifyNoMoreInteractions(webDataResolverAndCreatorMock);
     }
 
     @Test

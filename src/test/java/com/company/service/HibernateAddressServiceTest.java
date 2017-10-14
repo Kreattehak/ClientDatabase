@@ -217,8 +217,10 @@ public class HibernateAddressServiceTest {
 
         verify(addressDao).save(any(Address.class));
         verify(clientService).findClientById(anyLong(), any(HttpServletRequest.class));
+        verify(webDataResolverAndCreatorMock).getUserData(requestMock);
         verifyNoMoreInteractions(addressDao);
         verifyNoMoreInteractions(clientService);
+        verifyNoMoreInteractions(webDataResolverAndCreatorMock);
     }
 
     @Test
@@ -265,8 +267,11 @@ public class HibernateAddressServiceTest {
         verify(addressDao).delete(any(Address.class));
         verify(addressDao).findById(anyLong());
         verify(clientService).findClientById(anyLong(), any(HttpServletRequest.class));
+        verify(webDataResolverAndCreatorMock).fetchClientIdFromRequest(requestMock);
+        verify(webDataResolverAndCreatorMock).getUserData(requestMock);
         verifyNoMoreInteractions(addressDao);
         verifyNoMoreInteractions(clientService);
+        verifyNoMoreInteractions(webDataResolverAndCreatorMock);
     }
 
     @Test
@@ -329,7 +334,9 @@ public class HibernateAddressServiceTest {
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, testClient)));
 
         verify(addressDao).findById(anyLong());
+        verify(webDataResolverAndCreatorMock).getUserData(requestMock);
         verifyNoMoreInteractions(addressDao);
+        verifyNoMoreInteractions(webDataResolverAndCreatorMock);
     }
 
     @Test
@@ -385,8 +392,10 @@ public class HibernateAddressServiceTest {
 
         verify(addressDao).findById(anyLong());
         verify(clientService).findClientById(anyLong(), any(HttpServletRequest.class));
+        verify(webDataResolverAndCreatorMock).getUserData(requestMock);
         verifyNoMoreInteractions(addressDao);
         verifyNoMoreInteractions(clientService);
+        verifyNoMoreInteractions(webDataResolverAndCreatorMock);
     }
 
     @Test
