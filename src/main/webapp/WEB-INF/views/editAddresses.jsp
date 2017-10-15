@@ -18,7 +18,7 @@
     <form:form modelAttribute="clientAddresses" class="form-horizontal" method="GET" action="/admin/editAddress">
         <form:errors path="*" cssClass="alert alert-danger" element="div"/>
         <fieldset>
-            <legend><spring:message code="editAddress.legendMessage"/></legend>
+            <legend><spring:message code="editAddresses.legendMessage"/></legend>
             <div class="form-group col-lg-5">
                 <label for="clientMainAddress"><spring:message code="editAddress.selectAddress"/></label>
                 <select name="addressId" class="form-control" id="clientMainAddress">

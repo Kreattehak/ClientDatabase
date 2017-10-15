@@ -18,7 +18,7 @@
         <form:errors path="*" cssClass="alert alert-danger" element="div"/>
         <fieldset>
             <legend><spring:message code="editClient.legendMessage"/>
-                    ${clientToBeEdited.firstName} ${clientToBeEdited.lastName} with id: ${clientToBeEdited.id}</legend>
+                    ${clientToBeEdited.firstName} ${clientToBeEdited.lastName}</legend>
             <div class="form-group">
                 <label class="control-label col-lg-2" for="id">
                     <spring:message code="addForm.client.id"/>

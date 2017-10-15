@@ -8,7 +8,7 @@
 <body>
 <div class="container">
     <div class="col-lg-12">
-        <p>Check my github projects at:</p>
+        <p><spring:message code="aboutUs.message"/></p>
         <p id="githubLink" class="bg-success"><a href="https://github.com/Kreattehak">Github Account -> Kreattehak</a></p>
     </div>
 </div>

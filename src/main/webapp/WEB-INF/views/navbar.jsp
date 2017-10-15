@@ -24,7 +24,7 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">
-                        Admin Panel <span class="caret"></span></a>
+                        <spring:message code="menu.adminPanel"/><span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="<c:url value="/admin/addClient"/>"><spring:message code="menu.addClient"/></a>
                         </li>

@@ -84,10 +84,10 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(OPTIONS, ANY_SUBPATH).permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
-                .formLogin().failureHandler(authFailureHandler).loginPage(LOGIN_PAGE)
-                .successHandler(authSuccessHandler)
+                .formLogin().loginPage(LOGIN_PAGE)
+                .failureHandler(authFailureHandler).successHandler(authSuccessHandler)
                 .and()
-                .logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout")
+                .logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout=true")
                 .deleteCookies(COOKIE_NAME, "JSESSIONID").invalidateHttpSession(true);
 
         // Custom JWT based security filter
@@ -109,7 +109,7 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
     SimpleUrlAuthenticationFailureHandler getAuthFailureHandler() {
 
         SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler("/login");
-        handler.setDefaultFailureUrl("/login");
+        handler.setDefaultFailureUrl("/login?error=true");
         //handler.setUseForward( true );
 
         return handler;

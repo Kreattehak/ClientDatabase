@@ -7,7 +7,7 @@
 <head>
     <link rel="stylesheet" href="<c:url value="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>">
     <link rel="stylesheet" href="<c:url value="/resources/style.css"/>">
-    <title>Login Page</title>
+    <title><spring:message code="login.title"/></title>
 </head>
 <body>
 
@@ -15,24 +15,26 @@
 
 <div class="container">
     <form action="<c:url value="/login"/>" method="post" class="form-signin">
-        <c:if test="${param.error != null}">
+        <c:if test="${not empty param.error}">
             <p>
-                Invalid username and password.
+                <spring:message code="login.error"/>
             </p>
         </c:if>
-        <c:if test="${param.logout != null}">
+        <c:if test="${not empty param.logout}">
             <p>
-                You have been logged out.
+                <spring:message code="login.logout"/>
             </p>
         </c:if>
-        <h2 class="form-signin-heading">Please sign in</h2>
-        <label for="username" class="sr-only">Username</label>
-        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required
-               autofocus>
-        <label for="password" class="sr-only">Password</label>
-        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <h2 class="form-signin-heading"><spring:message code="login.pleaseLogin"/></h2>
+        <label for="username" class="sr-only"><spring:message code="login.username"/></label>
+        <input type="text" id="username" name="username" class="form-control"
+               placeholder="<spring:message code="login.username"/>" required autofocus>
+        <label for="password" class="sr-only"><spring:message code="login.password"/></label>
+        <input type="password" id="password" name="password" class="form-control"
+               placeholder="<spring:message code="login.password"/>" required>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">
+            <spring:message code="login.login"/>
+        </button>
     </form>
 </div>
 

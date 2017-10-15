@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
+
 @Repository
 @Transactional(readOnly = true)
 public class UserRepositoryImpl extends AbstractDao<User, Long> implements UserRepository {
@@ -20,6 +22,13 @@ public class UserRepositoryImpl extends AbstractDao<User, Long> implements UserR
     public User findByUsername(String username) {
         String query = String.format("FROM %s WHERE USERNAME = '%s'",
                 getPersistentClass().getSimpleName(), username);
-        return sessionFactory.getCurrentSession().createQuery(query, User.class).getSingleResult();
+        try {
+            User user = sessionFactory.getCurrentSession()
+                    .createQuery(query, User.class)
+                    .getSingleResult();
+            return user;
+        } catch(NoResultException e) {
+            return null;
+        }
     }
 }
