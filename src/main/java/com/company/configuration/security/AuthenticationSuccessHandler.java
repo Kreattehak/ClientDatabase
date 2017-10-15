@@ -1,6 +1,8 @@
 package com.company.configuration.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DeviceResolver;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,12 +25,16 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private DeviceResolver deviceResolver;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
-        final String token = jwtTokenUtil.generateToken(userDetails, null);//TODO: Device
+        final Device device = deviceResolver.resolveDevice(request);
+        final String token = jwtTokenUtil.generateToken(userDetails, device);
 
         // Add a session cookie
         Cookie sessionCookie = new Cookie(COOKIE_NAME, token);

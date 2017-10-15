@@ -104,20 +104,8 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private String generateAudience(Device device) {
-//        String audience = AUDIENCE_UNKNOWN;
-//        if (device.isNormal()) {
-//            audience = AUDIENCE_WEB;
-//        } else if (device.isTablet()) {
-//            audience = AUDIENCE_TABLET;
-//        } else if (device.isMobile()) {
-//            audience = AUDIENCE_MOBILE;
-//        }
-//        return audience;
-
         String audience = AUDIENCE_UNKNOWN;
-        if (device == null) {//TODO: MY IMPLEMENTATION
-            return audience;
-        } else if (device.isNormal()) {
+        if (device.isNormal()) {
             audience = AUDIENCE_WEB;
         } else if (device.isTablet()) {
             audience = AUDIENCE_TABLET;

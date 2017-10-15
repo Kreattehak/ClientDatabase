@@ -4,8 +4,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.mobile.device.DeviceResolver;
 import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.mobile.device.DeviceWebArgumentResolver;
+import org.springframework.mobile.device.LiteDeviceResolver;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.LocaleResolver;
@@ -64,13 +66,23 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
         return resolver;
     }
 
+    @Bean
+    public DeviceResolver deviceResolver(){
+        return new LiteDeviceResolver();
+    }
+
+    @Bean
+    public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor() {
+        return new DeviceResolverHandlerInterceptor();
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName(I18_INTERCEPTOR_NAME);
         registry.addInterceptor(interceptor);
-        DeviceResolverHandlerInterceptor deviceInterceptor = new DeviceResolverHandlerInterceptor();
-        registry.addInterceptor(deviceInterceptor);
+
+        registry.addInterceptor(deviceResolverHandlerInterceptor()).addPathPatterns("/**");
     }
 
     @Override
