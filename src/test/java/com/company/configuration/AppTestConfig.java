@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @Import({HibernateConfigurationForTests.class})
 public class AppTestConfig {
-
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
