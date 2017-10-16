@@ -31,7 +31,7 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-
+        //Once more get User
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
         final Device device = deviceResolver.resolveDevice(request);
         final String token = jwtTokenUtil.generateToken(userDetails, device);
@@ -42,7 +42,7 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
 
         clearAuthenticationAttributes(request);
 
-        // call the original impl
+        // Call the original impl
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }
