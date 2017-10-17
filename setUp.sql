@@ -1,4 +1,4 @@
-CREATE TABLE `addresses` (
+ CREATE TABLE `addresses` (
    `id` bigint(20) NOT NULL AUTO_INCREMENT,
    `cityName` varchar(50) NOT NULL,
    `streetName` varchar(50) NOT NULL,
