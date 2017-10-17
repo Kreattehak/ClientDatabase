@@ -3,6 +3,7 @@ package com.company.configuration;
 import com.company.configuration.security.AuthenticationSuccessHandler;
 import com.company.configuration.security.JwtAuthenticationEntryPoint;
 import com.company.configuration.security.JwtAuthenticationTokenFilter;
+import com.company.configuration.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,20 +31,22 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
             REST_AUTHORIZATION + ANY_SUBPATH, REST_API_PREFIX + REST_GET_ALL_CLIENTS,
             SLASH, TABLE_OF_CLIENTS, RESOURCES + ANY_SUBPATH, FAVICON, ABOUT_US_PAGE, BLANK_PAGE
     };
-
     private static final int BCRYPT_STRENGTH = 12;
 
-    @Autowired
-    private SimpleUrlAuthenticationFailureHandler authFailureHandler;
+    private final AuthenticationSuccessHandler authSuccessHandler;
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private AuthenticationSuccessHandler authSuccessHandler;
-
-    @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
-
-    @Autowired
-    private UserDetailsService userDetailsService;
+    public MultiSecurityConfiguration(AuthenticationSuccessHandler authSuccessHandler,
+                                      JwtAuthenticationEntryPoint unauthorizedHandler,
+                                      UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
+        this.authSuccessHandler = authSuccessHandler;
+        this.unauthorizedHandler = unauthorizedHandler;
+        this.userDetailsService = userDetailsService;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -65,7 +68,7 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
-        return new JwtAuthenticationTokenFilter();
+        return new JwtAuthenticationTokenFilter(userDetailsService, jwtTokenUtil);
     }
 
     @Override
@@ -85,7 +88,7 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().hasRole("USER")
                 .and()
                 .formLogin().loginPage(LOGIN_PAGE)
-                .failureHandler(authFailureHandler).successHandler(authSuccessHandler)
+                .failureHandler(getAuthFailureHandler()).successHandler(authSuccessHandler)
                 .and()
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/login?logout=true")
                 .deleteCookies(COOKIE_NAME, "JSESSIONID").invalidateHttpSession(true);

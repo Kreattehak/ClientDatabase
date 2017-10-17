@@ -20,7 +20,6 @@ import static com.company.util.Mappings.extractGetParamValues;
  * wants to change one of stored client entities.
  * Also provides user name and ip for logs.
  */
-
 @Component
 public class WebDataResolverAndCreator {
 

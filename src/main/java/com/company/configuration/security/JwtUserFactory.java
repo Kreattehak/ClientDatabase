@@ -27,7 +27,7 @@ public final class JwtUserFactory {
         );
     }
 
-    //why authority.getName().name() instead of authority.getName()
+    //TODO:why authority.getName().name() instead of authority.getName()?
     private static List<GrantedAuthority> mapToGrantedAuthorities(List<Authority> authorities) {
         return authorities.stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getName().name()))

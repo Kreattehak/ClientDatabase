@@ -20,23 +20,26 @@ import static com.company.util.Mappings.COOKIE_NAME;
 @Component
 public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final DeviceResolver deviceResolver;
 
     @Autowired
-    private DeviceResolver deviceResolver;
+    public AuthenticationSuccessHandler(UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, DeviceResolver deviceResolver) {
+        this.userDetailsService = userDetailsService;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.deviceResolver = deviceResolver;
+    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        //Once more get User
+        //Get user and generate token
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
         final Device device = deviceResolver.resolveDevice(request);
         final String token = jwtTokenUtil.generateToken(userDetails, device);
 
-        // Add a session cookie
+        // Add a session cookie with token
         Cookie sessionCookie = new Cookie(COOKIE_NAME, token);
         response.addCookie(sessionCookie);
 
