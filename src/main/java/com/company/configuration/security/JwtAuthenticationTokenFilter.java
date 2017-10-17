@@ -21,6 +21,11 @@ import java.io.IOException;
 import static com.company.util.Mappings.COOKIE_NAME;
 import static com.company.util.Mappings.LOGIN_LOGGER_NAME;
 
+/**
+ * JwtAuthenticationTokenFilter only validates token from cookie or from request header,
+ * part where user login and gets authenticated is done on AuthenticationRestController by
+ * default spring implementation.
+ */
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @InjectLogger(LOGIN_LOGGER_NAME)
