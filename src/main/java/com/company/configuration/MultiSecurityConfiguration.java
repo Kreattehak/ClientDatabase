@@ -34,16 +34,13 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final int BCRYPT_STRENGTH = 12;
 
     private final AuthenticationSuccessHandler authSuccessHandler;
-    private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     public MultiSecurityConfiguration(AuthenticationSuccessHandler authSuccessHandler,
-                                      JwtAuthenticationEntryPoint unauthorizedHandler,
                                       UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
         this.authSuccessHandler = authSuccessHandler;
-        this.unauthorizedHandler = unauthorizedHandler;
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
@@ -67,7 +64,7 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
+    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() {
         return new JwtAuthenticationTokenFilter(userDetailsService, jwtTokenUtil);
     }
 
@@ -76,8 +73,6 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
-
-//                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 
                 // don't create session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

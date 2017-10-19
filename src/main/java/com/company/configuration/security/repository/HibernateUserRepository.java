@@ -11,10 +11,10 @@ import javax.persistence.NoResultException;
 
 @Repository
 @Transactional(readOnly = true)
-public class UserRepositoryImpl extends AbstractDao<User, Long> implements UserRepository {
+public class HibernateUserRepository extends AbstractDao<User, Long> implements UserRepository {
 
     @Autowired
-    public UserRepositoryImpl(SessionFactory sessionFactory) {
+    public HibernateUserRepository(SessionFactory sessionFactory) {
         super(sessionFactory);
     }
 
