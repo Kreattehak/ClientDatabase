@@ -101,7 +101,7 @@ public class HibernateClientService implements ClientService {
         clientDao.delete(clientFromDatabase);
 
         logger.info("Client with id {} was deleted.", clientId);
-        logger.trace(webDataResolverAndCreator.getUserData(request) + " deleted client {} {} with id {}.",
+        logger.trace("{} deleted client {} {} with id {}.", webDataResolverAndCreator.getUserData(request),
                 clientFromDatabase.getFirstName(), clientFromDatabase.getLastName(), clientFromDatabase.getId());
     }
 

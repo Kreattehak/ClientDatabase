@@ -31,6 +31,8 @@ public class AuthenticationRestController {
 
     @Value("${jwt.header}")
     private String tokenHeader;
+    @Value("${userDisableMessage")
+    private String userDisabledMessage;
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
@@ -47,8 +49,9 @@ public class AuthenticationRestController {
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
         // Perform the security
+        final Authentication authentication;
         try {
-            final Authentication authentication = authenticationManager.authenticate(
+            authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             authenticationRequest.getUsername(),
                             authenticationRequest.getPassword()
@@ -56,6 +59,9 @@ public class AuthenticationRestController {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (AuthenticationException e) {
+            if (e.getMessage().equals("User is disabled")) {
+                return new ResponseEntity<>(userDisabledMessage, UNAUTHORIZED);
+            }
             return new ResponseEntity<>("Username or password is incorrect", UNAUTHORIZED);
         }
 
