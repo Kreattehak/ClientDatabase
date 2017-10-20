@@ -5,6 +5,7 @@ import com.company.configuration.AppTestConfig;
 import com.company.dao.ClientDao;
 import com.company.model.Client;
 import com.company.service.ClientService;
+import com.company.util.LocalizedMessages;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,6 +32,7 @@ import static com.company.service.HibernateClientServiceTest.DCEM;
 import static com.company.service.HibernateClientServiceTest.FCEM;
 import static com.company.service.HibernateClientServiceTest.UCEM;
 import static com.company.service.HibernateClientServiceTest.checkClientFieldsEquality;
+import static com.company.util.LocalizedMessagesTest.getErrorMessage;
 import static com.company.util.Mappings.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -60,6 +61,8 @@ public class ClientControllerIntegrationTest {
     private ClientService clientService;
     @Autowired
     private WebApplicationContext webApplicationContext;
+    @Autowired
+    private LocalizedMessages localizedMessages;
 
     private MockMvc mockMvc;
     private Client testClient;
@@ -77,6 +80,7 @@ public class ClientControllerIntegrationTest {
         clientDao = null;
         clientService = null;
         webApplicationContext = null;
+        localizedMessages = null;
         mockMvc = null;
         testClient = null;
         allClientsCurrrentlyInDatabase = null;
@@ -140,14 +144,14 @@ public class ClientControllerIntegrationTest {
 
     @Test
     public void shouldNotDeleteClientFromDatabaseWhenClientWasNotFound() throws Exception {
-        ReflectionTestUtils.setField(clientService, DCEM, STRING_TO_TEST_EQUALITY);
         clientDao.save(testClient);
 
         mockMvc.perform(get(REMOVE_CLIENT)
                 .param(CLIENT_ID, ID_NOT_FOUND_VALUE_STRING))
                 .andExpect(status().is4xxClientError())
                 .andExpect(view().name(extractViewName(ERROR_PAGE)))
-                .andExpect(model().attribute(ERROR_MESSAGE, STRING_TO_TEST_EQUALITY));
+                .andExpect(model().attribute(
+                        ERROR_MESSAGE, getErrorMessage(localizedMessages, DCEM, clientService)));
 
         assertThat(clientService.getAllClients(), Matchers.<List<Client>>allOf(
                 hasSize(1),
@@ -238,11 +242,10 @@ public class ClientControllerIntegrationTest {
 
     private void tryToPerformActionButExceptionWasThrown(MockHttpServletRequestBuilder builder,
                                                          String message, Object target) throws Exception {
-        ReflectionTestUtils.setField(target, message, STRING_TO_TEST_EQUALITY);
-
         mockMvc.perform(builder)
                 .andExpect(status().is4xxClientError())
                 .andExpect(view().name(extractViewName(ERROR_PAGE)))
-                .andExpect(model().attribute(ERROR_MESSAGE, STRING_TO_TEST_EQUALITY));
+                .andExpect(model().attribute(ERROR_MESSAGE,
+                        getErrorMessage(localizedMessages, message, target)));
     }
 }

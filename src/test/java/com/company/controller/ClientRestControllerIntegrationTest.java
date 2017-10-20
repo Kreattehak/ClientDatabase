@@ -5,6 +5,7 @@ import com.company.configuration.AppTestConfig;
 import com.company.dao.ClientDao;
 import com.company.model.Client;
 import com.company.service.ClientService;
+import com.company.util.LocalizedMessages;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -33,6 +34,7 @@ import static com.company.service.HibernateClientServiceTest.DCEM;
 import static com.company.service.HibernateClientServiceTest.FCEM;
 import static com.company.service.HibernateClientServiceTest.UCEM;
 import static com.company.service.HibernateClientServiceTest.checkClientFieldsEquality;
+import static com.company.util.LocalizedMessagesTest.getErrorMessage;
 import static com.company.util.Mappings.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -64,6 +66,8 @@ public class ClientRestControllerIntegrationTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private ClientRestController clientRestController;
+    @Autowired
+    private LocalizedMessages localizedMessages;
 
     private MockMvc mockMvc;
     private Client testClient;
@@ -82,6 +86,7 @@ public class ClientRestControllerIntegrationTest {
         clientService = null;
         webApplicationContext = null;
         clientRestController = null;
+        localizedMessages = null;
         mockMvc = null;
         testClient = null;
     }
@@ -242,10 +247,9 @@ public class ClientRestControllerIntegrationTest {
 
     private void tryToPerformActionButExceptionWasThrown(
             MockHttpServletRequestBuilder builder, String message, Object target) throws Exception {
-        ReflectionTestUtils.setField(target, message, STRING_TO_TEST_EQUALITY);
-
         mockMvc.perform(builder)
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.errorMessage", equalTo(STRING_TO_TEST_EQUALITY)));
+                .andExpect(jsonPath("$.errorMessage",
+                        equalTo(getErrorMessage(localizedMessages, message, target))));
     }
 }

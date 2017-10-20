@@ -4,8 +4,10 @@ import com.company.configuration.security.JwtAuthenticationRequest;
 import com.company.configuration.security.JwtTokenUtil;
 import com.company.configuration.security.JwtUser;
 import com.company.configuration.security.service.JwtAuthenticationResponse;
+import com.company.util.LocalizedMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,14 +27,16 @@ import javax.servlet.http.HttpServletRequest;
 import static com.company.util.Mappings.REST_AUTHORIZATION;
 import static com.company.util.Mappings.REST_AUTHORIZATION_REFRESH;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
 public class AuthenticationRestController {
 
+    @Autowired
+    private LocalizedMessages localizedMessages;
+
     @Value("${jwt.header}")
     private String tokenHeader;
-    @Value("${userDisableMessage")
-    private String userDisabledMessage;
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtil jwtTokenUtil;
@@ -45,7 +49,8 @@ public class AuthenticationRestController {
         this.userDetailsService = userDetailsService;
     }
 
-    @PostMapping(REST_AUTHORIZATION)
+    @PostMapping(value = REST_AUTHORIZATION, consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
         // Perform the security
@@ -59,10 +64,13 @@ public class AuthenticationRestController {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (AuthenticationException e) {
+            System.out.println(LocaleContextHolder.getLocale());
             if (e.getMessage().equals("User is disabled")) {
-                return new ResponseEntity<>(userDisabledMessage, UNAUTHORIZED);
+                return new ResponseEntity<>(localizedMessages.getMessage(
+                        "login.userDisableMessage"), UNAUTHORIZED);
             }
-            return new ResponseEntity<>("Username or password is incorrect", UNAUTHORIZED);
+            return new ResponseEntity<>(localizedMessages.getMessage(
+                    "login.error"), UNAUTHORIZED);
         }
 
         // Generate the token
@@ -73,7 +81,7 @@ public class AuthenticationRestController {
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 
-    @GetMapping(REST_AUTHORIZATION_REFRESH)
+    @GetMapping(value = REST_AUTHORIZATION_REFRESH, produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
         String username = jwtTokenUtil.getUsernameFromToken(token);

@@ -1,5 +1,6 @@
 package com.company.configuration;
 
+import com.company.util.LocalizedMessages;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +56,11 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
         messageSource.setBasename(I18_MESSAGE_SOURCE_BASENAME);
         messageSource.setDefaultEncoding(DEFAULT_ENCODING_VALUE);
         return messageSource;
+    }
+
+    @Bean
+    public LocalizedMessages localizedMessages() {
+        return new LocalizedMessages(messageSource());
     }
 
     @Bean

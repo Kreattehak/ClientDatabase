@@ -4,11 +4,11 @@ import com.company.dao.AddressDao;
 import com.company.model.Address;
 import com.company.model.Client;
 import com.company.util.InjectLogger;
+import com.company.util.LocalizedMessages;
 import com.company.util.ProcessUserRequestException;
 import com.company.util.WebDataResolverAndCreator;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,18 +29,12 @@ import static com.company.util.Mappings.ID_NOT_FOUND;
 @Transactional(readOnly = true)
 public class HibernateAddressService implements AddressService {
 
-    @Value("${exception.findAddress}")
-    private String findAddressExceptionMessage;
-    @Value("${exception.saveAddress}")
-    private String saveAddressExceptionMessage;
-    @Value("${exception.deleteAddress}")
-    private String deleteAddressExceptionMessage;
-    @Value("${exception.updateAddress}")
-    private String updateAddressExceptionMessage;
-    @Value("${exception.updateMainAddress}")
-    private String updateMainAddressExceptionMessage;
-    @Value("${exception.deleteAddressNoRefererHeader}")
-    private String deleteAddressNoRefererExceptionMessage;
+    private final String findAddressExceptionMessage = "exception.findAddress";
+    private final String saveAddressExceptionMessage = "exception.saveAddress";
+    private final String deleteAddressExceptionMessage = "exception.deleteAddress";
+    private final String updateAddressExceptionMessage = "exception.updateAddress";
+    private final String updateMainAddressExceptionMessage = "exception.updateMainAddress";
+    private final String deleteAddressNoRefererExceptionMessage = "exception.deleteAddressNoRefererHeader";
 
     @InjectLogger(ADDRESS_SERVICE_LOGGER_NAME)
     private static Logger logger;
@@ -48,16 +42,19 @@ public class HibernateAddressService implements AddressService {
     private final AddressDao addressDao;
     private final ClientService clientService;
     private final WebDataResolverAndCreator webDataResolverAndCreator;
+    private final LocalizedMessages localizedMessages;
 
     private final Collector<Address, ?, Map<Long, String>> collectAddressesToMapWithLocation =
             Collectors.toMap(Address::getId, (address) -> address.getCityName() + ", " + address.getStreetName());
 
     @Autowired
     public HibernateAddressService(AddressDao addressDao, ClientService clientService,
-                                   WebDataResolverAndCreator webDataResolverAndCreator) {
+                                   WebDataResolverAndCreator webDataResolverAndCreator,
+                                   LocalizedMessages localizedMessages) {
         this.addressDao = addressDao;
         this.clientService = clientService;
         this.webDataResolverAndCreator = webDataResolverAndCreator;
+        this.localizedMessages = localizedMessages;
     }
 
     @Override
@@ -68,7 +65,7 @@ public class HibernateAddressService implements AddressService {
             logger.warn("{} tried to get address with id {}, but that address doesn't exist. "
                             + "This request was handmade.",
                     webDataResolverAndCreator.getUserData(request), addressId);
-            throw new ProcessUserRequestException(findAddressExceptionMessage);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(findAddressExceptionMessage));
         }
 
         return addressFromDatabase;
@@ -123,7 +120,7 @@ public class HibernateAddressService implements AddressService {
             logger.warn("{} tried to add address for client with id {}. " +
                             "This request was handmade, with data: clientId= {}, {}.",
                     webDataResolverAndCreator.getUserData(request), clientId, newAddress);
-            throw new ProcessUserRequestException(saveAddressExceptionMessage);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(saveAddressExceptionMessage));
         }
 
         Address addressStoredInDatabase = addressDao.save(newAddress);
@@ -147,7 +144,7 @@ public class HibernateAddressService implements AddressService {
         if (clientId.equals(ID_NOT_FOUND)) {
             logger.warn(webDataResolverAndCreator.getUserData(request)
                     + " tried to remove address, but request doesn't have a referer header.");
-            throw new ProcessUserRequestException(deleteAddressNoRefererExceptionMessage);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(deleteAddressNoRefererExceptionMessage));
         }
         Client clientFromDatabase = clientService.findClientById(clientId, request);
         boolean isRequestProper = !Objects.equals(clientFromDatabase.getMainAddress().getId(), addressId);
@@ -155,7 +152,7 @@ public class HibernateAddressService implements AddressService {
             logger.warn("{} tried to delete address for client with id {}. "
                             + "This request was handmade, with data: addressId= {}, clientId= {}.",
                     webDataResolverAndCreator.getUserData(request), clientId, addressId, clientId);
-            throw new ProcessUserRequestException(deleteAddressExceptionMessage);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(deleteAddressExceptionMessage));
         }
         Address addressToBeRemoved = findAddressById(addressId, request);
 
@@ -177,7 +174,7 @@ public class HibernateAddressService implements AddressService {
         if (!isRequestProper) {
             logger.warn("{} tried to update address. This request was handmade, with data: {}.",
                     webDataResolverAndCreator.getUserData(request), editedAddress);
-            throw new ProcessUserRequestException(updateAddressExceptionMessage);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(updateAddressExceptionMessage));
         }
         Address addressFromDatabase = findAddressById(addressId, request);
         isRequestProper = (checkIfAddressAlreadyExists(addressFromDatabase.getClient(),
@@ -185,7 +182,7 @@ public class HibernateAddressService implements AddressService {
         if (!isRequestProper) {
             logger.warn("{} tried to update address with address data that already exists {}.",
                     webDataResolverAndCreator.getUserData(request), editedAddress);
-            throw new ProcessUserRequestException(updateAddressExceptionMessage);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(updateAddressExceptionMessage));
         }
 
         String addressData = addressFromDatabase.toString();
@@ -211,7 +208,7 @@ public class HibernateAddressService implements AddressService {
             logger.warn("{} tried to edit main address for client with id {}. "
                             + "This request was handmade, with data: addressId= {}, clientId= {}.",
                     webDataResolverAndCreator.getUserData(request), clientId, addressId, clientId);
-            throw new ProcessUserRequestException(updateMainAddressExceptionMessage);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(updateMainAddressExceptionMessage));
         }
         Address addressFromDatabase = findAddressById(addressId, request);
 

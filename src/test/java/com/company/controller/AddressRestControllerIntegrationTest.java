@@ -8,6 +8,7 @@ import com.company.model.Address;
 import com.company.model.Client;
 import com.company.service.AddressService;
 import com.company.service.ClientService;
+import com.company.util.LocalizedMessages;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
@@ -34,6 +35,7 @@ import static com.company.controller.AddressRestControllerTest.ASR;
 import static com.company.controller.AddressRestControllerTest.MASE;
 import static com.company.service.HibernateAddressServiceTest.*;
 import static com.company.service.HibernateClientServiceTest.FCEM;
+import static com.company.util.LocalizedMessagesTest.getErrorMessage;
 import static com.company.util.Mappings.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -68,6 +70,8 @@ public class AddressRestControllerIntegrationTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private AddressRestController addressRestController;
+    @Autowired
+    private LocalizedMessages localizedMessages;
 
     private MockMvc mockMvc;
     private Client testClient;
@@ -90,6 +94,7 @@ public class AddressRestControllerIntegrationTest {
         addressService = null;
         webApplicationContext = null;
         addressRestController = null;
+        localizedMessages = null;
 
         mockMvc = null;
         testClient = null;
@@ -414,10 +419,9 @@ public class AddressRestControllerIntegrationTest {
 
     private void tryToPerformActionButExceptionWasThrown(MockHttpServletRequestBuilder builder,
                                                          String message, Object target) throws Exception {
-        ReflectionTestUtils.setField(target, message, STRING_TO_TEST_EQUALITY);
-
         mockMvc.perform(builder)
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.errorMessage", equalTo(STRING_TO_TEST_EQUALITY)));
+                .andExpect(jsonPath("$.errorMessage",
+                        equalTo(getErrorMessage(localizedMessages, message, target))));
     }
 }

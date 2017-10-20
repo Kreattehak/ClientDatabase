@@ -5,6 +5,7 @@ import com.company.configuration.AppTestConfig;
 import com.company.dao.AddressDao;
 import com.company.model.Address;
 import com.company.model.Client;
+import com.company.util.LocalizedMessages;
 import com.company.util.ProcessUserRequestException;
 import com.company.util.WebDataResolverAndCreator;
 import org.hamcrest.Matcher;
@@ -22,7 +23,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -63,6 +64,8 @@ public class HibernateAddressServiceTest {
     private HttpServletRequest requestMock;
     @Mock
     private WebDataResolverAndCreator webDataResolverAndCreatorMock;
+    @Mock
+    private LocalizedMessages localizedMessagesMock;
 
     @InjectMocks
     private HibernateAddressService addressService;
@@ -88,6 +91,7 @@ public class HibernateAddressServiceTest {
         clientService = null;
         requestMock = null;
         webDataResolverAndCreatorMock = null;
+        localizedMessagesMock = null;
         addressService = null;
         testAddress = null;
         testClient = null;
@@ -106,7 +110,7 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenAddressWasNotFoundById() {
-        ReflectionTestUtils.setField(addressService, FAEM, STRING_TO_TEST_EQUALITY);
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
@@ -225,9 +229,9 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldNotAddTwoSameAddressesForOneClient() throws Exception {
-        ReflectionTestUtils.setField(addressService, SAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
 
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
 
@@ -276,8 +280,7 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldNotDeleteAddressFromDatabaseWhenRefererHeaderWasNotPresent() throws Exception {
-        ReflectionTestUtils.setField(addressService, DANREM, STRING_TO_TEST_EQUALITY);
-
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(requestMock.getHeader(REFERER_HEADER)).thenReturn(null);
         when(webDataResolverAndCreatorMock.fetchClientIdFromRequest(requestMock))
                 .thenReturn(ID_NOT_FOUND);
@@ -289,9 +292,9 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldNotDeleteAddressFromDatabaseWhenItIsMainAddress() throws Exception {
-        ReflectionTestUtils.setField(addressService, DAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
 
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(requestMock.getHeader(REFERER_HEADER))
                 .thenReturn(REFERER_HEADER_VALUE + testClient.getId());
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
@@ -304,9 +307,9 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldNotDeleteAddressFromDatabaseWhenAddressToDeleteWasNotFound() throws Exception {
-        ReflectionTestUtils.setField(addressService, FAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
 
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(requestMock.getHeader(REFERER_HEADER))
                 .thenReturn(REFERER_HEADER_VALUE + testClient.getId());
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
@@ -341,9 +344,10 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldNotUpdateAddressWhenAddressFromFormDoesNotHaveId() throws Exception {
-        ReflectionTestUtils.setField(addressService, UAEM, STRING_TO_TEST_EQUALITY);
         Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
@@ -352,10 +356,10 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldNotUpdateAddressWhenAddressDoesNotExist() throws Exception {
-        ReflectionTestUtils.setField(addressService, UAEM, STRING_TO_TEST_EQUALITY);
         Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
 
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(addressDao.findById(anyLong())).thenReturn(null);
 
         expectedException.expect(ProcessUserRequestException.class);
@@ -365,10 +369,10 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldNotUpdateAddressWithTheSameData() throws Exception {
-        ReflectionTestUtils.setField(addressService, UAEM, STRING_TO_TEST_EQUALITY);
         testAddress.setClient(testClient);
         testClient.addAddress(testAddress);
 
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(addressDao.findById(anyLong())).thenReturn(testAddress);
 
         expectedException.expect(ProcessUserRequestException.class);
@@ -400,9 +404,9 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldNotUpdateMainAddressToMainAddress() throws Exception {
-        ReflectionTestUtils.setField(addressService, UMAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
 
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
 
@@ -413,9 +417,9 @@ public class HibernateAddressServiceTest {
 
     @Test
     public void shouldNotUpdateMainAddressWhenAddressDoesNotExist() throws Exception {
-        ReflectionTestUtils.setField(addressService, UMAEM, STRING_TO_TEST_EQUALITY);
         testClient.addAddress(testAddress);
 
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(clientService.findClientById(anyLong(), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
         when(addressDao.findById(anyLong())).thenReturn(null);

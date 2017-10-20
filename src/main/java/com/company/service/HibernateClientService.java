@@ -3,11 +3,11 @@ package com.company.service;
 import com.company.dao.ClientDao;
 import com.company.model.Client;
 import com.company.util.InjectLogger;
+import com.company.util.LocalizedMessages;
 import com.company.util.ProcessUserRequestException;
 import com.company.util.WebDataResolverAndCreator;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,23 +21,23 @@ import static com.company.util.Mappings.CLIENT_SERVICE_LOGGER_NAME;
 @Transactional(readOnly = true)
 public class HibernateClientService implements ClientService {
 
-    @Value("${exception.findClient}")
-    private String findClientExceptionMessage;
-    @Value("${exception.updateClient}")
-    private String updateClientExceptionMessage;
-    @Value("${exception.deleteClient}")
-    private String deleteClientExceptionMessage;
+    private final String findClientExceptionMessage = "exception.findClient";
+    private final String updateClientExceptionMessage = "exception.updateClient";
+    private final String deleteClientExceptionMessage = "exception.deleteClient";
 
     @InjectLogger(CLIENT_SERVICE_LOGGER_NAME)
     private static Logger logger;
 
     private final ClientDao clientDao;
     private final WebDataResolverAndCreator webDataResolverAndCreator;
+    private final LocalizedMessages localizedMessages;
 
     @Autowired
-    public HibernateClientService(ClientDao clientDao, WebDataResolverAndCreator webDataResolverAndCreator) {
+    public HibernateClientService(ClientDao clientDao, WebDataResolverAndCreator webDataResolverAndCreator,
+                                  LocalizedMessages localizedMessages) {
         this.clientDao = clientDao;
         this.webDataResolverAndCreator = webDataResolverAndCreator;
+        this.localizedMessages = localizedMessages;
     }
 
     @Override
@@ -48,8 +48,7 @@ public class HibernateClientService implements ClientService {
             logger.warn("{} tried to get client with id {}, but that client doesn't exist. "
                             + "This request was handmade.",
                     webDataResolverAndCreator.getUserData(request), clientId);
-            System.out.println(findClientExceptionMessage);
-            throw new ProcessUserRequestException(findClientExceptionMessage);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(findClientExceptionMessage));
         }
 
         return clientFromDatabase;
@@ -95,7 +94,7 @@ public class HibernateClientService implements ClientService {
         } catch (ProcessUserRequestException cause) {
             logger.warn("{} tried to delete client with id {}. This request was handmade.",
                     webDataResolverAndCreator.getUserData(request), clientId);
-            throw new ProcessUserRequestException(deleteClientExceptionMessage, cause);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(deleteClientExceptionMessage), cause);
         }
 
         clientDao.delete(clientFromDatabase);
@@ -113,7 +112,7 @@ public class HibernateClientService implements ClientService {
         if (!isRequestProper) {
             logger.warn("{} tried to update client. This request was handmade, with data: {}.",
                     webDataResolverAndCreator.getUserData(request), editedClient);
-            throw new ProcessUserRequestException(updateClientExceptionMessage);
+            throw new ProcessUserRequestException(localizedMessages.getMessage(updateClientExceptionMessage));
         }
         Client clientFromDatabase = findClientById(clientId, request);
 

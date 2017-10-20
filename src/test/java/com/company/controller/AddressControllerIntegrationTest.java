@@ -8,6 +8,7 @@ import com.company.model.Address;
 import com.company.model.Client;
 import com.company.service.AddressService;
 import com.company.service.ClientService;
+import com.company.util.LocalizedMessages;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -18,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -33,6 +33,7 @@ import static com.company.controller.AddressController.CLIENT_ADDRESSES;
 import static com.company.controller.AddressController.NEW_ADDRESS;
 import static com.company.service.HibernateAddressServiceTest.*;
 import static com.company.service.HibernateClientServiceTest.FCEM;
+import static com.company.util.LocalizedMessagesTest.getErrorMessage;
 import static com.company.util.Mappings.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -68,6 +69,8 @@ public class AddressControllerIntegrationTest {
     private AddressDao addressDao;
     @Autowired
     private WebApplicationContext webApplicationContext;
+    @Autowired
+    private LocalizedMessages localizedMessages;
 
     private MockMvc mockMvc;
     private Client testClient;
@@ -89,6 +92,7 @@ public class AddressControllerIntegrationTest {
         clientDao = null;
         addressDao = null;
         webApplicationContext = null;
+        localizedMessages = null;
 
         mockMvc = null;
         testClient = null;
@@ -256,7 +260,7 @@ public class AddressControllerIntegrationTest {
                 .param(ID, ID_NOT_FOUND_VALUE_STRING)
                 .param(STREET_NAME, ADDRESS_STREET_NAME)
                 .param(CITY_NAME, ADDRESS_CITY_NAME)
-                .param(ZIP_CODE, ADDRESS_ZIP_CODE), UAEM, addressService);
+                .param(ZIP_CODE, ADDRESS_ZIP_CODE), FAEM, addressService);
     }
 
     @Test
@@ -310,7 +314,7 @@ public class AddressControllerIntegrationTest {
         tryToPerformActionButExceptionWasThrown(
                 put(EDIT_MAIN_ADDRESS)
                         .param(CLIENT_ID, testClient.getId().toString())
-                        .param(ADDRESS_ID, ID_NOT_FOUND_VALUE_STRING), UMAEM, addressService);
+                        .param(ADDRESS_ID, testAddress.getId().toString()), UMAEM, addressService);
     }
 
     @Test
@@ -358,10 +362,12 @@ public class AddressControllerIntegrationTest {
 
     @Test
     public void shouldNotDeleteAddressFromDatabaseWhenAddressWasNotFound() throws Exception {
+        saveClientWithAddress();
+
         tryToPerformActionButExceptionWasThrown(
                 get(REMOVE_ADDRESS)
                         .contentType(APPLICATION_FORM_URLENCODED_VALUE)
-                        .header(REFERER_HEADER, REFERER_HEADER_VALUE + ID_VALUE_STRING)
+                        .header(REFERER_HEADER, REFERER_HEADER_VALUE + testClient.getId())
                         .param(ADDRESS_ID, ID_VALUE_STRING), FAEM, addressService);
     }
 
@@ -452,12 +458,11 @@ public class AddressControllerIntegrationTest {
 
     private void tryToPerformActionButExceptionWasThrown(MockHttpServletRequestBuilder builder,
                                                          String message, Object target) throws Exception {
-        ReflectionTestUtils.setField(target, message, STRING_TO_TEST_EQUALITY);
-
         mockMvc.perform(builder)
                 .andExpect(status().is4xxClientError())
                 .andExpect(view().name(extractViewName(ERROR_PAGE)))
-                .andExpect(model().attribute(ERROR_MESSAGE, STRING_TO_TEST_EQUALITY));
+                .andExpect(model().attribute(ERROR_MESSAGE,
+                        getErrorMessage(localizedMessages, message, target)));
     }
 
 }

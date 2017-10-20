@@ -4,6 +4,7 @@ import com.company.configuration.AppConfiguration;
 import com.company.configuration.AppTestConfig;
 import com.company.dao.ClientDao;
 import com.company.model.Client;
+import com.company.util.LocalizedMessages;
 import com.company.util.ProcessUserRequestException;
 import com.company.util.WebDataResolverAndCreator;
 import org.hamcrest.Matcher;
@@ -37,6 +38,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -58,6 +60,8 @@ public class HibernateClientServiceTest {
     private HttpServletRequest requestMock;
     @Mock
     private WebDataResolverAndCreator webDataResolverAndCreatorMock;
+    @Mock
+    private LocalizedMessages localizedMessagesMock;
 
     @InjectMocks
     private HibernateClientService clientService;
@@ -79,6 +83,7 @@ public class HibernateClientServiceTest {
         clientDaoMock = null;
         requestMock = null;
         webDataResolverAndCreatorMock = null;
+        localizedMessagesMock = null;
         clientService = null;
         testClient = null;
     }
@@ -95,7 +100,7 @@ public class HibernateClientServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenClientWasNotFoundById() {
-        ReflectionTestUtils.setField(clientService, FCEM, STRING_TO_TEST_EQUALITY);
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
@@ -116,7 +121,7 @@ public class HibernateClientServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenClientIdWasNotFoundWhileEditingClient() {
-        ReflectionTestUtils.setField(clientService, FCEM, STRING_TO_TEST_EQUALITY);
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
@@ -176,8 +181,7 @@ public class HibernateClientServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenClientWasNotFoundWhileDeletingClient() {
-        ReflectionTestUtils.setField(clientService, DCEM, STRING_TO_TEST_EQUALITY);
-
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(clientDaoMock.findById(anyLong())).thenReturn(null);
 
         expectedException.expect(ProcessUserRequestException.class);
@@ -207,8 +211,9 @@ public class HibernateClientServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenIdWasNullWhileUpdatingClient() {
-        ReflectionTestUtils.setField(clientService, UCEM, STRING_TO_TEST_EQUALITY);
         testClient.setId(null);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         expectedException.expect(ProcessUserRequestException.class);
         expectedException.expectMessage(STRING_TO_TEST_EQUALITY);
@@ -217,8 +222,7 @@ public class HibernateClientServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenClientWasNotFoundWhileUpdatingClient() {
-        ReflectionTestUtils.setField(clientService, FCEM, STRING_TO_TEST_EQUALITY);
-
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
         when(clientDaoMock.findById(anyLong())).thenReturn(null);
 
         expectedException.expect(ProcessUserRequestException.class);
