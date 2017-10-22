@@ -30,8 +30,8 @@ public class JwtTokenUtil implements Serializable {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
-    private Long expiration;
+    @Value("${jwt.expirationTimeInSeconds}")
+    private Long expirationTimeInSeconds;
 
     public String getUsernameFromToken(String token) {
         String username;
@@ -91,7 +91,7 @@ public class JwtTokenUtil implements Serializable {
     }
 
     private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + expiration * 1000);
+        return new Date(System.currentTimeMillis() + expirationTimeInSeconds * 1000);
     }
 
     private Boolean isTokenExpired(String token) {
@@ -158,7 +158,7 @@ public class JwtTokenUtil implements Serializable {
         JwtUser user = (JwtUser) userDetails;
         final String username = getUsernameFromToken(token);
         final Date created = getCreatedDateFromToken(token);
-        //final Date expiration = getExpirationDateFromToken(token);
+
         return (
                 username.equals(user.getUsername())
                         && !isTokenExpired(token)

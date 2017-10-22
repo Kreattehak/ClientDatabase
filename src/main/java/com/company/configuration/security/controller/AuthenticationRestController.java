@@ -7,7 +7,6 @@ import com.company.configuration.security.service.JwtAuthenticationResponse;
 import com.company.util.LocalizedMessages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mobile.device.Device;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -64,7 +63,6 @@ public class AuthenticationRestController {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (AuthenticationException e) {
-            System.out.println(LocaleContextHolder.getLocale());
             if (e.getMessage().equals("User is disabled")) {
                 return new ResponseEntity<>(localizedMessages.getMessage(
                         "login.userDisableMessage"), UNAUTHORIZED);
