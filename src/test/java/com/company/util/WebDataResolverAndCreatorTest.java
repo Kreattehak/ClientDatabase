@@ -75,7 +75,7 @@ public class WebDataResolverAndCreatorTest {
 
     @Test
     public void shouldReturnLoggedUserNameFromHeaderSendByFrontEndApp() throws Exception {
-        String userName = "someUser";
+        String userName = "someuser";
         when(requestMock.getHeader(LOGGED_USER_HEADER)).thenReturn(userName);
 
         assertThat(webDataResolverAndCreator.getLoggedUserName(requestMock), equalTo(userName));
@@ -86,8 +86,8 @@ public class WebDataResolverAndCreatorTest {
 
     @Test
     public void shouldReturnLoggedUserNameFromCookie() throws Exception {
-        String userName = "someUser";
-        Cookie cookie = new Cookie(COOKIE_NAME, TEST_JWT_TOKEN);
+        String userName = "someuser";
+        Cookie cookie = new Cookie(COOKIE_NAME, TEST_JWT);
         when(requestMock.getHeader(LOGGED_USER_HEADER)).thenReturn(null);
         when(requestMock.getCookies()).thenReturn(new Cookie[]{cookie});
 

@@ -4,6 +4,7 @@ import com.company.configuration.AppConfiguration;
 import com.company.configuration.AppTestConfig;
 import com.company.model.Client;
 import com.company.service.ClientService;
+import com.company.util.LocalizedMessages;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
@@ -17,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -30,6 +30,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -55,6 +56,8 @@ public class ClientRestControllerTest {
     private ObjectMapper objectMapper;
 
     @Mock
+    private LocalizedMessages localizedMessagesMock;
+    @Mock
     private ClientService clientServiceMock;
 
     @InjectMocks
@@ -76,6 +79,7 @@ public class ClientRestControllerTest {
     @After
     public void tearDown() throws Exception {
         objectMapper = null;
+        localizedMessagesMock = null;
         clientServiceMock = null;
         clientRestController = null;
         mockMvc = null;
@@ -114,8 +118,9 @@ public class ClientRestControllerTest {
 
     @Test
     public void shouldPerformDeleteClientAction() throws Exception {
-        ReflectionTestUtils.setField(clientRestController, CSR, STRING_TO_TEST_EQUALITY);
         String data = objectMapper.writeValueAsString(testClient);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         mockMvc.perform(post(REST_API_PREFIX + REST_DELETE_CLIENT)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -129,11 +134,11 @@ public class ClientRestControllerTest {
 
     @Test
     public void shouldPerformEditClientAction() throws Exception {
-        ReflectionTestUtils.setField(clientRestController, CSE, STRING_TO_TEST_EQUALITY);
         String data = objectMapper.writeValueAsString(testClient);
 
         when(clientServiceMock.updateClient(any(Client.class), any(HttpServletRequest.class)))
                 .thenReturn(testClient);
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         mockMvc.perform(put(REST_API_PREFIX + REST_UPDATE_CLIENT)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -147,9 +152,10 @@ public class ClientRestControllerTest {
 
     @Test
     public void shouldPerformValidateFirstNameAndNotEditClientInDatabaseAction() throws Exception {
-        ReflectionTestUtils.setField(clientRestController, CNF, STRING_TO_TEST_EQUALITY);
         testClient.setFirstName(INVALID_TO_SHORT_INPUT);
         String data = objectMapper.writeValueAsString(testClient);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         tryToEditClientWithNotValidData(data);
 
@@ -158,9 +164,10 @@ public class ClientRestControllerTest {
 
     @Test
     public void shouldPerformValidateLastNameAndNotEditClientInDatabaseAction() throws Exception {
-        ReflectionTestUtils.setField(clientRestController, CNF, STRING_TO_TEST_EQUALITY);
         testClient.setLastName(INVALID_TO_SHORT_INPUT);
         String data = objectMapper.writeValueAsString(testClient);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         tryToEditClientWithNotValidData(data);
 

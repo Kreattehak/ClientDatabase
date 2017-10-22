@@ -44,8 +44,8 @@ public class Constants {
 
     public static final String STRING_TO_TEST_EQUALITY = "1a2b3c4d5e6";
 
-    public static final String TEST_JWT_TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzb21lVXNlciIsImF1ZGllbm" +
-            "NlIjoidW5rbm93biIsImNyZWF0ZWQiOjE1MDc3NDU3NDYyMzksImV4cCI6MTUwODM1MDU0Nn0.kuV3N4oxhzN8r5Yga" +
-            "_eC0idDL78Uj4uRhkFoCBBa1VZfTAO6Ub5kxMWxB--aSs6EMm4GEOYqPccj5SqKnD9aqQ";
-
+    //JWT without expiration date
+    public static final String TEST_JWT = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzb21ldXNlciIsIm" +
+            "F1ZGllbmNlIjoid2ViIiwiY3JlYXRlZCI6MTUwODY4MjQ2NjI4OH0.l2TJQ-avQINPpgUd85RZKvmpJg59L" +
+            "WELazzj2Z3aNPEBzyQyB3R3aCWwJLOYLJC5ZNhsWW3J9os8U3Qo6w_F4A";
 }

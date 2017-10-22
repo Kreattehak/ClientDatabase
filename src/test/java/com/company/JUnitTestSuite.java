@@ -13,6 +13,8 @@ import com.company.dao.AbstractDaoTest;
 import com.company.model.ClientTest;
 import com.company.service.HibernateAddressServiceTest;
 import com.company.service.HibernateClientServiceTest;
+import com.company.util.LocalizedMessages;
+import com.company.util.LocalizedMessagesTest;
 import com.company.util.LoggerInjectorTest;
 import com.company.util.MappingsTest;
 import com.company.util.WebDataResolverAndCreatorTest;
@@ -25,6 +27,7 @@ import org.junit.runners.Suite;
         MappingsTest.class,
 //        FastTests.class,
         WebDataResolverAndCreatorTest.class,
+        LocalizedMessagesTest.class,
         ClientTest.class,
         AbstractDaoTest.class,
         HibernateClientServiceTest.class,

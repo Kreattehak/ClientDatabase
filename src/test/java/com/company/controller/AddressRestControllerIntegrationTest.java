@@ -19,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -120,7 +119,6 @@ public class AddressRestControllerIntegrationTest {
 
     @Test
     public void shouldEditAddressInDatabase() throws Exception {
-        ReflectionTestUtils.setField(addressRestController, ASE, STRING_TO_TEST_EQUALITY);
         saveClientWithAddress();
 
         Address anotherTestAddress = new Address(ANOTHER_ADDRESS_STREET_NAME,
@@ -132,7 +130,8 @@ public class AddressRestControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(data))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
+                .andExpect(jsonPath("$",
+                        equalTo(getErrorMessage(localizedMessages, ASE, addressRestController))));
 
         assertThat(addressDao.findById(testAddress.getId()),
                 is(checkAddressFieldsEqualityWithClient(ANOTHER_ADDRESS_STREET_NAME,
@@ -241,8 +240,6 @@ public class AddressRestControllerIntegrationTest {
 
     @Test
     public void shouldDeleteAddress() throws Exception {
-        ReflectionTestUtils.setField(addressRestController, ASR, STRING_TO_TEST_EQUALITY);
-
         Address anotherTestAddress = saveClientWithTwoAddresses();
 
         AddressRestController.Params params = new AddressRestController.Params();
@@ -255,7 +252,8 @@ public class AddressRestControllerIntegrationTest {
                 .content(data)
                 .header(REFERER_HEADER, REST_REFERER_HEADER_VALUE + testClient.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
+                .andExpect(jsonPath("$",
+                        equalTo(getErrorMessage(localizedMessages, ASR, addressRestController))));
 
         Set<Address> addresses = addressService.findAllAddresses();
 
@@ -308,7 +306,6 @@ public class AddressRestControllerIntegrationTest {
     public void shouldChangeMainAddress() throws Exception {
         Address anotherTestAddress = saveClientWithTwoAddresses();
 
-        ReflectionTestUtils.setField(addressRestController, MASE, STRING_TO_TEST_EQUALITY);
         AddressRestController.Params params = new AddressRestController.Params();
         params.setAddressId(anotherTestAddress.getId());
         params.setClientId(testClient.getId());
@@ -318,7 +315,8 @@ public class AddressRestControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(data))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
+                .andExpect(jsonPath("$",
+                        equalTo(getErrorMessage(localizedMessages, MASE, addressRestController))));
 
         assertThat(clientDao.findById(testClient.getId()).getMainAddress(), is(checkAddressFieldsEqualityWithClient(
                 ANOTHER_ADDRESS_STREET_NAME, ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, testClient)));
@@ -366,7 +364,6 @@ public class AddressRestControllerIntegrationTest {
 
     private void validateFieldsWhenTryingToEditAddress(String streetName, String cityName,
                                                        String zipCode) throws Exception {
-        ReflectionTestUtils.setField(addressRestController, ANF, STRING_TO_TEST_EQUALITY);
         Address address = addressDao.save(testAddress);
         testAddress.setStreetName(streetName);
         testAddress.setCityName(cityName);
@@ -377,7 +374,8 @@ public class AddressRestControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(data))
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
+                .andExpect(jsonPath("$",
+                        equalTo(getErrorMessage(localizedMessages, ANF, addressRestController))));
     }
 
     private void validateFieldsWhenTryingToAddAddress(String streetName, String cityName, String zipCode)

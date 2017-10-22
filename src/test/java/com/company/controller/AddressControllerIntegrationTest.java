@@ -287,7 +287,6 @@ public class AddressControllerIntegrationTest {
     @Test
     public void shouldEditMainAddress() throws Exception {
         Address anotherTestAddress = saveClientWithTwoAddresses();
-        System.out.println(clientDao.findById(testClient.getId()));
 
         mockMvc.perform(put(EDIT_MAIN_ADDRESS)
                 .contentType(APPLICATION_FORM_URLENCODED_VALUE)

@@ -5,6 +5,7 @@ import com.company.configuration.AppTestConfig;
 import com.company.model.Address;
 import com.company.model.Client;
 import com.company.service.AddressService;
+import com.company.util.LocalizedMessages;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
@@ -18,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -30,6 +30,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -56,6 +57,8 @@ public class AddressRestControllerTest {
     private ObjectMapper objectMapper;
 
     @Mock
+    private LocalizedMessages localizedMessagesMock;
+    @Mock
     private AddressService addressServiceMock;
 
     @InjectMocks
@@ -80,6 +83,7 @@ public class AddressRestControllerTest {
     @After
     public void tearDown() throws Exception {
         objectMapper = null;
+        localizedMessagesMock = null;
         addressServiceMock = null;
         addressRestController = null;
         mockMvc = null;
@@ -108,11 +112,11 @@ public class AddressRestControllerTest {
 
     @Test
     public void shouldPerformEditAddressAction() throws Exception {
-        ReflectionTestUtils.setField(addressRestController, ASE, STRING_TO_TEST_EQUALITY);
         String data = objectMapper.writeValueAsString(testAddress);
 
         when(addressServiceMock.updateAddress(any(Address.class), any(HttpServletRequest.class)))
                 .thenReturn(testAddress);
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         mockMvc.perform(put(REST_API_PREFIX + REST_UPDATE_ADDRESS)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -126,9 +130,10 @@ public class AddressRestControllerTest {
 
     @Test
     public void shouldPerformValidateStreetNameAndNotEditAddressInDatabaseAction() throws Exception {
-        ReflectionTestUtils.setField(addressRestController, ANF, STRING_TO_TEST_EQUALITY);
         testAddress.setStreetName(INVALID_TO_SHORT_INPUT);
         String data = objectMapper.writeValueAsString(testAddress);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         tryToEditAddressWithNotValidData(data);
 
@@ -137,9 +142,10 @@ public class AddressRestControllerTest {
 
     @Test
     public void shouldPerformValidateCityNameAndNotEditAddressInDatabaseAction() throws Exception {
-        ReflectionTestUtils.setField(addressRestController, ANF, STRING_TO_TEST_EQUALITY);
         testAddress.setCityName(INVALID_TO_SHORT_INPUT);
         String data = objectMapper.writeValueAsString(testAddress);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         tryToEditAddressWithNotValidData(data);
 
@@ -148,9 +154,10 @@ public class AddressRestControllerTest {
 
     @Test
     public void shouldPerformValidateZipCodeAndNotEditAddressInDatabaseAction() throws Exception {
-        ReflectionTestUtils.setField(addressRestController, ANF, STRING_TO_TEST_EQUALITY);
         testAddress.setZipCode(INVALID_TO_SHORT_INPUT);
         String data = objectMapper.writeValueAsString(testAddress);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         tryToEditAddressWithNotValidData(data);
 
@@ -208,11 +215,12 @@ public class AddressRestControllerTest {
 
     @Test
     public void shouldPerformDeleteAddressAction() throws Exception {
-        ReflectionTestUtils.setField(addressRestController, ASR, STRING_TO_TEST_EQUALITY);
         AddressRestController.Params params = new AddressRestController.Params();
         params.setAddressId(ID_VALUE);
         params.setClientId(ID_VALUE);
         String data = objectMapper.writeValueAsString(params);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         mockMvc.perform(post(REST_API_PREFIX + REST_DELETE_ADDRESS)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -226,11 +234,12 @@ public class AddressRestControllerTest {
 
     @Test
     public void shouldPerformChangeMainAddressAction() throws Exception {
-        ReflectionTestUtils.setField(addressRestController, MASE, STRING_TO_TEST_EQUALITY);
         AddressRestController.Params params = new AddressRestController.Params();
         params.setAddressId(ID_VALUE);
         params.setClientId(ID_VALUE);
         String data = objectMapper.writeValueAsString(params);
+
+        when(localizedMessagesMock.getMessage(anyString())).thenReturn(STRING_TO_TEST_EQUALITY);
 
         mockMvc.perform(put(REST_API_PREFIX + REST_EDIT_MAIN_ADDRESS)
                 .contentType(APPLICATION_JSON_UTF8_VALUE)

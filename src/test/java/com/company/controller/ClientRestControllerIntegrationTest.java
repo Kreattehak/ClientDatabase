@@ -17,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -121,7 +120,6 @@ public class ClientRestControllerIntegrationTest {
 
     @Test
     public void shouldDeleteClientFromDatabase() throws Exception {
-        ReflectionTestUtils.setField(clientRestController, CSR, STRING_TO_TEST_EQUALITY);
         clientDao.save(testClient);
         String data = objectMapper.writeValueAsString(testClient);
 
@@ -129,7 +127,8 @@ public class ClientRestControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(data))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
+                .andExpect(jsonPath("$",
+                        equalTo(getErrorMessage(localizedMessages, CSR, clientRestController))));
 
         assertThat(clientService.getAllClients(), hasSize(0));
     }
@@ -146,7 +145,6 @@ public class ClientRestControllerIntegrationTest {
 
     @Test
     public void shouldEditClientInDatabase() throws Exception {
-        ReflectionTestUtils.setField(clientRestController, CSE, STRING_TO_TEST_EQUALITY);
         clientDao.save(testClient);
 
         Client anotherTestClient = new Client(ANOTHER_CLIENT_FIRST_NAME, ANOTHER_CLIENT_LAST_NAME);
@@ -157,7 +155,8 @@ public class ClientRestControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(data))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
+                .andExpect(jsonPath("$",
+                        equalTo(getErrorMessage(localizedMessages, CSE, clientRestController))));
 
         assertThat(clientService.getAllClients(), Matchers.<List<Client>>allOf(
                 hasSize(1), hasItem(checkClientFieldsEquality(
@@ -219,7 +218,6 @@ public class ClientRestControllerIntegrationTest {
 
     private void validateFieldsWhenTryingToEditClient(String firstName, String lastName)
             throws Exception {
-        ReflectionTestUtils.setField(clientRestController, CNF, STRING_TO_TEST_EQUALITY);
         Client client = clientDao.save(testClient);
         testClient.setFirstName(firstName);
         testClient.setLastName(lastName);
@@ -229,7 +227,8 @@ public class ClientRestControllerIntegrationTest {
                 .contentType(APPLICATION_JSON_UTF8_VALUE)
                 .content(data))
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$", equalTo(STRING_TO_TEST_EQUALITY)));
+                .andExpect(jsonPath("$",
+                        equalTo(getErrorMessage(localizedMessages, CNF, clientRestController))));
     }
 
     private void validateFieldsWhenTryingToAddClient(String firstName, String lastName)
