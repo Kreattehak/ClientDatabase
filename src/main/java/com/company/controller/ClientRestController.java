@@ -2,8 +2,8 @@ package com.company.controller;
 
 import com.company.model.Client;
 import com.company.service.ClientService;
+import com.company.util.LocalizedMessages;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,22 +26,20 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 @RequestMapping(REST_API_PREFIX)
 public class ClientRestController {
 
-    @Value("${clientSuccessfullyRemoved}")
-    private String clientSuccessfullyRemoved;
-    @Value("${clientNotFound}")
-    private String clientNotFound;
-    @Value("${clientSuccessfullyEdited}")
-    private String clientSuccessfullyEdited;
-
+    private final String clientSuccessfullyRemoved = "clientSuccessfullyRemoved";
+    private final String clientNotFound = "clientNotFound";
+    private final String clientSuccessfullyEdited = "clientSuccessfullyEdited";
     private final ClientService clientService;
+    private final LocalizedMessages localizedMessages;
 
     @Autowired
-    public ClientRestController(ClientService clientService) {
+    public ClientRestController(ClientService clientService, LocalizedMessages localizedMessages) {
         this.clientService = clientService;
+        this.localizedMessages = localizedMessages;
     }
 
     @GetMapping(value = REST_GET_ALL_CLIENTS, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Client[]> getAllClients(){
+    public ResponseEntity<Client[]> getAllClients() {
         Client[] clients = clientService.getAllClientsAsArray();
         return new ResponseEntity<>(clients, OK);
     }
@@ -57,7 +55,7 @@ public class ClientRestController {
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<String> deleteClient(@Valid @RequestBody Client client, HttpServletRequest request) {
         clientService.deleteClient(client.getId(), request);
-        return new ResponseEntity<>(clientSuccessfullyRemoved, OK);
+        return new ResponseEntity<>(localizedMessages.getMessage(clientSuccessfullyRemoved), OK);
     }
 
     @PutMapping(value = REST_UPDATE_CLIENT, consumes = APPLICATION_JSON_UTF8_VALUE,
@@ -65,10 +63,10 @@ public class ClientRestController {
     public ResponseEntity<String> updateClient(@Valid @RequestBody Client clientEditData, BindingResult result,
                                                HttpServletRequest request) {
         if (result.hasErrors()) {
-            return new ResponseEntity<>(clientNotFound, UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(localizedMessages.getMessage(clientNotFound), UNPROCESSABLE_ENTITY);
         }
         clientService.updateClient(clientEditData, request);
-        return new ResponseEntity<>(clientSuccessfullyEdited, OK);
+        return new ResponseEntity<>(localizedMessages.getMessage(clientSuccessfullyEdited), OK);
     }
 
     @PostMapping(value = REST_SAVE_NEW_CLIENT, consumes = APPLICATION_JSON_UTF8_VALUE,

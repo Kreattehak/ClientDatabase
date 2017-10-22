@@ -2,8 +2,8 @@ package com.company.controller;
 
 import com.company.model.Address;
 import com.company.service.AddressService;
+import com.company.util.LocalizedMessages;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,20 +32,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 @RequestMapping(REST_API_PREFIX)
 public class AddressRestController {
 
-    @Value("${addressSuccessfullyRemoved}")
-    private String addressSuccessfullyRemoved;
-    @Value("${addressNotFound}")
-    private String addressNotFound;
-    @Value("${addressSuccessfullyEdited}")
-    private String addressSuccessfullyEdited;
-    @Value("${mainAddressSuccessfullyEdited}")
-    private String mainAddressSuccessfullyEdited;
-
+    private final String addressSuccessfullyRemoved = "addressSuccessfullyRemoved";
+    private final String addressNotFound = "addressNotFound";
+    private final String addressSuccessfullyEdited = "addressSuccessfullyEdited";
+    private final String mainAddressSuccessfullyEdited = "mainAddressSuccessfullyEdited";
     private final AddressService addressService;
+    private final LocalizedMessages localizedMessages;
 
     @Autowired
-    public AddressRestController(AddressService addressService) {
+    public AddressRestController(AddressService addressService, LocalizedMessages localizedMessages) {
         this.addressService = addressService;
+        this.localizedMessages = localizedMessages;
     }
 
     @GetMapping(value = REST_GET_ALL_ADDRESSES, produces = APPLICATION_JSON_UTF8_VALUE)
@@ -59,10 +56,10 @@ public class AddressRestController {
     public ResponseEntity<String> updateAddress(@Valid @RequestBody Address addressEditData,
                                                 BindingResult result, HttpServletRequest request) {
         if (result.hasErrors()) {
-            return new ResponseEntity<>(addressNotFound, UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(localizedMessages.getMessage(addressNotFound), UNPROCESSABLE_ENTITY);
         }
         addressService.updateAddress(addressEditData, request);
-        return new ResponseEntity<>(addressSuccessfullyEdited, OK);
+        return new ResponseEntity<>(localizedMessages.getMessage(addressSuccessfullyEdited), OK);
     }
 
     @PostMapping(value = REST_SAVE_NEW_ADDRESS, consumes = APPLICATION_JSON_UTF8_VALUE,
@@ -81,7 +78,7 @@ public class AddressRestController {
             produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<String> deleteAddress(@RequestBody Params params, HttpServletRequest request) {
         addressService.deleteAddress(params.getAddressId(), request);
-        return new ResponseEntity<>(addressSuccessfullyRemoved, OK);
+        return new ResponseEntity<>(localizedMessages.getMessage(addressSuccessfullyRemoved), OK);
     }
 
     @PutMapping(value = REST_EDIT_MAIN_ADDRESS, consumes = APPLICATION_JSON_UTF8_VALUE,
@@ -89,7 +86,7 @@ public class AddressRestController {
     public ResponseEntity<String> processEditClientMainAddress(@RequestBody Params params,
                                                                HttpServletRequest request) {
         addressService.updateMainAddress(params.getAddressId(), params.getClientId(), request);
-        return new ResponseEntity<>(mainAddressSuccessfullyEdited, OK);
+        return new ResponseEntity<>(localizedMessages.getMessage(mainAddressSuccessfullyEdited), OK);
     }
 
     static class Params implements Serializable {
