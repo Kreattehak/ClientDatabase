@@ -17,8 +17,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import java.util.LinkedHashMap;
 
 import static com.company.util.Mappings.*;
 import static org.springframework.http.HttpMethod.OPTIONS;
@@ -36,13 +43,16 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final AuthenticationSuccessHandler authSuccessHandler;
     private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Autowired
     public MultiSecurityConfiguration(AuthenticationSuccessHandler authSuccessHandler,
-                                      UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
+                                      UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil,
+                                      JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
         this.authSuccessHandler = authSuccessHandler;
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     @Autowired
@@ -73,7 +83,7 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
-
+                .exceptionHandling().authenticationEntryPoint(delegatingAuthenticationEntryPoint()).and()
                 // don't create session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
@@ -105,11 +115,15 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     SimpleUrlAuthenticationFailureHandler getAuthFailureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler(LOGIN_PAGE + "?error=true");
+    }
 
-        SimpleUrlAuthenticationFailureHandler handler = new SimpleUrlAuthenticationFailureHandler("/login");
-        handler.setDefaultFailureUrl("/login?error=true");
-        //handler.setUseForward( true );
-
-        return handler;
+    @Bean
+    public DelegatingAuthenticationEntryPoint delegatingAuthenticationEntryPoint() {
+        LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> entryPoints = new LinkedHashMap<>();
+        entryPoints.put(new AntPathRequestMatcher(REST_API_PREFIX + ANY_SUBPATH), jwtAuthenticationEntryPoint);
+        DelegatingAuthenticationEntryPoint defaultEntryPoint = new DelegatingAuthenticationEntryPoint(entryPoints);
+        defaultEntryPoint.setDefaultEntryPoint(new LoginUrlAuthenticationEntryPoint(LOGIN_PAGE));
+        return defaultEntryPoint;
     }
 }

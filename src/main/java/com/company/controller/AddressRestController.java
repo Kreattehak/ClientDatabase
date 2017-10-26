@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.Serializable;
 
+import static com.company.util.Mappings.ID_NOT_FOUND;
 import static com.company.util.Mappings.REST_API_PREFIX;
 import static com.company.util.Mappings.REST_DELETE_ADDRESS;
 import static com.company.util.Mappings.REST_EDIT_MAIN_ADDRESS;
@@ -67,7 +68,7 @@ public class AddressRestController {
     public ResponseEntity<Long> processAddNewAddress(@Valid @RequestBody Address newAddress, BindingResult result,
                                                      @RequestParam Long id, HttpServletRequest request) {
         if (result.hasErrors()) {
-            return new ResponseEntity<>(-1L, UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(ID_NOT_FOUND, UNPROCESSABLE_ENTITY);
         }
         Address savedAddress = addressService.saveAddress(newAddress, id, request);
         return new ResponseEntity<>(savedAddress.getId(), OK);

@@ -118,17 +118,7 @@
         trs[i].onclick = markAsActive;
     }
 
-    function addFunctionalityToButton(button, address, id) {
-        button.addEventListener("click", function () {
-            if (activeRow !== undefined) {
-                window.location = "/" + address + "?clientId=" + activeRow.children[0].textContent;
-            } else {
-                showErrors(button);
-            }
-        }, false);
-    }
-
-    function onDeleteButtonClick(button, address) {
+    function addFunctionalityToButton(button, address) {
         button.addEventListener("click", function () {
             if (activeRow !== undefined) {
                 window.location = "/" + address + "?clientId=" + activeRow.children[0].textContent;
@@ -142,7 +132,7 @@
     addFunctionalityToButton(bEditClient, "admin/editClient");
     addFunctionalityToButton(bEditAddresses, "admin/editAddresses");
     addFunctionalityToButton(bEditMainAddress, "admin/editMainAddress");
-    onDeleteButtonClick(bRemoveClient, "admin/removeClient");
-    onDeleteButtonClick(bRemoveAddress, "admin/removeAddressFromClient");
+    addFunctionalityToButton(bRemoveClient, "admin/removeClient");
+    addFunctionalityToButton(bRemoveAddress, "admin/removeAddressFromClient");
 
 })();
