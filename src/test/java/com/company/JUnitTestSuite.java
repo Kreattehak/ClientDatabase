@@ -1,5 +1,6 @@
 package com.company;
 
+import com.company.configuration.security.AuthenticationSuccessHandlerTest;
 import com.company.controller.AddressControllerIntegrationTest;
 import com.company.controller.AddressControllerTest;
 import com.company.controller.AddressRestControllerIntegrationTest;
@@ -13,7 +14,6 @@ import com.company.dao.AbstractDaoTest;
 import com.company.model.ClientTest;
 import com.company.service.HibernateAddressServiceTest;
 import com.company.service.HibernateClientServiceTest;
-import com.company.util.LocalizedMessages;
 import com.company.util.LocalizedMessagesTest;
 import com.company.util.LoggerInjectorTest;
 import com.company.util.MappingsTest;
@@ -23,9 +23,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        AuthenticationSuccessHandlerTest.class,
         LoggerInjectorTest.class,
         MappingsTest.class,
-//        FastTests.class,
         WebDataResolverAndCreatorTest.class,
         LocalizedMessagesTest.class,
         ClientTest.class,

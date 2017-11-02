@@ -62,8 +62,8 @@ public class HomeControllerTest {
     }
 
     @Test
-    public void shouldMapToAboutUsPage() throws Exception {
-        performRequestForHomeController(ABOUT_US_PAGE);
+    public void shouldMapToAboutAuthorPage() throws Exception {
+        performRequestForHomeController(ABOUT_AUTHOR_PAGE);
     }
 
     @Test
