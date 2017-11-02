@@ -1,8 +1,8 @@
 # ClientDatabase
 
-It's a back-end app which uses Spring MVC and Hibernate frameworks to communicate with MySQL database.
+It's a back-end server which uses Spring MVC and Hibernate frameworks to communicate with MySQL database.
 
-`ClientDatabase` also have RESTful Web Service, to check how it works you can use another project from my github
+`ClientDatabase` also have RESTful Service, to check how it works you can use another project from my github
 `ClientDatabaseAngularFront`
 
 
@@ -10,7 +10,7 @@ It's a back-end app which uses Spring MVC and Hibernate frameworks to communicat
 
 ```
 1. You need to have some relational database management system installed, I used MYSQL.
-2. Create two schemas clients and clients_test
+2. Create two schemas clients and clients_test in you database.
 3. Download or clone repo.
 4a) This repo has setUp.sql file which can populate your sql database with some data.
 4b) This repo also has a createSecurityTables.sql to generate tables required for authentication.
@@ -25,7 +25,8 @@ It's a back-end app which uses Spring MVC and Hibernate frameworks to communicat
 
 This project is an CRUD web application which can help you mange your client data by web page.
 
-## Screens
+
+## Screenshots
 
 ![main page](https://github.com/Kreattehak/ClientDatabase/blob/screenshots/main_page.png "Main page with table of clients")
 Main page with table of clients.
@@ -40,20 +41,23 @@ Localized version of project.
 ## More about this project
 This project is an CRUD web application, which allows you to store Clients with their addresses 
 in database. You can use standard Spring MVC with JSP part of this app or consume REST with front-end 
-app like `ClientDatabaseAngularFront` from my github.
+app like `ClientDatabaseAngularFront` from my github. You can check it [here](https://github.com/Kreattehak/ClientDatabaseAngularFront).
+
 MVC part contains multiple jsp pages which allow you to add, delete, edit clients and their addresses,
 you can also mark one of them as main address.
 
-This project has convenient log system. Logs are saved at your user home location in ClientDatabase folder.
+This project has convenient log system. Logs are saved at your user home location in ClientDatabase folder. 
+So if you account is named 'User', this path looks like that `C:\Users\User\ClientDatabase\logs`.
 
 ### Some of design choices I took:
-This project still contains old version of this app which was based on JSP and some basic Spring Security authentication.
+This project still contains 'old' version of this app which was based on JSP and some basic Spring Security authentication, 
+it's updated to get authentication token from cookie.
 JUnit 5 class `org.junit.Assert` does not provide `assertThat()` method, 
 to prevent test failure in newer versions of Junit I use `assertThat()` method from `org.hamcrest.MatcherAssert`.
 
-### How this app was developed over time:
+### How this app was developed over time
 First and foremost, I created this app to learn how Object-Relational Mapping works. Before, 
-I was developing `ElectronicShop` app and I have encountered a several ORM problems e.g. 
+I was developing `ElectronicShop` (now postponed) app and I have encountered a several ORM problems e.g. 
 with storing lists of products that users have bought or various relationships between entities. 
 I choose Hibernate ORM to perform simple CRUD operations on MYSQL Relational Database. 
 After creating basic relationships between entities (@OneToMany, @ManyToOne), 
@@ -65,25 +69,27 @@ For front-end I initially used pure JavaScript,
 but after I studied REST topics I came to an conclusion that Angular framework 
 would perfectly fit my needs.
 
-Under this [link](https://github.com/Kreattehak/ClientDatabaseAngularFront)
-you can check this Angular app.
-
 ### Problems I encountered while developing this app:
-Change of thinking while writing JS code (ES5),
-e.g. that blocks doesn’t create scope, behavior of `this` keyword in various situations.
+Change of thinking while writing JS code (ES5) in comparison to Java,
+e.g. that blocks doesn’t create scope, behavior of `this` keyword in various situations (Typescript 'this' in callbacks).
 
-Spring security configuration which allows both jwt authentication and default form login with changed cookie data.
- 
+How to manage Spring security configuration which allows both jwt authentication and default form login with changed cookie data.
+
+How to store clients addresses. I used HashSet with hashCode() method overridden to hash address ids,
+but that didn't eliminated data duplication in database. 
+
 How to test both mvc and rest part of this project.
  
 How to handle exceptions when client violate rules and send handmade requests.
 
+Problem with transactions in early version when controllers had some logic that used queries to database.
+Now it's refactored and all logic is in services.
 ### Why you haven't use Spring Boot?
 This app from beginning was developed with clear purpose to learn how Spring and Hibernate frameworks
- work and later I wanted to know how Angular framework can be used to consume REST.
+work and later I wanted to know how Angular framework can be used to consume REST.
 
 ## REST resources
-
+Same as in ClientDatabaseAngularFront
 ```
 /api/getAllClients - return all clients in array [GET]
 /api/admin/getClient - with id parameter, to get desired client [GET]
@@ -99,5 +105,4 @@ This app from beginning was developed with clear purpose to learn how Spring and
 ```
 
 ## Future of this project
-
-My purpose is to transform this project into 'AnimalShelterManagement' project.
+My purpose is to transform this project into 'AnimalShelterManagement' project working on Spring Boot.

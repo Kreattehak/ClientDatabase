@@ -80,7 +80,6 @@ public class Client extends BaseEntity implements Serializable {
         this.address = adress;
     }
 
-    //TODO: Should addAddress also set client for address?
     public void addAddress(Address address) {
         if (this.address.isEmpty()) {
             this.mainAddress = address;

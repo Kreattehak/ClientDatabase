@@ -84,7 +84,6 @@ public class HibernateClientService implements ClientService {
         return clientStoredInDatabase;
     }
 
-    //TODO: Is catching and rethrowing exception really a good idea?
     @Override
     @Transactional(readOnly = false)
     public void deleteClient(Long clientId, HttpServletRequest request) {
