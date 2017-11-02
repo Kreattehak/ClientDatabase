@@ -36,7 +36,7 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final String[] PERMITTED_URLS = {
             REST_AUTHORIZATION + ANY_SUBPATH, REST_API_PREFIX + REST_GET_ALL_CLIENTS,
-            SLASH, TABLE_OF_CLIENTS, RESOURCES + ANY_SUBPATH, FAVICON, ABOUT_US_PAGE, BLANK_PAGE
+            SLASH, TABLE_OF_CLIENTS, RESOURCES + ANY_SUBPATH, FAVICON, ABOUT_AUTHOR_PAGE, BLANK_PAGE
     };
     private static final int BCRYPT_STRENGTH = 12;
 

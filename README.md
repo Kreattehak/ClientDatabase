@@ -84,6 +84,7 @@ How to handle exceptions when client violate rules and send handmade requests.
 
 Problem with transactions in early version when controllers had some logic that used queries to database.
 Now it's refactored and all logic is in services.
+
 ### Why you haven't use Spring Boot?
 This app from beginning was developed with clear purpose to learn how Spring and Hibernate frameworks
 work and later I wanted to know how Angular framework can be used to consume REST.

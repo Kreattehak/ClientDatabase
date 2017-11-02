@@ -16,7 +16,7 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-nav-hide">
             <ul class="nav navbar-nav">
-                <li><a href="<c:url value="/aboutUs"/>"><spring:message code="menu.aboutUs"/></a></li>
+                <li><a href="<c:url value="/aboutAuthor"/>"><spring:message code="menu.aboutAuthor"/></a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="<c:url value="?language=en"/>">ENG</a></li>

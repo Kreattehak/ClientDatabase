@@ -3,13 +3,7 @@ package com.company.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import static com.company.util.Mappings.ABOUT_US_PAGE;
-import static com.company.util.Mappings.BLANK_PAGE;
-import static com.company.util.Mappings.LOGIN_PAGE;
-import static com.company.util.Mappings.REDIRECT;
-import static com.company.util.Mappings.SLASH;
-import static com.company.util.Mappings.TABLE_OF_CLIENTS;
-import static com.company.util.Mappings.extractViewName;
+import static com.company.util.Mappings.*;
 
 @Controller
 public class HomeController {
@@ -24,9 +18,9 @@ public class HomeController {
         return extractViewName(BLANK_PAGE);
     }
 
-    @RequestMapping(ABOUT_US_PAGE)
-    public String aboutUs() {
-        return extractViewName(ABOUT_US_PAGE);
+    @RequestMapping(ABOUT_AUTHOR_PAGE)
+    public String aboutAuthor() {
+        return extractViewName(ABOUT_AUTHOR_PAGE);
     }
 
     @RequestMapping(LOGIN_PAGE)

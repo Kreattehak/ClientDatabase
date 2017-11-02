@@ -43,7 +43,7 @@ public class Mappings {
     public static final String REST_EDIT_MAIN_ADDRESS = ADMIN_PREFIX + "/editMainAddress";
 
     public static final String BLANK_PAGE = "/blank";
-    public static final String ABOUT_US_PAGE = "/aboutUs";
+    public static final String ABOUT_AUTHOR_PAGE = "/aboutAuthor";
 
     public static final String RESOLVER_PREFIX = "/WEB-INF/views/";
     public static final String RESOLVER_SUFFIX = ".jsp";
