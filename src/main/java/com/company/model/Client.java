@@ -23,12 +23,12 @@ import java.util.Set;
 @Table(name = "listofclients")
 public class Client extends BaseEntity implements Serializable {
 
-    @Column(name = "firstName", length = 50)
+    @Column(name = "firstName", length = 25)
     @Length(min = 3, message = "{validation.minLength}")
     @NotNull
     private String firstName;
 
-    @Column(name = "lastName", length = 50)
+    @Column(name = "lastName", length = 35)
     @Length(min = 3, message = "{validation.minLength}")
     @NotNull
     private String lastName;

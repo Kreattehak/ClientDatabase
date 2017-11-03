@@ -82,6 +82,13 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
         return new DeviceResolverHandlerInterceptor();
     }
 
+    @Bean
+    public Validator validator() {
+        LocalValidatorFactoryBean lvfb = new LocalValidatorFactoryBean();
+        lvfb.setValidationMessageSource(messageSource());
+        return lvfb;
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
@@ -97,16 +104,8 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
                 .addResourceLocations(RESOURCES + SLASH);
     }
 
-    @Bean
-    public Validator validator() {
-        LocalValidatorFactoryBean lvfb = new LocalValidatorFactoryBean();
-        lvfb.setValidationMessageSource(messageSource());
-        return lvfb;
-    }
-
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new ServletWebArgumentResolverAdapter(new DeviceWebArgumentResolver()));
     }
-
 }

@@ -18,10 +18,6 @@ public class AbstractDao<T, ID extends Serializable> implements Dao<T, ID> {
 
     }
 
-    protected Class<T> getPersistentClass() {
-        return persistentClass;
-    }
-
     @Override
     public T findById(ID id) {
         return sessionFactory.getCurrentSession().get(getPersistentClass(), id);
@@ -45,6 +41,12 @@ public class AbstractDao<T, ID extends Serializable> implements Dao<T, ID> {
     }
 
     @Override
+    public T update(T entity) {
+        sessionFactory.getCurrentSession().merge(entity);
+        return entity;
+    }
+
+    @Override
     public void flush() {
         sessionFactory.getCurrentSession().flush();
     }
@@ -54,9 +56,8 @@ public class AbstractDao<T, ID extends Serializable> implements Dao<T, ID> {
         sessionFactory.getCurrentSession().clear();
     }
 
-    @Override
-    public T update(T entity) {
-        return (T) sessionFactory.getCurrentSession().merge(entity);
+    protected Class<T> getPersistentClass() {
+        return persistentClass;
     }
 }
 

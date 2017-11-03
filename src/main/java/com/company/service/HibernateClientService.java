@@ -128,9 +128,4 @@ public class HibernateClientService implements ClientService {
 
         return clientDao.update(clientFromDatabase);
     }
-
-    @Override
-    public void flush() {
-        clientDao.flush();
-    }
 }

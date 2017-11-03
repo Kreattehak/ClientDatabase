@@ -2,7 +2,6 @@ package com.company.configuration.security.controller;
 
 import com.company.configuration.security.JwtAuthenticationRequest;
 import com.company.configuration.security.JwtTokenUtil;
-import com.company.configuration.security.JwtUser;
 import com.company.configuration.security.service.JwtAuthenticationResponse;
 import com.company.util.LocalizedMessages;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +15,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-
 import static com.company.util.Mappings.REST_AUTHORIZATION;
-import static com.company.util.Mappings.REST_AUTHORIZATION_REFRESH;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 

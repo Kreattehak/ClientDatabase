@@ -22,7 +22,6 @@ import static org.hibernate.cfg.AvailableSettings.*;
 public class HibernateConfiguration {
 
     private final String MODEL_PACKAGE = ".model";
-
     private final Environment env;
 
     @Autowired
@@ -50,6 +49,13 @@ public class HibernateConfiguration {
         return sessionFactory;
     }
 
+    @Bean
+    public HibernateTransactionManager getTransactionManager(SessionFactory sessionFactory) {
+        HibernateTransactionManager txManager = new HibernateTransactionManager();
+        txManager.setSessionFactory(sessionFactory);
+        return txManager;
+    }
+
     private Properties getHibernateProperties() {
         Properties properties = new Properties();
         properties.put(DIALECT, env.getRequiredProperty(DIALECT));
@@ -58,12 +64,5 @@ public class HibernateConfiguration {
         properties.put(STATEMENT_BATCH_SIZE, env.getRequiredProperty(STATEMENT_BATCH_SIZE));
         properties.put(HBM2DDL_AUTO, env.getRequiredProperty(HBM2DDL_AUTO));
         return properties;
-    }
-
-    @Bean
-    public HibernateTransactionManager getTransactionManager(SessionFactory sessionFactory) {
-        HibernateTransactionManager txManager = new HibernateTransactionManager();
-        txManager.setSessionFactory(sessionFactory);
-        return txManager;
     }
 }

@@ -78,6 +78,20 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new JwtAuthenticationTokenFilter(userDetailsService, jwtTokenUtil);
     }
 
+    @Bean
+    SimpleUrlAuthenticationFailureHandler getAuthFailureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler(LOGIN_PAGE + "?error=true");
+    }
+
+    @Bean
+    public DelegatingAuthenticationEntryPoint delegatingAuthenticationEntryPoint() {
+        LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> entryPoints = new LinkedHashMap<>();
+        entryPoints.put(new AntPathRequestMatcher(REST_API_PREFIX + ANY_SUBPATH), jwtAuthenticationEntryPoint);
+        DelegatingAuthenticationEntryPoint defaultEntryPoint = new DelegatingAuthenticationEntryPoint(entryPoints);
+        defaultEntryPoint.setDefaultEntryPoint(new LoginUrlAuthenticationEntryPoint(LOGIN_PAGE));
+        return defaultEntryPoint;
+    }
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -111,19 +125,5 @@ public class MultiSecurityConfiguration extends WebSecurityConfigurerAdapter {
         webSecurity
                 .ignoring()
                 .antMatchers(PERMITTED_URLS);
-    }
-
-    @Bean
-    SimpleUrlAuthenticationFailureHandler getAuthFailureHandler() {
-        return new SimpleUrlAuthenticationFailureHandler(LOGIN_PAGE + "?error=true");
-    }
-
-    @Bean
-    public DelegatingAuthenticationEntryPoint delegatingAuthenticationEntryPoint() {
-        LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> entryPoints = new LinkedHashMap<>();
-        entryPoints.put(new AntPathRequestMatcher(REST_API_PREFIX + ANY_SUBPATH), jwtAuthenticationEntryPoint);
-        DelegatingAuthenticationEntryPoint defaultEntryPoint = new DelegatingAuthenticationEntryPoint(entryPoints);
-        defaultEntryPoint.setDefaultEntryPoint(new LoginUrlAuthenticationEntryPoint(LOGIN_PAGE));
-        return defaultEntryPoint;
     }
 }

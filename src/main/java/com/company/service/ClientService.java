@@ -20,6 +20,4 @@ public interface ClientService {
     void deleteClient(Long clientId, HttpServletRequest request);
 
     Client updateClient(Client client, HttpServletRequest request);
-
-    void flush();
 }

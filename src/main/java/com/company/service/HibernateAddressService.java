@@ -196,7 +196,7 @@ public class HibernateAddressService implements AddressService {
         logger.trace("{} edited {} with data {}.", webDataResolverAndCreator.getUserData(request),
                 addressData, addressFromDatabase);
 
-        return addressFromDatabase;
+        return addressDao.update(addressFromDatabase);
     }
 
     @Override

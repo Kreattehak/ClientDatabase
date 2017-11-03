@@ -16,9 +16,6 @@ public class Constants {
     public static final String ANOTHER_ADDRESS_CITY_NAME  = "AnotherCity";
     public static final String ANOTHER_ADDRESS_ZIP_CODE= "99-999";
 
-    public static final String INVALID_TO_SHORT_INPUT = "00";
-    public static final String TEST_DB_URL_PROPERTY_NAME = "test.hibernate.connection.url";
-
     public static final String REFERER_HEADER_VALUE = "http://localhost:8080/admin/removeAddressFromClient?clientId=";
     public static final String REST_REFERER_HEADER_VALUE = "http://localhost:4200/clients/details/";
 
@@ -42,6 +39,8 @@ public class Constants {
     public static final String ANOTHER_ID_VALUE_STRING = ANOTHER_ID_VALUE.toString();
     public static final String ID_NOT_FOUND_VALUE_STRING = ID_NOT_FOUND.toString();
 
+    public static final String INVALID_TO_SHORT_INPUT = "00";
+    public static final String TEST_DB_URL_PROPERTY_NAME = "test.hibernate.connection.url";
     public static final String STRING_TO_TEST_EQUALITY = "1a2b3c4d5e6";
 
     //JWT without expiration date

@@ -12,10 +12,10 @@ public interface Dao<T, ID> {
 
     void delete(T entity);
 
+    T update(T entity);
+
     void flush();
 
     void clear();
-
-    T update(T entity);
 }
 

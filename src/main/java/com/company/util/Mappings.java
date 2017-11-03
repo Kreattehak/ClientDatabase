@@ -5,19 +5,20 @@ import java.util.regex.Pattern;
 
 public class Mappings {
 
+    private static final String ADMIN_PREFIX = "/admin";
+    public static final String REST_API_PREFIX = "/api";
+    public static final String REST_AUTHORIZATION = REST_API_PREFIX + "/auth";
+
     public static final String REDIRECT = "redirect:";
     public static final String SLASH = "/";
     public static final String ANY_SUBPATH = "/**";
     public static final String RESOURCES = "/resources";
     public static final String ERROR_PAGE = "/error";
-
-    private static final String ADMIN_PREFIX = "/admin";
-    public static final String REST_API_PREFIX = "/api";
-
-    public static final String REST_AUTHORIZATION = REST_API_PREFIX + "/auth";
-    public static final String REST_AUTHORIZATION_REFRESH = REST_API_PREFIX + "/refresh";
-
     public static final String LOGIN_PAGE = "/login";
+    public static final String BLANK_PAGE = "/blank";
+    public static final String ABOUT_AUTHOR_PAGE = "/aboutAuthor";
+    public static final String FAVICON = "/favicon.ico";
+
     public static final String TABLE_OF_CLIENTS = "/clientsTable";
     public static final String ADD_CLIENT = ADMIN_PREFIX + "/addClient";
     public static final String REMOVE_CLIENT = ADMIN_PREFIX + "/removeClient";
@@ -42,12 +43,8 @@ public class Mappings {
     public static final String REST_DELETE_ADDRESS = ADMIN_PREFIX + "/deleteAddress";
     public static final String REST_EDIT_MAIN_ADDRESS = ADMIN_PREFIX + "/editMainAddress";
 
-    public static final String BLANK_PAGE = "/blank";
-    public static final String ABOUT_AUTHOR_PAGE = "/aboutAuthor";
-
     public static final String RESOLVER_PREFIX = "/WEB-INF/views/";
     public static final String RESOLVER_SUFFIX = ".jsp";
-    public static final String FAVICON = "/favicon.ico";
 
     public static final String DEFAULT_COMPONENT_SCAN_PACKAGE = "com.company";
     public static final String ADDRESS_SERVICE_LOGGER_NAME =
@@ -57,15 +54,14 @@ public class Mappings {
     public static final String LOGIN_LOGGER_NAME =
             DEFAULT_COMPONENT_SCAN_PACKAGE + ".controller.JwtAuthenticationTokenFilter";
 
-    static int ONE_GET_PARAM = 1;
-    static int TWO_GET_PARAMS = 2;
+    public static final int ONE_GET_PARAM = 1;
+    public static final int TWO_GET_PARAMS = 2;
     public static final String REFERER_HEADER = "referer";
 
     public static final String DEFAULT_ENCODING_VALUE = "UTF-8";
     public static final Long ID_NOT_FOUND = -1L;
 
     public static final String ERROR_MESSAGE = "errorMessage";
-    public static final String HTTP_STATUS = "httpStatus";
 
     public static final String LOGGED_USER_HEADER = "Logged-User";
     public static final String COOKIE_NAME = "currentUser";

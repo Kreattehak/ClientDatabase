@@ -14,7 +14,7 @@ public class Authority {
     @SequenceGenerator(name = "authority_seq", sequenceName = "authority_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "NAME", length = 50)
+    @Column(name = "NAME", length = 30)
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthorityName name;

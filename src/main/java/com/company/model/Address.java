@@ -28,7 +28,7 @@ public class Address extends BaseEntity implements Serializable {
     @NotNull
     private String streetName;
 
-    @Column(name = "cityName", length = 50, nullable = false)
+    @Column(name = "cityName", length = 25, nullable = false)
     @Length(min = 3, message = "{validation.minLength}")
     @NotNull
     private String cityName;
