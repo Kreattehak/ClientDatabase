@@ -20,18 +20,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "list_of_clients")
+@Table(name = "client")
 public class Client extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 7001249363109297934L;
 
-    @Column(name = "first_name", nullable = false, length = 25)
-    @Length(min = 3, message = "{validation.minLength}")
+    @Column(name = "first_name", nullable = false, length = 30)
+    @Length(min = 3, max = 30, message = "{validation.minLength}")
     @NotNull
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 35)
-    @Length(min = 3, message = "{validation.minLength}")
+    @Column(name = "last_name", nullable = false, length = 30)
+    @Length(min = 3, max = 30, message = "{validation.minLength}")
     @NotNull
     private String lastName;
 

@@ -14,7 +14,7 @@ import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "addresses")
+@Table(name = "address")
 public class Address extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -4023699522800449374L;
@@ -26,12 +26,12 @@ public class Address extends BaseEntity implements Serializable {
     private Client client;
 
     @Column(name = "street_name", nullable = false, length = 50)
-    @Length(min = 3, message = "{validation.minLength}")
+    @Length(min = 3, max = 50, message = "{validation.minLength}")
     @NotNull
     private String streetName;
 
-    @Column(name = "city_name", nullable = false, length = 25)
-    @Length(min = 3, message = "{validation.minLength}")
+    @Column(name = "city_name", nullable = false, length = 30)
+    @Length(min = 3, max = 30, message = "{validation.minLength}")
     @NotNull
     private String cityName;
 
