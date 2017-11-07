@@ -20,15 +20,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "listofclients")
+@Table(name = "list_of_clients")
 public class Client extends BaseEntity implements Serializable {
 
-    @Column(name = "firstName", length = 25)
+    private static final long serialVersionUID = 7001249363109297934L;
+
+    @Column(name = "first_name", nullable = false, length = 25)
     @Length(min = 3, message = "{validation.minLength}")
     @NotNull
     private String firstName;
 
-    @Column(name = "lastName", length = 35)
+    @Column(name = "last_name", nullable = false, length = 35)
     @Length(min = 3, message = "{validation.minLength}")
     @NotNull
     private String lastName;
@@ -37,7 +39,7 @@ public class Client extends BaseEntity implements Serializable {
     @JsonIgnore
     private Set<Address> address;
 
-    @Column(name = "dateOfRegistration", nullable = false, updatable = false)
+    @Column(name = "date_of_registration", nullable = false, updatable = false)
     private Date dateOfRegistration;
 
     @OneToOne
@@ -110,7 +112,7 @@ public class Client extends BaseEntity implements Serializable {
     @Override
     public String toString() {
         return "Client{" +
-                "id=" + super.getId()+
+                "id=" + super.getId() +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", address=" + address +

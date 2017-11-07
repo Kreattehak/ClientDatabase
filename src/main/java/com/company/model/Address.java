@@ -17,23 +17,25 @@ import java.io.Serializable;
 @Table(name = "addresses")
 public class Address extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -4023699522800449374L;
+
     @ManyToOne
     @JoinTable(name = "client_address", joinColumns = @JoinColumn(name = "address_id"),
             inverseJoinColumns = @JoinColumn(name = "client_id"))
     @JsonIgnore
     private Client client;
 
-    @Column(name = "streetName", length = 50, nullable = false)
+    @Column(name = "street_name", nullable = false, length = 50)
     @Length(min = 3, message = "{validation.minLength}")
     @NotNull
     private String streetName;
 
-    @Column(name = "cityName", length = 25, nullable = false)
+    @Column(name = "city_name", nullable = false, length = 25)
     @Length(min = 3, message = "{validation.minLength}")
     @NotNull
     private String cityName;
 
-    @Column(name = "zipCode", length = 6, nullable = false)
+    @Column(name = "zip_code", nullable = false, length = 6)
     @Pattern(regexp = "\\d{2}-\\d{3}", message = "{validation.zipCodePattern}")
     @NotNull
     private String zipCode;
