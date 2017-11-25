@@ -17,9 +17,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import static com.company.util.Mappings.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
@@ -64,11 +62,6 @@ public class HomeControllerTest {
     @Test
     public void shouldMapToAboutAuthorPage() throws Exception {
         performRequestForHomeController(ABOUT_AUTHOR_PAGE);
-    }
-
-    @Test
-    public void shouldMapToLoginPage() throws Exception {
-        performRequestForHomeController(LOGIN_PAGE);
     }
 
     private void performRequestForHomeController(String url) throws Exception {

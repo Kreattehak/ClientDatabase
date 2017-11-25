@@ -12,10 +12,7 @@ import org.springframework.mobile.device.LiteDeviceResolver;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.mvc.method.annotation.ServletWebArgumentResolverAdapter;
@@ -25,12 +22,8 @@ import javax.validation.Validator;
 import java.util.List;
 import java.util.Locale;
 
-import static com.company.util.Mappings.ANY_SUBPATH;
-import static com.company.util.Mappings.DEFAULT_ENCODING_VALUE;
-import static com.company.util.Mappings.RESOLVER_PREFIX;
-import static com.company.util.Mappings.RESOLVER_SUFFIX;
-import static com.company.util.Mappings.RESOURCES;
-import static com.company.util.Mappings.SLASH;
+import static com.company.util.Mappings.*;
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Configuration
 @EnableWebMvc
@@ -73,7 +66,7 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public DeviceResolver deviceResolver(){
+    public DeviceResolver deviceResolver() {
         return new LiteDeviceResolver();
     }
 
@@ -107,5 +100,11 @@ public class SpringConfiguration extends WebMvcConfigurerAdapter {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(new ServletWebArgumentResolverAdapter(new DeviceWebArgumentResolver()));
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController(LOGIN_PAGE).setViewName(extractViewName(LOGIN_PAGE));
+        registry.setOrder(HIGHEST_PRECEDENCE);
     }
 }

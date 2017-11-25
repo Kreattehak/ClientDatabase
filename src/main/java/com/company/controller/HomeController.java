@@ -22,9 +22,4 @@ public class HomeController {
     public String aboutAuthor() {
         return extractViewName(ABOUT_AUTHOR_PAGE);
     }
-
-    @RequestMapping(LOGIN_PAGE)
-    public String login() {
-        return extractViewName(LOGIN_PAGE);
-    }
 }

@@ -38,10 +38,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {AppTestConfig.class, AppConfiguration.class})
@@ -328,7 +325,6 @@ public class HibernateAddressServiceTest {
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE);
         anotherTestAddress.setId(ID_VALUE);
 
-
         when(addressDao.findById(anyLong())).thenReturn(testAddress);
 
         addressService.updateAddress(anotherTestAddress, requestMock);
@@ -337,6 +333,7 @@ public class HibernateAddressServiceTest {
                 ANOTHER_ADDRESS_CITY_NAME, ANOTHER_ADDRESS_ZIP_CODE, testClient)));
 
         verify(addressDao).findById(anyLong());
+        verify(addressDao).update(anotherTestAddress);
         verify(webDataResolverAndCreatorMock).getUserData(requestMock);
         verifyNoMoreInteractions(addressDao);
         verifyNoMoreInteractions(webDataResolverAndCreatorMock);
