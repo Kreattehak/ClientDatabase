@@ -10,7 +10,7 @@ CREATE TABLE `client` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `date_of_registration` date NOT NULL,
   `first_name` varchar(30) NOT NULL,
-  `last_name` varchar(30) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 

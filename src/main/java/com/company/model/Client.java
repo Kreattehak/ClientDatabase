@@ -30,8 +30,8 @@ public class Client extends BaseEntity implements Serializable {
     @NotNull
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 30)
-    @Length(min = 3, max = 30, message = "{validation.minLength}")
+    @Column(name = "last_name", nullable = false, length = 50)
+    @Length(min = 3, max = 50, message = "{validation.minLength}")
     @NotNull
     private String lastName;
 
