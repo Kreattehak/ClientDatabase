@@ -28,20 +28,20 @@ This project is an CRUD web application which can help you mange your client dat
 
 ## Screenshots
 
-![main page](https://github.com/Kreattehak/ClientDatabase/blob/screenshots/main_page.png "Main page with table of clients")
+![main page](https://github.com/kamil-olejniczak/ClientDatabase/blob/screenshots/main_page.png "Main page with table of clients")
 Main page with table of clients.
 
-![client without address](https://github.com/Kreattehak/ClientDatabase/blob/screenshots/client_without_address.png "Active client without address")
+![client without address](https://github.com/kamil-olejniczak/ClientDatabase/blob/screenshots/client_without_address.png "Active client without address")
 Buttons disabled when client has no address.
 
-![localized app](https://github.com/Kreattehak/ClientDatabase/blob/screenshots/localized_app.png "Polish version of project")
+![localized app](https://github.com/kamil-olejniczak/ClientDatabase/blob/screenshots/localized_app.png "Polish version of project")
 Localized version of project.
 
 
 ## More about this project
 This project is an CRUD web application, which allows you to store Clients with their addresses 
 in database. You can use standard Spring MVC with JSP part of this app or consume REST with front-end 
-app like `ClientDatabaseAngularFront` from my github. You can check it [here](https://github.com/Kreattehak/ClientDatabaseAngularFront).
+app like `ClientDatabaseAngularFront` from my github. You can check it [here](https://github.com/kamil-olejniczak/ClientDatabaseAngularFront).
 
 MVC part contains multiple jsp pages which allow you to add, delete, edit clients and their addresses,
 you can also mark one of them as main address.
