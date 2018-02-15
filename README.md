@@ -49,6 +49,8 @@ you can also mark one of them as main address.
 This project has convenient log system. Logs are saved at your user home location in ClientDatabase folder. 
 So if you account is named 'User', this path looks like that `C:\Users\User\ClientDatabase\logs`.
 
+You can see example logs in `exampleLogs.log`file or directly [here](https://github.com/kamil-olejniczak/ClientDatabase/blob/master/exampleLogs.log)
+
 ### Some of design choices I took:
 This project still contains 'old' version of this app which was based on JSP and some basic Spring Security authentication, 
 it's updated to get authentication token from cookie.
