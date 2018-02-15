@@ -1,0 +1,17 @@
+# Content of loginLogs.log
+com.company.controller.JwtAuthenticationTokenFilter [INFO ] 2017-10-23 20:50:17 [http-nio-8080-exec-9] doFilterInternal-> Checking authentication for user admin http://localhost:4200/api/admin/updateAddress
+com.company.controller.JwtAuthenticationTokenFilter [INFO ] 2017-10-23 20:50:18 [http-nio-8080-exec-9] doFilterInternal-> Authenticated user admin, setting security context http://localhost:4200/api/admin/updateAddress
+com.company.controller.JwtAuthenticationTokenFilter [INFO ] 2017-10-23 20:50:22 [http-nio-8080-exec-1] doFilterInternal-> Checking authentication for user admin http://localhost:4200/api/admin/getClient
+com.company.controller.JwtAuthenticationTokenFilter [INFO ] 2017-10-23 20:50:22 [http-nio-8080-exec-10] doFilterInternal-> Checking authentication for user admin http://localhost:4200/api/admin/getAllAddresses
+com.company.controller.JwtAuthenticationTokenFilter [INFO ] 2017-10-23 20:50:22 [http-nio-8080-exec-1] doFilterInternal-> Authenticated user admin, setting security context http://localhost:4200/api/admin/getClient
+com.company.controller.JwtAuthenticationTokenFilter [INFO ] 2017-10-23 20:50:22 [http-nio-8080-exec-10] doFilterInternal-> Authenticated user admin, setting security context http://localhost:4200/api/admin/getAllAddresses
+
+# Content of fullDatabaseLogs.log
+com.company.service.HibernateAddressService [WARN ] 2017-10-23 20:50:18 [http-nio-8080-exec-9] updateAddress-> User admin with ip: 127.0.0.1 tried to update address with address data that already exists Address{id=13, streetName='sads', cityName='asd', zipCode='44-798'}.
+com.company.service.HibernateAddressService [INFO ] 2017-10-23 20:51:02 [http-nio-8080-exec-2] saveAddress-> New address with id 15 was added for client with id 4.
+com.company.service.HibernateAddressService [TRACE] 2017-10-23 20:51:02 [http-nio-8080-exec-2] saveAddress-> User admin with ip: 127.0.0.1 added Address{id=15, streetName='aaa', cityName='aaa', zipCode='11-111'} for client Without Address with id 4.
+com.company.service.HibernateAddressService [WARN ] 2017-10-23 20:51:09 [http-nio-8080-exec-5] saveAddress-> User admin with ip: 127.0.0.1 tried to add address for client with id 4. This request was handmade, with data: clientId=4, Address{id=null, streetName='aaa', cityName='aaa', zipCode='11-111'}.
+
+# Difference between fullDatabaseLogs.log and databaseLogs.log
+saveAddress-> New address with id 15 was added for client with id 4.
+saveAddress-> User admin with ip: 127.0.0.1 added Address{id=15, streetName='aaa', cityName='aaa', zipCode='11-111'} for client Without Address with id 4.
