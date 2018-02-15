@@ -119,7 +119,7 @@ public class HibernateAddressService implements AddressService {
         if (!isRequestProper) {
             logger.warn("{} tried to add address for client with id {}. " +
                             "This request was handmade, with data: clientId= {}, {}.",
-                    webDataResolverAndCreator.getUserData(request), clientId, newAddress);
+                    webDataResolverAndCreator.getUserData(request), clientId, clientId, newAddress);
             throw new ProcessUserRequestException(localizedMessages.getMessage(saveAddressExceptionMessage));
         }
 
@@ -214,8 +214,7 @@ public class HibernateAddressService implements AddressService {
 
         clientFromDatabase.setMainAddress(addressFromDatabase);
 
-        logger.info("Address with id {} was set as main address for client with id {}.",
-                addressId, clientId);
+        logger.info("Address with id {} was set as main address for client with id {}.", addressId, clientId);
         logger.trace("{} updated main address {} for client with id {}.",
                 webDataResolverAndCreator.getUserData(request), addressFromDatabase, clientId);
     }

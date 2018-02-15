@@ -46,8 +46,7 @@ public class HibernateClientService implements ClientService {
         boolean isRequestProper = (clientFromDatabase != null);
         if (!isRequestProper) {
             logger.warn("{} tried to get client with id {}, but that client doesn't exist. "
-                            + "This request was handmade.",
-                    webDataResolverAndCreator.getUserData(request), clientId);
+                            + "This request was handmade.", webDataResolverAndCreator.getUserData(request), clientId);
             throw new ProcessUserRequestException(localizedMessages.getMessage(findClientExceptionMessage));
         }
 
